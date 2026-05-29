@@ -118,6 +118,19 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `ebpf_events_total{program="fentrysnoop",result=...}` splits ok/fail in Grafana | Ch 8 |
 | unverified | `bpftrace -e 'fexit:do_unlinkat { @[retval==0]=count() }'` split tracks the tool | Ch 8 |
 
+### Chapters 9–10 — opensnoop, sigsnoop (r4.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/09-opensnoop` builds; tracepoints attach to `syscalls:sys_{enter,exit}_openat` | Ch 9 |
+| unverified | `TracePointContext::read_at` reads filename@24/flags@32/ret@16 correctly | Ch 9 |
+| unverified | `bpf_probe_read_user_str_bytes` reads the user-space filename pointer | Ch 9 |
+| unverified | enter/exit pair via `HashMap` keyed by pid_tgid; result classified ok/err | Ch 9 |
+| unverified | `ebpf_events_total{program="opensnoop",result=...}` appears in Grafana | Ch 9 |
+| unverified | `examples/10-sigsnoop` builds; tracepoint attaches to `syscalls:sys_enter_kill` | Ch 10 |
+| unverified | `sys_enter_kill` offsets pid@16/sig@24 read correctly | Ch 10 |
+| unverified | signal number→name mapping + `signal` metric label work | Ch 10 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -175,3 +188,22 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **CI note:** the deploy job is now guarded
   `if: github.event_name == 'push' && github.ref == 'refs/heads/main'`,
   so feature-branch pushes and PRs build (validate) without deploying.
+
+### r4.0 — Chapters 9–10: opensnoop + sigsnoop
+- **Shipped:** `_docs/09-opensnoop.md`, `_docs/10-sigsnoop.md`;
+  `examples/09-opensnoop/` (enter+exit openat tracepoints, user-memory
+  filename read, ok/err result) and `examples/10-sigsnoop/` (single
+  kill tracepoint, signal name mapping); reconciliation Section C rows
+  for Ch 9–10.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) tracepoint field offsets vs. the
+  kernel's format files (`sys_enter_openat`, `sys_enter_kill`);
+  (2) `TracePointContext::read_at::<T>(offset)` API in aya 0.13.x;
+  (3) `bpf_probe_read_user_str_bytes` (user vs kernel reader) for the
+  openat filename; (4) high openat event volume — future chapters add
+  in-kernel filtering.
+- **Teaching arc:** Ch 7 (kprobe) → Ch 8 (fentry/fexit, return values)
+  → Ch 9 (stable tracepoints + user-memory reads + enter/exit) → Ch 10
+  (minimal single tracepoint). The four together cover the main
+  attach mechanisms before process-lifecycle tracing (execsnoop/
+  exitsnoop) in r5.0.
