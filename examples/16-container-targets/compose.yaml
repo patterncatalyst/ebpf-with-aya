@@ -1,0 +1,20 @@
+# Runs the two observed targets ON THE TARGET VM (Podman/crun), where the VM's
+# kernel — and therefore our eBPF — can see their processes. Ports bind
+# 127.0.0.1 on the VM; the host load driver reaches them via the VM's IP.
+name: ebpf-targets
+services:
+  fastapi-target:
+    build:
+      context: ./targets/fastapi
+    image: ebpf-fastapi-target:dev
+    container_name: fastapi-target
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  quarkus-target:
+    build:
+      context: ./targets/quarkus
+    image: ebpf-quarkus-target:dev
+    container_name: quarkus-target
+    ports:
+      - "127.0.0.1:8080:8080"

@@ -37,6 +37,13 @@ packages:
   - zlib-devel
   - git
   - tar
+  # Containers ON the target VM: observed app targets (Quarkus/FastAPI) run
+  # here under Podman/crun so the VM's kernel — where our eBPF attaches — can
+  # see their processes. dwarves provides pahole (BTF from DWARF, Ch 15).
+  - podman
+  - podman-compose
+  - crun
+  - dwarves
 
 runcmd:
   # Confirm the running kernel ships a BTF blob (required for CO-RE).

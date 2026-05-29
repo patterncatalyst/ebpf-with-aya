@@ -172,6 +172,20 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `pahole -J` + `bpftool btf dump file target-app` shows `Order` with offsets | Ch 15 |
 | unverified | `ebpf_events_total{program="btf-uprobe",status=...}` appears in Grafana | Ch 15 |
 
+### Chapter 16 — containerized targets + cgroup-scoped observation (r8.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | FastAPI target builds (multi-stage `ubi9/python-314` → `-minimal`) and serves `/work` | Ch 16 |
+| unverified | Quarkus target builds (UBI OpenJDK 25 + Quarkus 3.33 fast-jar) and serves `/work` | Ch 16 |
+| unverified | `ubi9/openjdk-25` image tag exists (else use Containerfile fallback) | Ch 16 |
+| unverified | target VM has podman/crun/dwarves after re-provision (added to cloud-init) | Ch 16 |
+| unverified | `examples/16-container-targets` (contrace) builds | Ch 16 |
+| unverified | `bpf_get_current_cgroup_id()` + `Array::set` cgroup filter works in aya 0.13.x | Ch 16 |
+| unverified | container cgroup id resolves via `podman inspect CgroupPath` + `stat -c %i` | Ch 16 |
+| unverified | scoped contrace emits only the target container's opens; PID is host PID | Ch 16 |
+| unverified | `ebpf_events_total{program="contrace",container=...}` per-container series in Grafana | Ch 16 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -348,3 +362,24 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Captured as durable project requirements** (carried forward to all
   future chapters): the container/loader split, multi-stage UBI, the
   language-target pins, crun coverage, and the Excalidraw workflow.
+
+### r8.0 — Chapter 16: containerized targets + cgroup-scoped observation
+- **Shipped:** `_docs/16-container-targets.md`;
+  `examples/16-container-targets/` — FastAPI (Python 3.14) and Quarkus
+  (Java 25 + Quarkus 3.33) targets as multi-stage UBI containers,
+  `contrace` (cgroup-scoped openat tracer via
+  `bpf_get_current_cgroup_id()` + config `Array`), `compose.yaml`, and a
+  demo that runs targets on the VM and scopes observation to one
+  container. Added `podman`/`crun`/`dwarves` to the target VM cloud-init.
+  Reconciliation Section C rows for Ch 16.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) cgroup-id resolution
+  (rootless/rootful + cgroup-manager variance) — demo falls back to
+  unscoped; (2) `ubi9/openjdk-25` tag availability + Quarkus 3.33 build
+  (Containerfile carries a fallback); (3) `bpf_get_current_cgroup_id` /
+  `Array::set` API; (4) re-provisioning the VM so podman/crun are
+  present.
+- **Model refinement:** observed app-target containers run **on the
+  target VM** (not the host), because eBPF attaches to that kernel —
+  documented in the chapter and the lab topology applies. Host still
+  runs the stack + load driver.

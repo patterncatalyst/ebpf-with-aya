@@ -1,0 +1,28 @@
+# Multi-stage, UBI-based Quarkus (Java 25 + Quarkus 3.33) target.
+#
+# builder: Maven + JDK 25 build of the Quarkus fast-jar.
+# runtime: UBI OpenJDK 25 running the fast-jar layout.
+#
+# NOTE (verify): the exact UBI image tags below must exist on the registry.
+# If ubi9/openjdk-25 / a Maven UBI tag aren't published yet, fall back to a
+# JDK-25 builder of your choice and ubi9/openjdk-21 at runtime, or run on
+# ubi9-minimal + a JRE 25. Flagged in the chapter + reconciliation plan.
+
+FROM registry.access.redhat.com/ubi9/openjdk-25 AS builder
+USER root
+WORKDIR /build
+COPY pom.xml ./
+# warm the dependency cache, then build the app
+RUN mvn -q -B -DskipTests dependency:go-offline || true
+COPY src ./src
+RUN mvn -q -B -DskipTests package
+
+FROM registry.access.redhat.com/ubi9/openjdk-25 AS runtime
+WORKDIR /app
+# Quarkus fast-jar layout
+COPY --from=builder /build/target/quarkus-app/lib/ ./lib/
+COPY --from=builder /build/target/quarkus-app/*.jar ./
+COPY --from=builder /build/target/quarkus-app/app/ ./app/
+COPY --from=builder /build/target/quarkus-app/quarkus/ ./quarkus/
+EXPOSE 8080
+CMD ["java", "-jar", "quarkus-run.jar"]

@@ -38,7 +38,7 @@ one may merge with its neighbour.
 |----|-----------|--------|--------|
 | r06 | 13–14 | `uprobe` + `bashreadline`; `uprobe rust` (probe a Rust binary's symbols) | **shipped (unverified)** |
 | r07 | 15 | `btf uprobe` — BTF-assisted user probes | **shipped (unverified)** |
-| r08 | 16 | bootstrap for user-space targets — Java and Python target examples | open |
+| r08 | 16 | bootstrap for user-space targets — Java and Python target examples | **shipped (unverified)** |
 | r09 | 17–18 | `sslsniff`; `funclatency` — uprobe-based latency histograms | open |
 | r10 | 19–20 | trace goroutine states; `javagc` — runtime-aware probing | open |
 

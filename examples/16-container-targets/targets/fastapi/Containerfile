@@ -1,0 +1,17 @@
+# Multi-stage, UBI-based FastAPI (Python 3.14) target.
+# builder: resolve deps into a venv; runtime: slim minimal image + venv.
+FROM registry.access.redhat.com/ubi9/python-314:latest AS builder
+WORKDIR /build
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+FROM registry.access.redhat.com/ubi9/python-314-minimal:latest AS runtime
+WORKDIR /app
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY app.py ./
+EXPOSE 8000
+# uvicorn serves the app; bind 0.0.0.0 so it's reachable from the load driver.
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,16 @@
+[package]
+name = "contrace-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya-ebpf = "0.1"
+aya-log-ebpf = "0.1"
+contrace-common = { path = "../contrace-common" }
+[[bin]]
+name = "contrace"
+path = "src/main.rs"
+[profile.dev]
+opt-level = 3
+[profile.release]
+lto = true
