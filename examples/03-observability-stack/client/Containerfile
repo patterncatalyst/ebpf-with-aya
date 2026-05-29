@@ -1,0 +1,16 @@
+# Python 3.14 client on UBI 9. The python-3.14 UBI image is publicly pullable
+# without a Red Hat subscription. Clients always run in Podman, never on the host.
+FROM registry.access.redhat.com/ubi9/python-314:latest
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY client.py ./
+
+# Defaults; compose/demo.sh override OTEL_EXPORTER_OTLP_ENDPOINT for the
+# container network. From inside Podman, the host stack is reachable at
+# host.containers.internal:4318.
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4318 \
+    OTEL_SERVICE_NAME=ebpf-client
+
+ENTRYPOINT ["python", "client.py"]

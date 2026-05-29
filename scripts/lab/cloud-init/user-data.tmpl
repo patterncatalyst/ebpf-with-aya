@@ -1,0 +1,47 @@
+#cloud-config
+# cloud-init user-data template for an eBPF target/peer guest.
+# Placeholders __HOSTNAME__ and __SSH_PUBKEY__ are filled by provision-vm.sh.
+hostname: __HOSTNAME__
+fqdn: __HOSTNAME__.lab
+
+users:
+  - name: fedora
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: [wheel]
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - __SSH_PUBKEY__
+
+# Grow the root filesystem to fill the overlay disk.
+growpart:
+  mode: auto
+  devices: ['/']
+
+package_update: true
+
+# Everything an eBPF target needs, all from Fedora repositories.
+# kernel-devel + the matching BTF give CO-RE programs their type info;
+# clang/llvm + bpftool/bpftrace/bcc are the kernel-side toolchain we
+# cross-check Aya against.
+packages:
+  - kernel-devel
+  - kernel-headers
+  - clang
+  - llvm
+  - bpftool
+  - bpftrace
+  - bcc-tools
+  - perf
+  - elfutils-libelf-devel
+  - zlib-devel
+  - git
+  - tar
+
+runcmd:
+  # Confirm the running kernel ships a BTF blob (required for CO-RE).
+  - [ bash, -c, "test -f /sys/kernel/btf/vmlinux && echo 'BTF: present' > /var/log/ebpf-target-ready || echo 'BTF: MISSING' > /var/log/ebpf-target-ready" ]
+  - [ bash, -c, "uname -r >> /var/log/ebpf-target-ready" ]
+  - [ bash, -c, "touch /var/lib/cloud/ebpf-provisioned" ]
+
+final_message: "eBPF target __HOSTNAME__ is up after $UPTIME seconds"

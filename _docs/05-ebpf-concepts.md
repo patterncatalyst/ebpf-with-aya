@@ -1,0 +1,179 @@
+---
+title: "eBPF concepts and tools"
+order: 5
+part: Foundations
+description: Programs, maps, the verifier, BTF and CO-RE, program types and attach points — the mental model you need before writing the first Aya program, and how bpftool and bpftrace fit in.
+duration: 20 minutes
+---
+
+You have a lab and a toolchain. Before writing the first program, this
+chapter builds the mental model: what an eBPF program actually *is*,
+how it gets from your `.rs` file into a running kernel, what the
+verifier will and won't let you do, and how Aya's pieces map onto the
+kernel's. It's deliberately concept-only — no deploys — so that when
+Chapter 6's code appears, every line has a place to land.
+
+## What an eBPF program is
+
+eBPF lets you load a small program into the running kernel and attach
+it to an **event** — a function entry, a syscall, a packet arriving on
+a NIC, a tracepoint firing. When the event happens, your program runs,
+in kernel context, and then returns. It cannot loop forever, cannot
+call arbitrary kernel functions, and cannot touch arbitrary memory.
+Those restrictions are the price of safety, and they're enforced
+before your program ever runs.
+
+Think of it as the kernel's plugin system: you don't recompile or
+reboot the kernel, you hand it a verified program and it runs that
+program at the events you chose.
+
+## The load-and-attach lifecycle
+
+Every Aya program follows the same arc, and it's worth memorizing
+because the API mirrors it exactly:
+
+```text
+   your Rust (-ebpf crate)
+        │  cargo + bpf-linker
+        ▼
+   BPF bytecode object  ──embedded into──>  user-space binary
+        │
+   user space calls the bpf() syscall to LOAD it
+        ▼
+   the VERIFIER checks it (safe? terminates? memory in bounds?)
+        │  pass
+        ▼
+   JIT compiles bytecode to native instructions
+        │
+   user space ATTACHES it to an event (kprobe, XDP hook, ...)
+        ▼
+   event fires ──> program runs in kernel ──> writes a MAP / logs
+        │
+   user space READS the map and reports (to Grafana, in our case)
+```
+
+In Aya, "load" is `Ebpf::load(...)`, "attach" is `program.load()`
+followed by `program.attach(...)`, and "read the map" is opening a
+typed map handle and iterating it. Chapter 6 shows each of these.
+
+## Maps: how the two worlds share data
+
+An eBPF program has no return channel to user space except **maps**.
+A map is a kernel-resident data structure both sides can access by a
+file descriptor. The kinds you'll use most early:
+
+- **`PerCpuArray` / `Array`** — fixed-size; great for counters.
+  Per-CPU variants avoid cross-CPU contention; user space sums them.
+- **`HashMap`** — keyed lookups, e.g. "latency histogram bucket per
+  PID" or "first-seen timestamp per socket".
+- **`PerfEventArray` / `RingBuf`** — streaming events from kernel to
+  user space. `RingBuf` (the modern choice) is a single shared ring;
+  perfect for "emit one record per `execve`".
+
+The shared `*-common` crate (Chapter 4) holds the `#[repr(C)]` structs
+that go *into* maps, so the kernel writer and the user-space reader
+agree on the byte layout. Get that layout wrong and you'll read
+garbage — it's the most common early bug.
+
+## The verifier: your strict but fair reviewer
+
+Before your program runs, the kernel **verifier** walks every possible
+execution path and proves the program is safe: it terminates (bounded
+loops only), never dereferences an unchecked pointer, never reads
+uninitialized stack, and stays within its instruction budget. If it
+can't prove safety, it rejects the load with an error.
+
+Two things to know now:
+
+1. **Verifier errors are normal**, especially early. They read like a
+   disassembly dump with a complaint at the end. The usual causes are
+   an unchecked bounds access (you indexed a packet without first
+   checking the packet is long enough) or an unbounded loop.
+2. **Rust + Aya prevents whole classes of these at compile time.**
+   Bounds-checked slice access, no uninitialized memory, no wild
+   pointers — the same guarantees that make Rust Rust also keep the
+   verifier happy. That's a large part of *why* write eBPF in Rust.
+
+## BTF and CO-RE: compile once, run everywhere
+
+Kernel data structures (`struct task_struct`, `struct file`, …) change
+layout between kernel versions. A probe that reads a field at a
+hardcoded offset breaks the moment the kernel changes. **BTF** (BPF
+Type Format) is the kernel describing its own types to you at runtime —
+that `vmlinux` blob you confirmed at `/sys/kernel/btf/vmlinux` in
+Chapter 2. **CO-RE** (Compile Once – Run Everywhere) uses BTF to
+*relocate* field accesses at load time, so one compiled program runs
+across kernel versions without recompiling.
+
+Aya supports CO-RE transparently when the target kernel has BTF —
+which Fedora 44's stock kernel does. This is why you can build on your
+laptop and run on the guest even if their kernels differ slightly, and
+why we confirmed BTF presence during lab setup.
+
+## Program types and attach points
+
+The *type* of an eBPF program determines what it can do and where it
+attaches. The ones this tutorial works through, grouped by part:
+
+| Family | Attaches to | Tutorial chapters |
+|--------|-------------|-------------------|
+| **kprobe / kretprobe** | any kernel function entry/return | `kprobe+unlink`, `opensnoop` |
+| **fentry / fexit** | function entry/exit (BTF-based, lower overhead than kprobes) | `fentry+unlink` |
+| **tracepoint / raw tracepoint** | stable kernel trace events | `execsnoop`, `exitsnoop`, `sigsnoop` |
+| **uprobe / USDT** | user-space function entry, in any process | `bashreadline`, `uprobe rust`, `sslsniff` |
+| **perf / profiling** | sampled on a timer or PMU counter | `profile`, `runqlat`, `hardirqs` |
+| **XDP** | earliest point a packet hits the NIC driver | `xdp`, load balancer, `xdp tcpdump` |
+| **TC / tcx** | traffic control ingress/egress | `tc`, `tcx` |
+| **socket / sockops** | socket lifecycle and data | `L7 tracing`, `sockops` |
+| **LSM** | security hooks; can *deny* operations | `lsm connect`, hardening |
+| **struct_ops / sched_ext** | implement a kernel interface in BPF | `scx_simple`, `scx_nest` |
+
+You don't need to memorize this. The point is that "write an eBPF
+program" always means "pick a program type, write the handler, attach
+it to the right event" — and Aya gives you a typed Rust macro for each
+type (`#[kprobe]`, `#[xdp]`, `#[tracepoint]`, …).
+
+## Where bpftool and bpftrace fit
+
+Two Fedora-packaged tools are your ground truth when an Aya program
+misbehaves. You run these **inside the target VM**:
+
+- **`bpftool`** — inspects the live BPF subsystem: what programs are
+  loaded (`bpftool prog list`), what maps exist and their contents
+  (`bpftool map dump`), and what's attached where. When your user
+  space reads zeros from a map, `bpftool map dump` tells you whether
+  the *kernel* side is writing anything at all — isolating the bug to
+  one half.
+- **`bpftrace`** — a high-level tracing language. It's not Aya, but
+  it's the fastest way to confirm an event even fires before you
+  invest in a full program. `bpftrace -e 'tracepoint:syscalls:sys_enter_openat { @[comm] = count(); }'`
+  proves `openat` traffic exists before you write `opensnoop` in Aya.
+
+Treat them as the multimeter you check against, not as competitors to
+Aya. The tutorial uses them throughout to verify that what your Rust
+program reports matches what the kernel actually did.
+
+## The shape of every chapter from here
+
+With this model, each program chapter is the same recipe:
+
+1. **Concept** — which event, which program type, what we'll measure.
+2. **Kernel crate** (`-ebpf`) — the handler, writing to a map or ring.
+3. **Common crate** — the shared record type.
+4. **User-space crate** — load, attach, read the map, export via OTLP.
+5. **Deploy** — `demo.sh` ships the binary to the target, runs it,
+   drives load (often from a Python client), shows the result in
+   Grafana, and cross-checks with `bpftool`/`bpftrace`.
+6. **Reconciliation** — claims start `unverified`, get promoted only
+   after a real run.
+
+[Next: Chapter 6 — Hello, eBPF →]({{ "/docs/06-hello-world/" | relative_url }})
+
+---
+
+*This chapter is conceptual; its claims about Aya's API surface and
+kernel behavior are <span class="status status--unverified">unverified</span>
+against a running system until Chapter 6's program is built and
+deployed. The concepts themselves draw on* Learning eBPF *(Liz Rice),*
+BPF Performance Tools *(Brendan Gregg), the Aya Book, and
+[ebpf.io](https://ebpf.io/get-started).*

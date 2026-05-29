@@ -1,0 +1,3 @@
+# OpenTelemetry SDK + OTLP/HTTP exporter. Pin to a recent line; bump deliberately.
+opentelemetry-sdk==1.30.0
+opentelemetry-exporter-otlp-proto-http==1.30.0

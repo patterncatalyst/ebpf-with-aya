@@ -1,0 +1,13 @@
+[package]
+name = "hello-common"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+
+[features]
+# When built for user space we may want std-only derives; the default is no_std
+# so the same crate links into the BPF program.
+default = []
+user = []
+
+[dependencies]

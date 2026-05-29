@@ -1,0 +1,21 @@
+[package]
+name = "hello-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+
+[dependencies]
+aya-ebpf = "0.1"
+aya-log-ebpf = "0.1"
+hello-common = { path = "../hello-common" }
+
+[[bin]]
+name = "hello"
+path = "src/main.rs"
+
+# The BPF target has no std and no test harness.
+[profile.dev]
+opt-level = 3
+debug = false
+[profile.release]
+lto = true

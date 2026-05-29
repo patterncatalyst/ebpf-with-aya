@@ -1,0 +1,43 @@
+# examples/03-observability-stack/compose.yaml
+#
+# The whole observability backend in one container: grafana/otel-lgtm bundles
+# Grafana + Tempo (traces) + Mimir (metrics) + Loki (logs) + Prometheus +
+# Pyroscope (profiles) + an OpenTelemetry Collector — exactly the Grafana /
+# Tempo / Mimir stack this tutorial targets. Your Aya user-space programs and
+# your Python clients both export OTLP to it.
+#
+# Conventions (see CONTRIBUTING.md / LESSONS-LEARNED):
+#   - fully-qualified image name (docker.io/...), never the bare short name
+#   - rootless podman: named volumes are root-owned, so Grafana runs as user 0
+#     with tmpfs for /tmp rather than a named data volume
+#   - bind mounts carry :Z for SELinux on Fedora
+
+name: ebpf-otel
+
+services:
+  lgtm:
+    image: docker.io/grafana/otel-lgtm:0.28.0
+    container_name: ebpf-lgtm
+    ports:
+      - "127.0.0.1:3000:3000"     # Grafana UI
+      - "127.0.0.1:4317:4317"     # OTLP gRPC
+      - "127.0.0.1:4318:4318"     # OTLP HTTP
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      # otel-lgtm ships pre-wired Tempo/Loki/Prometheus datasources already;
+      # we only layer in our own dashboards. (A datasources.yaml is included
+      # in grafana/provisioning/datasources/ for reference if you want to
+      # customise the trace<->log<->metric correlation.)
+      - ./grafana/provisioning/dashboards:/otel-lgtm/grafana/conf/provisioning/dashboards:Z
+    tmpfs:
+      - /tmp
+    user: "0"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s

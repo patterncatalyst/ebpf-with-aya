@@ -1,0 +1,26 @@
+# Cargo workspace for the hello-world Aya project.
+#
+# Three crates:
+#   hello-common  — #[repr(C)] types shared by both halves (no_std)
+#   hello-ebpf    — the in-kernel BPF program (no_std, BPF target)
+#   hello         — the user-space loader + OTLP reporter
+#
+# The hello crate's build.rs uses `aya-build` to compile hello-ebpf for the
+# BPF target and embed the object, so a plain `cargo build` produces one
+# self-contained user-space binary. (This is the current aya-template shape;
+# older templates used an `xtask` instead — see the Aya Book if your generated
+# project differs.)
+[workspace]
+resolver = "2"
+members = ["hello", "hello-common"]
+# hello-ebpf is compiled by hello/build.rs for the BPF target, not as a normal
+# workspace member, so it's intentionally excluded from the default members.
+exclude = ["hello-ebpf"]
+
+[workspace.package]
+license = "Apache-2.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+codegen-units = 1

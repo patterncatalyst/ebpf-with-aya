@@ -1,0 +1,48 @@
+# OPTIONAL — otel-lgtm already provisions correlated Tempo/Loki/Prometheus
+# datasources internally. Mount this only if you want to customise the
+# three-signal correlation (trace -> logs, trace -> metrics, log -> trace).
+# Inside the otel-lgtm container the backends listen on:
+#   Tempo 3200 · Loki 3100 · Prometheus 9090
+apiVersion: 1
+
+datasources:
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://127.0.0.1:3200
+    uid: tempo
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: loki
+        spanStartTimeShift: "-1m"
+        spanEndTimeShift: "1m"
+        filterByTraceID: true
+      tracesToMetrics:
+        datasourceUid: prometheus
+      serviceMap:
+        datasourceUid: prometheus
+      nodeGraph:
+        enabled: true
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://127.0.0.1:3100
+    uid: loki
+    jsonData:
+      derivedFields:
+        - name: TraceID
+          datasourceUid: tempo
+          matcherRegex: "trace_id=(\\w+)"
+          url: "$${__value.raw}"
+
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://127.0.0.1:9090
+    uid: prometheus
+    isDefault: true
+    jsonData:
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo

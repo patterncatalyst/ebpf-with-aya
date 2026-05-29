@@ -1,0 +1,47 @@
+{
+  "uid": "ebpf-overview",
+  "title": "eBPF with Aya — Overview",
+  "tags": ["ebpf", "aya"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Events observed by eBPF programs (rate/s)",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (program) (rate(ebpf_events_total[1m]))",
+          "legendFormat": "{{program}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Total events (last 15m)",
+      "gridPos": { "h": 9, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum(increase(ebpf_events_total[15m]))", "refId": "A" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "logs",
+      "title": "eBPF program logs",
+      "gridPos": { "h": 9, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        { "expr": "{service_name=~\".*ebpf.*\"}", "refId": "A" }
+      ]
+    }
+  ]
+}

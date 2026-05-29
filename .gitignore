@@ -1,0 +1,24 @@
+# Jekyll
+_site/
+.jekyll-cache/
+.jekyll-metadata
+vendor/
+Gemfile.lock
+
+# Rust / Cargo
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Local lab artifacts
+*.qcow2
+*.iso
+seed.img

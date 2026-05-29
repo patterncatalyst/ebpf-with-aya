@@ -1,0 +1,5 @@
+# User-space builds against pinned stable; the BPF target is built with nightly
+# by aya-build. Keep this in sync with the tutorial's pinned version.
+[toolchain]
+channel = "1.96.0"
+components = ["rustfmt", "clippy", "rust-src"]
