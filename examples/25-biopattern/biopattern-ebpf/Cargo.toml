@@ -1,0 +1,15 @@
+[package]
+name = "biopattern-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya-ebpf = "0.1"
+biopattern-common = { path = "../biopattern-common" }
+[[bin]]
+name = "biopattern"
+path = "src/main.rs"
+[profile.dev]
+opt-level = 3
+[profile.release]
+lto = true

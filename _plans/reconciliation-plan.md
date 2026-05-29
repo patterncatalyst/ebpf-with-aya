@@ -245,6 +245,21 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | user-stack capture works for target (frame pointers / unwind) | Ch 23 |
 | unverified | folded output pipes to flamegraph.pl; Pyroscope push left as extension | Ch 23 |
 
+### Chapters 24–25 — memleak, biopattern (r13.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/24-memleak` builds (+ leaker.c compiles on VM with clang) | Ch 24 |
+| unverified | uprobe+uretprobe on glibc `malloc`/`calloc` + uprobe on `free` attach by symbol | Ch 24 |
+| unverified | malloc size@entry / ptr@return bridged by `SIZES` HashMap; `ALLOCS[ptr]` add/remove | Ch 24 |
+| unverified | `bpf_get_stackid(BPF_F_USER_STACK)` captures alloc site; user-stack needs frame pointers | Ch 24 |
+| unverified | `TARGET_PID` `Array` pid filter; `u64_gauge` in otel 0.27 | Ch 24 |
+| unverified | `examples/25-biopattern` builds | Ch 25 |
+| unverified | `block_rq_issue` field offsets (dev@8, sector@16, nr_sector@24) match format file | Ch 25 |
+| unverified | per-device `LAST_END`/`STATS` HashMaps; sequential = (sector == last_end) | Ch 25 |
+| unverified | `dev_t` major:minor decoding correct | Ch 25 |
+| unverified | OTLP observable gauge `bio_sequential_ratio{dev}` in otel 0.27 | Ch 25 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -521,3 +536,20 @@ Later chapters' rows are added as each iteration drafts them (see the
   first sampling (fixed-cost) tool. User-frame symbolization left as hex
   (wire in `blazesym`); Pyroscope push noted as the continuous-profiling
   extension (otel-lgtm bundles Pyroscope).
+
+### r13.0 — Chapters 24–25: memleak + biopattern
+- **Shipped:** `_docs/24-memleak.md`, `_docs/25-biopattern.md`;
+  `examples/24-memleak/` (malloc/calloc+free pairing, alloc-site stacks
+  via `bpf_get_stackid` reused from Ch 23, pid-scoped, bundled leaker.c)
+  and `examples/25-biopattern/` (block_rq_issue tracepoint, per-device
+  sequential/random classification by sector arithmetic, OTLP ratio
+  gauge). Reconciliation Section C rows for Ch 24–25.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) glibc malloc/calloc/free uprobe
+  attach + user-stack capture needing frame pointers (memleak); (2)
+  `block_rq_issue` field offsets vs. the format file (biopattern —
+  layout has drifted across kernels); (3) `dev_t` decode; (4) `u64_gauge`
+  and observable-gauge APIs in otel 0.27.
+- **Continuity:** memleak deliberately reuses the Ch 23 stack-walking
+  primitive (StackTrace + get_stackid), reinforcing it as a building
+  block. Both remain consistent with the aggregate-in-kernel idiom.
