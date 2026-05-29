@@ -260,6 +260,17 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `dev_t` major:minor decoding correct | Ch 25 |
 | unverified | OTLP observable gauge `bio_sequential_ratio{dev}` in otel 0.27 | Ch 25 |
 
+### Chapter 26 — energy monitoring (r14.0) — *closes Performance & resources*
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/26-energy` builds | Ch 26 |
+| unverified | `sched_switch` offsets (prev_comm@8, prev_pid@24) read correctly | Ch 26 |
+| unverified | per-task `cpu_ns` credited on switch-out via `ONCPU`/`USAGE` HashMaps | Ch 26 |
+| unverified | RAPL `/sys/class/powercap/.../energy_uj` read; absent on VM → flat TDP model | Ch 26 |
+| unverified | per-comm power = share × system_w; observable gauges `estimated_power_watts{comm}` + `system_power_watts` in otel 0.27 | Ch 26 |
+| note | accuracy upgrade (PERF_EVENT_ARRAY + bpf_perf_event_read_value cycles, needs vPMU) left as documented extension | Ch 26 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -553,3 +564,25 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Continuity:** memleak deliberately reuses the Ch 23 stack-walking
   primitive (StackTrace + get_stackid), reinforcing it as a building
   block. Both remain consistent with the aggregate-in-kernel idiom.
+
+### r14.0 — Chapter 26: energy monitoring (closes Part 4)
+- **Shipped:** `_docs/26-energy.md`; `examples/26-energy/` — a
+  `sched_switch` tracepoint crediting per-task on-CPU time
+  (`ONCPU`/`USAGE` HashMaps), with user-space energy attribution by
+  CPU-time share × system power (RAPL when present, flat-TDP model when
+  not — the VM reality). Exports `estimated_power_watts{comm}` +
+  `system_power_watts`. Reconciliation Section C rows for Ch 26.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) sched_switch offsets; (2) RAPL
+  absence on KVM guests (fallback model exercised); (3) observable-gauge
+  API in otel 0.27; (4) the model is an estimate by construction.
+- **Honesty note:** chapter is explicit that RAPL/vPMU are usually NOT
+  exposed in VMs, so absolute watts are modeled on the lab VM while the
+  attribution (shares) stays correct; bare metal gives real RAPL. This
+  mirrors Kepler's cloud accommodation. Hardware-counter accuracy upgrade
+  (PERF_EVENT_ARRAY + bpf_perf_event_read_value) documented as the
+  extension, not shipped, to avoid an uncertain API in the core example.
+- **MILESTONE: Part 4 (Performance & resources) complete** — Ch 21–26
+  (runqlat, hardirqs, profile, memleak, biopattern, energy), 27 chapters
+  / 22 examples total. Parts 0–4 done. Next: Part 5 Networking (r15+),
+  which needs the two-VM peer build-out.

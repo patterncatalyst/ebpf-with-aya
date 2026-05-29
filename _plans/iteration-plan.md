@@ -49,7 +49,7 @@ one may merge with its neighbour.
 | r11 | 21–22 | `runqlat`, `hardirqs` — scheduling latency, IRQ timing | **shipped (unverified)** |
 | r12 | 23 | `profile` — sampling profiler, flame-graph-ready output | **shipped (unverified)** |
 | r13 | 24–25 | `memleak`, `biopattern` — allocation tracking, block I/O patterns | **shipped (unverified)** |
-| r14 | 26 | energy monitoring — eBPF offload of power/QoS feedback (modern theme) | open |
+| r14 | 26 | energy monitoring — eBPF offload of power/QoS feedback (modern theme) | **shipped (unverified)** |
 
 ## Phase 5 — Networking
 
