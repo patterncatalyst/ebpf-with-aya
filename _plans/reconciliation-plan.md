@@ -232,6 +232,19 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | per-IRQ `HashMap<u32, IrqStat>` accumulation; user-space `iter()` read | Ch 22 |
 | unverified | OTLP observable gauge `hardirq_total_ns{irq}` works in otel 0.27 | Ch 22 |
 
+### Chapter 23 — profile (r12.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/23-profile` builds | Ch 23 |
+| unverified | `PerfEvent::attach(PerfTypeId::Software, 0, AllProcessesOneCpu, Frequency(99))` signature in aya 0.13.x | Ch 23 |
+| unverified | `online_cpus()` return/error type as used | Ch 23 |
+| unverified | `StackTrace::get_stackid(&ctx, flags)` (ebpf) for kernel (0) + user (BPF_F_USER_STACK) | Ch 23 |
+| unverified | `StackTraceMap::get(&id,0).frames()` + `frame.ip` (user) | Ch 23 |
+| unverified | `aya::util::kernel_symbols()` BTreeMap for kernel symbolization | Ch 23 |
+| unverified | user-stack capture works for target (frame pointers / unwind) | Ch 23 |
+| unverified | folded output pipes to flamegraph.pl; Pyroscope push left as extension | Ch 23 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -490,3 +503,21 @@ Later chapters' rows are added as each iteration drafts them (see the
   (the hot-path technique flagged in Ch 18) rather than per-event ring
   buffers — runqlat via a log2 `Array` histogram, hardirqs via a per-IRQ
   `HashMap`. This is the Performance-part idiom.
+
+### r12.0 — Chapter 23: profile (sampling CPU profiler)
+- **Shipped:** `_docs/23-profile.md`; `examples/23-profile/` — a
+  `perf_event` program sampling at 99 Hz on every CPU, capturing kernel
+  + user stacks via `bpf_get_stackid` into a `StackTrace` map, a count
+  map keyed by `(pid,comm,kstack,ustack)`, kernel symbolization via
+  `kernel_symbols()`, and **folded** flame-graph output. Reconciliation
+  Section C rows for Ch 23.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) the `PerfEvent::attach` signature
+  / `SamplePolicy` / `PerfEventScope` and `online_cpus()` in aya 0.13.x
+  (first `perf_event` program); (2) `get_stackid` (ebpf) and
+  `StackTraceMap::get().frames()` (user) — first stack-walking example;
+  (3) user-stack capture depending on frame pointers/unwind info.
+- **New ground:** first `perf_event` program type, first stack walking,
+  first sampling (fixed-cost) tool. User-frame symbolization left as hex
+  (wire in `blazesym`); Pyroscope push noted as the continuous-profiling
+  extension (otel-lgtm bundles Pyroscope).
