@@ -138,6 +138,18 @@ for programs; **Python 3.14** in Podman for clients; `bpftool` /
 `bpftrace` / `bcc-tools` (Fedora repos) for cross-checks;
 `grafana/otel-lgtm` for the backend.
 
+**Container & target policy.** Everything user-space runs in a
+container (Podman / podman-compose) with **multi-stage, UBI-based**
+Containerfiles — the sole exception being the privileged Aya loader,
+which runs as a binary on the target VM. Observed application targets
+are pinned: **Java 25 (LTS) + Quarkus LTS 3.33**, and **Python 3.14 +
+FastAPI**, both containerized. The tutorial covers **observing a
+containerized target** — host-vs-container PID and path resolution —
+and **crun 1.27.1** (Fedora's default OCI runtime) including its eBPF
+and SELinux behavior. Architecture diagrams are authored in
+**Excalidraw** (`.excalidraw` source + exported `.svg`, embedded via the
+`excalidraw.html` include).
+
 ---
 
 ## 7. Lab architecture

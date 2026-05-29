@@ -57,7 +57,11 @@ implicitly assumes these.
 | unverified | Podman | 5.x | Ch 1, 3 | rootless |
 | unverified | podman-compose | latest | Ch 1, 3 | Fedora package |
 | unverified | grafana/otel-lgtm | 0.28.0 | Ch 3 `compose.yaml` | bundles Grafana+Tempo+Mimir+Loki+Prometheus+Pyroscope+OTel Collector (+OBI); current tag at authoring |
-| unverified | Python | 3.14 | Ch 3 `client/Containerfile` | UBI `ubi9/python-314` |
+| unverified | Python | 3.14 | Ch 3 `client/Containerfile` | UBI `ubi9/python-314`; clients + FastAPI target |
+| unverified | FastAPI | current | Ch 16 (Python target) | Python 3.14 app target, containerized |
+| unverified | Java | 25 (LTS) | Ch 16 (Java target) | Quarkus runtime |
+| unverified | Quarkus | 3.33 (LTS) | Ch 16 (Java target) | containerized, UBI + multi-stage |
+| unverified | crun | 1.27.1 | Ch 16, container-observation chapters | Fedora default OCI runtime; eBPF + SELinux |
 | unverified | opentelemetry (Rust) | 0.27.x | Ch 6 `hello/Cargo.toml` | exporter API moves between minors |
 | unverified | opentelemetry (Python SDK) | 1.30.0 | Ch 3 `client/requirements.txt` | OTLP/HTTP exporter |
 | unverified | libvirt / qemu-kvm / virt-install | Fedora 44 packages | Ch 1–2 | `@virtualization` group |
@@ -324,3 +328,23 @@ Later chapters' rows are added as each iteration drafts them (see the
   turnkey, user-space relocation is newer; the robust path taught is the
   shared/BTF-generated `#[repr(C)]` mirror + `bpf_probe_read_user`. Full
   relocation deferred to the CO-RE deep-dive (Ch 56).
+
+### r7.1 — conventions: container policy, version pins, first diagram
+- **Shipped:** expanded CONTRIBUTING container policy (everything
+  user-space in Podman except the privileged Aya loader on the VM;
+  **multi-stage UBI** Containerfiles mandatory; crun 1.27.1 + container
+  observation + SELinux; Java 25/Quarkus 3.33 + Python 3.14/FastAPI
+  target pins; Excalidraw diagram workflow). PRD + reconciliation
+  version table updated with Java/Quarkus/FastAPI/crun. Rewrote the
+  Ch 3 client Containerfile as multi-stage UBI (builder venv → minimal
+  runtime). Added the first real diagram — `assets/diagrams/lab-topology`
+  (.svg + .excalidraw) — embedded in Chapter 2.
+- **Verified:** N/A for policy/diagram; the multi-stage Containerfile is
+  `unverified` (not built here).
+- **To check on build:** the multi-stage build resolves
+  `ubi9/python-314` (builder) + `ubi9/python-314-minimal` (runtime) and
+  the venv copy runs; the SVG renders via the excalidraw include at
+  `/assets/diagrams/lab-topology.svg`.
+- **Captured as durable project requirements** (carried forward to all
+  future chapters): the container/loader split, multi-stage UBI, the
+  language-target pins, crun coverage, and the Excalidraw workflow.

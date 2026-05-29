@@ -118,12 +118,64 @@ from Fedora's `llvm`/`llvm-devel`.
 
 ## Container image policy
 
-Examples pull **only public UBI-based images** from
-`registry.access.redhat.com/ubi9/...` (no subscription required) and
-the **fully-qualified** `docker.io/grafana/otel-lgtm` for the
-observability stack. Image names are always fully qualified — the bare
-short name doesn't resolve under Fedora's registry policy. Document any
-new non-UBI exception inline and in this file.
+**Everything that runs in user space runs in a container** — clients,
+load drivers, and the language/application targets we observe — via
+**Podman** or **podman-compose**. The *one* exception is the Aya
+user-space loader for an eBPF program: it runs as a privileged binary
+**on the target VM** (it must load into that kernel) and is deployed by
+`scp` + `sudo`, not containerized.
+
+Container build rules:
+
+- **UBI base images only**, fully qualified
+  (`registry.access.redhat.com/ubi9/...`; the observability stack uses
+  the fully-qualified `docker.io/grafana/otel-lgtm`). Bare short names
+  don't resolve under Fedora's registry policy. Document any non-UBI
+  exception inline and here.
+- **Multi-stage Containerfiles**, always: a builder stage (compile /
+  install deps / produce artifacts) and a slim runtime stage that copies
+  only what's needed. This keeps images small and keeps build tooling
+  out of the runtime image.
+- Bind mounts carry **`:Z`**; published ports bind **`127.0.0.1`**;
+  named volumes are root-owned under rootless Podman (use `tmpfs` +
+  `user: "0"` where a service needs a writable dir, as the stack does).
+
+### Container runtime: crun, eBPF, and SELinux
+
+Fedora's default OCI runtime is **crun** (pinned at **1.27.1** for this
+tutorial). It matters here for two reasons:
+
+- **Observing a containerized target** means the process you probe lives
+  in its own PID and mount namespaces. uprobes attach to the target
+  binary at its path **on the host** (the overlay merged/upper dir) or
+  by PID; the probe sees **host** PIDs, so user space may need to
+  translate to the in-container PID. The chapters that observe Quarkus
+  and FastAPI targets spell this out.
+- crun runs under **SELinux** confinement and supports cgroup-v2 /
+  eBPF-based controllers; running our own eBPF tooling alongside
+  containerized targets has to respect both. Where a demo needs extra
+  capabilities or an SELinux label, it's called out in that example's
+  README.
+
+## Language & application targets
+
+Observed application targets are pinned to:
+
+- **Java 25** (LTS) with **Quarkus LTS 3.33**, containerized (UBI +
+  multi-stage).
+- **Python 3.14** with **FastAPI**, containerized (UBI + multi-stage).
+
+Client load drivers are **Python 3.14** in Podman. These are the
+*targets/clients*; the eBPF programs themselves remain Rust/Aya.
+
+## Diagrams
+
+Architecture and data-flow diagrams are authored in **Excalidraw** and
+committed as a pair under `assets/diagrams/`: an editable
+`<name>.excalidraw` source and an exported `<name>.svg`. Embed them with
+the `excalidraw.html` include (see `assets/diagrams/README.md`). Prefer
+a diagram over a long prose description for anything spatial — lab
+topology, data paths, attach/lifecycle.
 
 ## Site authoring conventions (Liquid collisions)
 

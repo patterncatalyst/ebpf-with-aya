@@ -17,6 +17,11 @@ host-to-host traffic.
 All the scripts referenced here ship in the iteration tarball under
 `scripts/lab/`. Run them from that directory.
 
+{% include excalidraw.html
+   file="lab-topology"
+   alt="The lab: a Fedora 44 host laptop running the Aya build plus Podman containers (the otel-lgtm stack, Python clients, and Java/Python app targets), a target KVM VM where eBPF loads and attaches, and an optional peer KVM VM for two-host networking tests. The host scp's the built binary to the target and runs it under sudo; the target exports OTLP back to the stack; the target and peer exchange test traffic over the libvirt network."
+   caption="Figure 2.1 — The lab at a glance: what runs where" %}
+
 ## One SSH key for the lab
 
 The provisioning script injects your SSH public key into the guest so
