@@ -34,10 +34,15 @@ layout: default
 <article class="tutorial">
   <div class="tutorial__inner">
 
+    {%- assign this_part = site.parts | where: "part_name", page.part | first -%}
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="{{ '/' | relative_url }}">Home</a>
       <span class="breadcrumb__sep">/</span>
-      <a href="{{ '/docs/00-outline/' | relative_url }}">Tutorial</a>
+      {%- if this_part -%}
+        <a href="{{ this_part.url | relative_url }}">{{ this_part.title }}</a>
+      {%- else -%}
+        <a href="{{ '/docs/00-outline/' | relative_url }}">Tutorial</a>
+      {%- endif -%}
       <span class="breadcrumb__sep">/</span>
       <span class="breadcrumb__current">{{ page.title }}</span>
     </nav>

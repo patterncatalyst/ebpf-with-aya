@@ -68,6 +68,7 @@ cd examples/06-hello-world && ./demo.sh
 ├── _config.yml                 ← Jekyll site config
 ├── _docs/                      ← Tutorial chapters (00-outline.md … NN-*.md)
 ├── _includes/  _layouts/       ← HTML wrappers
+├── _parts/                    ← One file per Part; drives the homepage Part cards + /parts/ pages
 ├── _plans/
 │   ├── iteration-plan.md       ← Roadmap: every topic mapped to an iteration
 │   ├── reconciliation-plan.md  ← Audit trail: verified vs. unverified

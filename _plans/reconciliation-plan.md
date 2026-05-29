@@ -271,3 +271,20 @@ Later chapters' rows are added as each iteration drafts them (see the
   "uprobe reads belong to the traced process → user probe helpers".
   Remaining Part-3 chapters (USDT, sslsniff, funclatency, runtimes) build
   on this attach model.
+
+### r6.1 — site: two-level Part/Chapter navigation (no new chapters)
+- **Shipped:** a `parts` collection (`_parts/*.md`, one per Part) +
+  `_layouts/part_index.html`; the homepage now shows one **Part** card
+  (with chapter count) instead of a flat chapter grid; each Part page
+  lists its chapters as cards; chapter breadcrumbs link Home → Part →
+  Chapter; Part pages have prev/next-part navigation. Config gains the
+  `parts` collection + default `part_index` layout.
+- **Rationale:** a flat 60+-chapter card grid would be unusable; the
+  two-level hierarchy keeps the homepage scannable as content grows.
+- **Verified:** nothing — `unverified` until the site is built. Static
+  checks pass (all 10 `_parts` parse; every doc `part` matches a
+  `part_name`; Liquid clean).
+- **To check on build:** the `parts` collection renders at
+  `/parts/<slug>/`; Part cards show correct chapter counts; empty parts
+  show "Coming soon"; future chapters MUST set `part:` to the exact
+  `part_name` string in the matching `_parts` file or they won't group.

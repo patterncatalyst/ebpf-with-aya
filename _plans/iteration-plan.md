@@ -20,6 +20,7 @@ one may merge with its neighbour.
 |----|--------------|--------|
 | **r1.0** | Site scaffold (config, layouts, includes, CSS, index, Pages workflow); README, PRD, CONTRIBUTING; onboarding docs; reconciliation + iteration plans; **Chapters 0–6** (outline, prerequisites, lab setup, observability stack, toolchain, concepts, hello-world); lab scripts; `examples/03-observability-stack/` and `examples/06-hello-world/` | shipped (unverified) |
 | r1.1 | Verify Foundations on real Fedora 44; fix whatever the first `cargo build` / `./demo.sh` / VM provision surfaces; promote rows | open |
+| r6.1 | **site:** two-level Part/Chapter navigation (homepage shows Part cards; each Part page lists its chapters) | shipped (unverified) |
 
 ## Phase 2 — Tracing the kernel (Part: kprobes, fentry, tracepoints)
 

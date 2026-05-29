@@ -47,24 +47,28 @@ title: Home
     </p>
 
     {%- comment -%}
-      Chapter cards are auto-generated from the _docs collection sorted by
-      `order`. New chapters appear on the homepage just by being published.
+      Two-level navigation: the homepage shows one card per Part. Each Part
+      card links to its own page (the _parts collection) which lists that
+      part's chapters. New chapters appear under their part automatically;
+      new parts appear here just by adding a file to _parts/.
     {%- endcomment -%}
     <div class="cards">
-      {% assign sections = site.docs | sort: "order" %}
-      {% for section in sections %}
-      <a class="card" href="{{ section.url | relative_url }}">
-        <div class="card__eyebrow">
-          {% if section.order == 0 %}Overview{% else %}Chapter {{ section.order }}{% endif %}
-          {% if section.part %} · {{ section.part }}{% endif %}
-        </div>
-        <h3 class="card__title">{{ section.title }}</h3>
-        {% if section.description %}
-        <p class="card__desc">{{ section.description }}</p>
+      {% assign parts_sorted = site.parts | sort: "order" %}
+      {% for part in parts_sorted %}
+      {% assign part_docs = site.docs | where: "part", part.part_name %}
+      <a class="card" href="{{ part.url | relative_url }}">
+        <div class="card__eyebrow">Part {{ part.order }}</div>
+        <h3 class="card__title">{{ part.title }}</h3>
+        {% if part.blurb %}
+        <p class="card__desc">{{ part.blurb }}</p>
         {% endif %}
         <div class="card__meta">
-          {% if section.duration %}<span>{{ section.duration }}</span>{% endif %}
-          <span>Read →</span>
+          {% if part_docs.size > 0 %}
+            <span>{{ part_docs.size }} chapter{% if part_docs.size != 1 %}s{% endif %}</span>
+          {% else %}
+            <span>Coming soon</span>
+          {% endif %}
+          <span>Explore →</span>
         </div>
       </a>
       {% endfor %}
