@@ -186,6 +186,21 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | scoped contrace emits only the target container's opens; PID is host PID | Ch 16 |
 | unverified | `ebpf_events_total{program="contrace",container=...}` per-container series in Grafana | Ch 16 |
 
+### Chapters 17–18 — sslsniff, funclatency (r9.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/17-sslsniff` builds; 3 uprobes attach to `libssl.so.3` (SSL_write, SSL_read enter+ret) | Ch 17 |
+| unverified | `SSL_write` buf-at-entry and `SSL_read` buf-at-return (stashed) capture plaintext | Ch 17 |
+| unverified | `bpf_probe_read_user_buf` with a min(len,CAP) dynamic length passes the verifier | Ch 17 |
+| unverified | OpenSSL 3 `SSL_read`/`SSL_write` symbol names resolve on Fedora 44 | Ch 17 |
+| unverified | `ebpf_events_total{program="sslsniff",dir=...}` splits read/write in Grafana | Ch 17 |
+| unverified | `examples/18-funclatency` builds (snoop + target-app) | Ch 18 |
+| unverified | uprobe-entry `bpf_ktime_get_ns` stash + uretprobe delta via `START` HashMap works | Ch 18 |
+| unverified | `slow_op` stays attachable under release+LTO (`#[inline(never)]`) | Ch 18 |
+| unverified | per-call `delta_ns` records into OTLP `f64_histogram` `function_latency_ms` | Ch 18 |
+| unverified | console log2 ASCII histogram renders | Ch 18 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -383,3 +398,24 @@ Later chapters' rows are added as each iteration drafts them (see the
   target VM** (not the host), because eBPF attaches to that kernel —
   documented in the chapter and the lab topology applies. Host still
   runs the stack + load driver.
+
+### r9.0 — Chapters 17–18: sslsniff + funclatency
+- **Shipped:** `_docs/17-sslsniff.md`, `_docs/18-funclatency.md`;
+  `examples/17-sslsniff/` (uprobes on libssl SSL_write/SSL_read,
+  entry/return correlation for reads, bounded plaintext capture, ethics
+  note) and `examples/18-funclatency/` (uprobe+uretprobe timing with
+  `bpf_ktime_get_ns`, per-call ring events → OTLP `f64_histogram`,
+  console log2 histogram, bundled target-app). Reconciliation Section C
+  rows for Ch 17–18.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) `bpf_probe_read_user_buf` with a
+  dynamic `min(len,CAP)` length passing the verifier (sslsniff); (2)
+  OpenSSL 3 symbol names in libssl.so.3; (3) `bpf_ktime_get_ns` +
+  uprobe/uretprobe-on-same-symbol + entry/exit HashMap; (4)
+  `f64_histogram` in opentelemetry 0.27; (5) `slow_op`/SSL symbols
+  attachable under release+LTO.
+- **Note:** funclatency ships the per-call-event approach (simple, OTLP
+  histogram); the in-kernel-histogram optimization is documented as the
+  high-call-rate alternative. This closes the core techniques of Part
+  "User-space & language probing"; remaining Part-3 chapters (goroutine
+  states, javagc) apply them to specific runtimes.
