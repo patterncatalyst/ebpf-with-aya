@@ -1,0 +1,16 @@
+[package]
+name = "goroutine-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya-ebpf = "0.1"
+aya-log-ebpf = "0.1"
+goroutine-common = { path = "../goroutine-common" }
+[[bin]]
+name = "goroutine"
+path = "src/main.rs"
+[profile.dev]
+opt-level = 3
+[profile.release]
+lto = true

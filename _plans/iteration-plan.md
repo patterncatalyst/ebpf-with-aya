@@ -40,7 +40,7 @@ one may merge with its neighbour.
 | r07 | 15 | `btf uprobe` — BTF-assisted user probes | **shipped (unverified)** |
 | r08 | 16 | bootstrap for user-space targets — Java and Python target examples | **shipped (unverified)** |
 | r09 | 17–18 | `sslsniff`; `funclatency` — uprobe-based latency histograms | **shipped (unverified)** |
-| r10 | 19–20 | trace goroutine states; `javagc` — runtime-aware probing | open |
+| r10 | 19–20 | trace goroutine states; `javagc` — runtime-aware probing | **shipped (unverified)** |
 
 ## Phase 4 — Performance & resources
 

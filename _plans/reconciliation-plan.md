@@ -201,6 +201,22 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | per-call `delta_ns` records into OTLP `f64_histogram` `function_latency_ms` | Ch 18 |
 | unverified | console log2 ASCII histogram renders | Ch 18 |
 
+### Chapters 19–20 — goroutine states, javagc (r10.0) — *closes User-space & language probing*
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/19-goroutine-states` builds (Go target via `go build` + tracer) | Ch 19 |
+| unverified | uprobe on `runtime.casgstatus`; `newval` read from RCX via `pt_regs` (Go ABI) | Ch 19 |
+| unverified | `pt_regs.rcx` field name correct in aya 0.13.x bindings | Ch 19 |
+| unverified | NO uretprobe used on Go (uprobe only) — documented hazard | Ch 19 |
+| unverified | goroutine-state value→name mapping correct for the Go version | Ch 19 |
+| unverified | `examples/20-javagc` builds | Ch 20 |
+| unverified | USDT `gc__begin`/`gc__end` offsets resolve from `readelf -n` stapsdt notes | Ch 20 |
+| unverified | uprobe attach by offset (`attach(None, off, libjvm, None)`) hits the USDT site | Ch 20 |
+| unverified | readelf Location == uprobe file offset (else vaddr→offset conversion needed) | Ch 20 |
+| unverified | begin/end timing via `GC_START` HashMap; `jvm_gc_pause_ms` OTLP histogram | Ch 20 |
+| unverified | JDK ships hotspot USDT probes; `-XX:+ExtendedDTraceProbes` enables them | Ch 20 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -419,3 +435,25 @@ Later chapters' rows are added as each iteration drafts them (see the
   high-call-rate alternative. This closes the core techniques of Part
   "User-space & language probing"; remaining Part-3 chapters (goroutine
   states, javagc) apply them to specific runtimes.
+
+### r10.0 — Chapters 19–20: goroutine states + javagc (closes Part 3)
+- **Shipped:** `_docs/19-goroutine-states.md`, `_docs/20-javagc.md`;
+  `examples/19-goroutine-states/` (Go target + uprobe on
+  `runtime.casgstatus` reading the Go-ABI RCX register, uprobe-only) and
+  `examples/20-javagc/` (HotSpot USDT `gc__begin`/`gc__end` timed via
+  uprobes at resolved offsets, OTLP GC-pause histogram, Java target).
+  Reconciliation Section C rows for Ch 19–20.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) Go register ABI read (RCX) +
+  `pt_regs.rcx` field name; (2) USDT offset resolution and the
+  readelf-Location→file-offset assumption (javagc — most experimental);
+  (3) Go symbol presence; (4) JDK hotspot USDT availability; (5) new host
+  toolchains needed: `golang` (Ch 19) and a JDK (Ch 20), both Fedora
+  repos.
+- **Two hazards documented as first-class lessons:** never uretprobe Go
+  (moving stacks corrupt return trampolines); non-C languages need
+  manual register mapping (ctx.arg assumes the C ABI). bpftrace's native
+  USDT + `reg()` are the cross-check references.
+- **Milestone:** Parts 0–3 complete (Foundations, Tracing the kernel,
+  User-space & language probing) — 21 chapters, 16 examples. Next:
+  Part 4 Performance & resources (r11+).
