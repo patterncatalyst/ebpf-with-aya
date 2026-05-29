@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = ["runqlat", "runqlat-common"]
+exclude = ["runqlat-ebpf"]
+[workspace.package]
+license = "Apache-2.0"
+edition = "2021"
+[profile.release]
+lto = true
+codegen-units = 1

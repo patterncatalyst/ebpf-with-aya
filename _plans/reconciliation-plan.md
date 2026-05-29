@@ -217,6 +217,21 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | begin/end timing via `GC_START` HashMap; `jvm_gc_pause_ms` OTLP histogram | Ch 20 |
 | unverified | JDK ships hotspot USDT probes; `-XX:+ExtendedDTraceProbes` enables them | Ch 20 |
 
+### Chapters 21–22 — runqlat, hardirqs (r11.0) — *opens Performance & resources*
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/21-runqlat` builds | Ch 21 |
+| unverified | sched tracepoint offsets correct (prev_pid@24, prev_state@32, next_pid@56, wakeup pid@24) | Ch 21 |
+| unverified | `TASK_RUNNING == 0` for the preempted-task re-stamp | Ch 21 |
+| unverified | in-kernel log2 histogram via `Array::get_ptr_mut` increments correctly | Ch 21 |
+| unverified | OTLP observable gauge `runqueue_latency_us{quantile}` (registered-once callback) works in otel 0.27 | Ch 21 |
+| unverified | `examples/22-hardirqs` builds | Ch 22 |
+| unverified | `irq` field offset (@8) in irq_handler_entry/exit format | Ch 22 |
+| unverified | per-CPU keying via `bpf_get_smp_processor_id`; nested-IRQ simplification acceptable | Ch 22 |
+| unverified | per-IRQ `HashMap<u32, IrqStat>` accumulation; user-space `iter()` read | Ch 22 |
+| unverified | OTLP observable gauge `hardirq_total_ns{irq}` works in otel 0.27 | Ch 22 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -457,3 +472,21 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Milestone:** Parts 0–3 complete (Foundations, Tracing the kernel,
   User-space & language probing) — 21 chapters, 16 examples. Next:
   Part 4 Performance & resources (r11+).
+
+### r11.0 — Chapters 21–22: runqlat + hardirqs (opens Part 4)
+- **Shipped:** `_docs/21-runqlat.md`, `_docs/22-hardirqs.md`;
+  `examples/21-runqlat/` (sched_wakeup/_new + sched_switch, in-kernel
+  log2 histogram in an `Array`, OTLP observable-gauge percentiles) and
+  `examples/22-hardirqs/` (irq_handler_entry/exit keyed by CPU, per-IRQ
+  `HashMap` totals, OTLP observable-gauge per vector). Reconciliation
+  Section C rows for Ch 21–22.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) sched + irq tracepoint field
+  offsets; (2) `Array::get_ptr_mut` / `HashMap` accumulation in-kernel;
+  (3) the **observable-gauge callback** API in opentelemetry 0.27 (first
+  use of registered-once observable gauges — both chapters); (4)
+  `TASK_RUNNING==0` and nested-IRQ simplification.
+- **Technique milestone:** both chapters use **in-kernel aggregation**
+  (the hot-path technique flagged in Ch 18) rather than per-event ring
+  buffers — runqlat via a log2 `Array` histogram, hardirqs via a per-IRQ
+  `HashMap`. This is the Performance-part idiom.

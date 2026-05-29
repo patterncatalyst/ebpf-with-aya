@@ -44,12 +44,12 @@ one may merge with its neighbour.
 
 ## Phase 4 — Performance & resources
 
-| r# | Chapter(s) | Topics |
-|----|-----------|--------|
-| r11 | 21–22 | `runqlat`, `hardirqs` — scheduling latency, IRQ timing |
-| r12 | 23 | `profile` — sampling profiler, flame-graph-ready output |
-| r13 | 24–25 | `memleak`, `biopattern` — allocation tracking, block I/O patterns |
-| r14 | 26 | energy monitoring — eBPF offload of power/QoS feedback (modern theme) |
+| r# | Chapter(s) | Topics | Status |
+|----|-----------|--------|--------|
+| r11 | 21–22 | `runqlat`, `hardirqs` — scheduling latency, IRQ timing | **shipped (unverified)** |
+| r12 | 23 | `profile` — sampling profiler, flame-graph-ready output | open |
+| r13 | 24–25 | `memleak`, `biopattern` — allocation tracking, block I/O patterns | open |
+| r14 | 26 | energy monitoring — eBPF offload of power/QoS feedback (modern theme) | open |
 
 ## Phase 5 — Networking
 
