@@ -122,10 +122,11 @@ The tutorial leans on, and frequently points at, this canonical set:
 - Material from **Isovalent/Cilium** and the broader *Oxidizing eBPF*
   community
 
-> **A note on sources** — We take *insight* from the whole eBPF
-> community, but, as a project policy, we do **not** copy code from
-> repositories originating in China, Russia, North Korea, or Iran.
-> See [`CONTRIBUTING.md`](https://github.com/{{ site.github_username }}/{{ site.github_repo }}/blob/main/CONTRIBUTING.md)
+> **A note on sources** — We take *insight* freely from the whole eBPF
+> community, but the code we ship is our own: we don't copy or port
+> code line-for-line from other repositories, and anything borrowed
+> carries a clearly compatible license. See
+> [`CONTRIBUTING.md`](https://github.com/{{ site.github_username }}/{{ site.github_repo }}/blob/main/CONTRIBUTING.md)
 > for the full provenance policy.
 
 Ready? [Start with Chapter 1: Prerequisites →]({{ "/docs/01-prerequisites/" | relative_url }})

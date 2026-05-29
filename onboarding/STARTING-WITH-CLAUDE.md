@@ -59,8 +59,8 @@ when you've drafted several chapters, or when responses get recap-heavy.
 > fully-qualified images + `:Z` + `127.0.0.1`; kernel tooling from
 > Fedora repos only; tested code first then prose; new claims
 > `unverified` and never self-promote; ship `ebpf-with-aya-rNN.x.tar.gz`
-> tarballs; single-line pasted commands; no code from
-> China/Russia/North-Korea/Iran repos (insight is fine).
+> tarballs; single-line pasted commands; no copied/ported code
+> (insight from anywhere is fine, but ship original, clearly-licensed code).
 
 ## Anti-patterns to avoid
 

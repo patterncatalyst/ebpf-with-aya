@@ -82,23 +82,24 @@ Aya program:
 `verified`.** Promotion requires a human running the test on the target
 and recording the result.
 
-## Source-provenance policy (hard rule)
+## Source-provenance policy
 
 This project takes **insight** from the entire global eBPF community —
 papers, talks, blog posts, and the design of well-known projects are
-all fair game to learn from and to cite. But we do **not** copy, vendor,
-or derive **code** from repositories whose origin is in **China,
-Russia, North Korea, or Iran** (GitHub, GitLab, or elsewhere).
+all fair game to learn from and to cite. What we ship, though, is
+**our own code**: we don't copy, vendor, or port code line-for-line
+from other repositories.
 
 - *Insight* (reading a writeup, understanding an approach, citing a
-  finding) — allowed.
-- *Code* (copying snippets, vendoring, porting line-for-line) from such
-  repositories — not allowed.
+  finding) — encouraged.
+- *Copying code* (snippets, vendoring, line-for-line ports) — no; write
+  an original equivalent instead.
 
-When in doubt about a source's provenance, don't use its code; find or
-write an equivalent from an unaffected source. Note the provenance of
-any non-trivial borrowed approach in the chapter's prose or the
-reconciliation plan.
+Anything we do borrow must carry a clearly compatible license, and the
+borrowed approach should be noted in the chapter's prose or the
+reconciliation plan. When a source's licensing or origin is unclear,
+don't use its code — find a clearly-licensed source or write it
+ourselves.
 
 ## Tooling-provenance policy (hard rule)
 

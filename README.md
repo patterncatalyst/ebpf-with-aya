@@ -100,8 +100,8 @@ cd examples/06-hello-world && ./demo.sh
 - Iterations ship as **`ebpf-with-aya-rNN.x.tar.gz`**, extracted in
   place.
 - Claims are **`unverified`** until run on Fedora 44.
-- **No code** from China/Russia/North Korea/Iran repositories (insight
-  is fine). See `CONTRIBUTING.md`.
+- **No copied/ported code** — insight from anywhere, but what we ship
+  is original and clearly licensed. See `CONTRIBUTING.md`.
 
 ## Status
 

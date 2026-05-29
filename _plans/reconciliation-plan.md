@@ -288,3 +288,12 @@ Later chapters' rows are added as each iteration drafts them (see the
   `/parts/<slug>/`; Part cards show correct chapter counts; empty parts
   show "Coming soon"; future chapters MUST set `part:` to the exact
   `part_name` string in the matching `_parts` file or they won't group.
+
+### r6.2 — docs: neutral source-provenance wording
+- **Shipped:** removed country-specific naming from the source-provenance
+  policy across CONTRIBUTING.md, PRD.md, README.md, _docs/00-outline.md,
+  _plans/prd-reconciliation.md, onboarding/STARTING-WITH-CLAUDE.md.
+  Replaced with a neutral norm: insight from anywhere; ship original,
+  clearly-licensed code; no line-for-line copying/porting.
+- **Verified:** N/A (wording change). No country references remain in
+  the repo.

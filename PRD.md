@@ -80,8 +80,8 @@ is now broad enough to be worth a long-form tutorial.
   signing, fleet rollout) beyond what L3AF/operating chapters introduce.
 - **Not Windows.** macOS is acknowledged for the client/stack pieces
   only; the KVM target is Linux.
-- **No code from China/Russia/North Korea/Iran repositories** (insight
-  only) — see `CONTRIBUTING.md`.
+- **No copied/ported code** — insight from anywhere, but the code we
+  ship is original and clearly licensed (see `CONTRIBUTING.md`).
 
 ---
 

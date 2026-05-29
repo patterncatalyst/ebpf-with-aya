@@ -38,7 +38,7 @@ recorded here as they happen.
 | Not a kernel-internals course | held |
 | Not production deployment at scale | held |
 | Not Windows; macOS client/stack only | held |
-| No code from China/Russia/North Korea/Iran repos | held — policy in CONTRIBUTING.md |
+| No copied/ported code; original + clearly licensed | held — policy in CONTRIBUTING.md |
 
 ## Divergences
 
