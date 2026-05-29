@@ -1,0 +1,14 @@
+# Workspace for unlinksnoop — a kprobe on do_unlinkat that reports who deletes
+# what. Same shape as the hello-world workspace (Chapter 6).
+[workspace]
+resolver = "2"
+members = ["unlinksnoop", "unlinksnoop-common"]
+exclude = ["unlinksnoop-ebpf"]
+
+[workspace.package]
+license = "Apache-2.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+codegen-units = 1

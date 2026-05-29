@@ -23,12 +23,12 @@ one may merge with its neighbour.
 
 ## Phase 2 — Tracing the kernel (Part: kprobes, fentry, tracepoints)
 
-| r# | Chapter(s) | Topics |
-|----|-----------|--------|
-| r02 | 7 | `kprobe` + `unlink` — first kprobe, read syscall args |
-| r03 | 8 | `fentry` + `unlink` — BTF-based, lower overhead than kprobes; compare |
-| r04 | 9–10 | `opensnoop`, `sigsnoop` — ring buffers, per-event records |
-| r05 | 11–12 | `execsnoop`, `exitsnoop` — process lifecycle tracepoints |
+| r# | Chapter(s) | Topics | Status |
+|----|-----------|--------|--------|
+| r02 | 7 | `kprobe` + `unlink` — first kprobe, read syscall args | **shipped (unverified)** |
+| r03 | 8 | `fentry` + `unlink` — BTF-based, lower overhead than kprobes; compare | open |
+| r04 | 9–10 | `opensnoop`, `sigsnoop` — ring buffers, per-event records | open |
+| r05 | 11–12 | `execsnoop`, `exitsnoop` — process lifecycle tracepoints | open |
 
 ## Phase 3 — User-space & language probing (Part: uprobes, USDT, runtimes)
 

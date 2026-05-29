@@ -87,11 +87,23 @@ implicitly assumes these.
 | unverified | `hello` exports `ebpf_events_total` to the stack from the target VM | Ch 6 |
 | unverified | `bpftool map dump name EVENTS` and `bpftrace` counts agree with Grafana | Ch 6 |
 
-## C. Later parts
+## C. Tracing the kernel — per-chapter claims
 
-Rows are added as each iteration drafts its chapters (see the
-[iteration roadmap](./iteration-plan.html)). Nothing past Chapter 6
-exists yet.
+### Chapter 7 — kprobe + unlink (r2.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/07-kprobe-unlink` builds with `cargo build --release` | Ch 7 |
+| unverified | A `#[kprobe]` attaches to `do_unlinkat` by name (entry offset 0) | Ch 7 |
+| unverified | `bpf_get_current_pid_tgid`/`uid_gid`/`comm` populate the event correctly | Ch 7 |
+| unverified | `do_unlinkat` 2nd arg (`struct filename *`) → `name` ptr → path string read works | Ch 7 |
+| unverified | The filename read degrades gracefully (empty) on a layout mismatch, event still emitted | Ch 7 |
+| unverified | `RingBuf` drains in user space via poll-on-timer; events decode via `read_unaligned` | Ch 7 |
+| unverified | `ebpf_events_total{program="unlinksnoop"}` appears in Grafana | Ch 7 |
+| unverified | `bpftrace -e 'kprobe:do_unlinkat { @[comm]=count() }'` counts track the tool's table | Ch 7 |
+
+Later chapters' rows are added as each iteration drafts them (see the
+[iteration roadmap](./iteration-plan.html)).
 
 ## D. Iteration log
 
@@ -118,3 +130,18 @@ exists yet.
   stable / 1.96 beta; aya 0.13.x; Fedora 44; otel-lgtm 0.28.0; Python
   3.14) but the lab to verify *against* is itself part of this delivery,
   so r1.1 is explicitly a verification pass.
+
+### r2.0 — Chapter 7: kprobe + unlink
+- **Shipped:** `_docs/07-kprobe-unlink.md`; `examples/07-kprobe-unlink/`
+  (`unlinksnoop` workspace — kprobe on `do_unlinkat`, RingBuf events,
+  OTLP reporting, `demo.sh`); reconciliation Section C rows for Ch 7.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) the filename read assumes
+  `struct filename` begins with its `name` pointer — likely needs CO-RE
+  field access if the layout differs; (2) `ctx.arg::<*const u8>(1)`
+  argument indexing on the target kernel; (3) `RingBuf::reserve`/
+  `submit` and user-side `RingBuf::next` API names in aya 0.13.x.
+- **Note:** Chapter 8 (fentry + unlink) will revisit the same target to
+  contrast kprobe fragility with fentry's BTF-typed argument access —
+  that contrast is the pedagogical payoff, so r3.0 should be drafted to
+  build directly on this chapter's code.
