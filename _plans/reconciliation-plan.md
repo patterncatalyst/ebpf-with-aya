@@ -144,6 +144,19 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `error_code`@16 reads correctly; exit code decode is `& 0xff` (raw arg, not wait-encoded) | Ch 12 |
 | unverified | `ebpf_events_total{program="exitsnoop",status="ok|nonzero"}` splits in Grafana | Ch 12 |
 
+### Chapters 13–14 — bashreadline, uprobe-rust (r6.0) — *User-space & language probing*
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/13-bashreadline` builds; `#[uretprobe]` + `UProbe` attach to `readline` | Ch 13 |
+| unverified | `RetProbeContext::ret()` returns the `char *`; user-string read works | Ch 13 |
+| unverified | `attach(Some("readline"), 0, "/usr/bin/bash", None)` resolves the symbol on Fedora 44 | Ch 13 |
+| unverified | (fallback) `readline` resolvable in `libreadline.so.8` via `READLINE_LIB` | Ch 13 |
+| unverified | `examples/14-uprobe-rust` builds (snoop + target-app) | Ch 14 |
+| unverified | `#[no_mangle] #[inline(never)] extern "C" compute` keeps an attachable symbol under release+LTO | Ch 14 |
+| unverified | `#[uprobe]` + `ProbeContext::arg(0)` reads the C-ABI first argument | Ch 14 |
+| unverified | uprobe attaches to `compute` in the deployed target-app path | Ch 14 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -239,3 +252,22 @@ Later chapters' rows are added as each iteration drafts them (see the
   `sched:sched_process_exit` specifically to avoid a `task_struct`
   CO-RE read, keeping Ch 12 robust; documented that signal-deaths won't
   appear (they don't call exit_group).
+
+### r6.0 — Chapters 13–14: bashreadline + uprobe-rust (opens User-space probing)
+- **Shipped:** `_docs/13-bashreadline.md`, `_docs/14-uprobe-rust.md`;
+  `examples/13-bashreadline/` (uretprobe on bash `readline`) and
+  `examples/14-uprobe-rust/` (uprobe on a `#[no_mangle] extern "C"`
+  function in a bundled `target-app`); reconciliation Section C rows for
+  Ch 13–14. First chapters of Part "User-space & language probing".
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) `UProbe`/`#[uprobe]`/`#[uretprobe]`
+  + `ProbeContext::arg`/`RetProbeContext::ret` API in aya 0.13.x;
+  (2) the `attach(Some(sym), offset, target, pid)` signature;
+  (3) where `readline` resolves on Fedora 44 bash (binary vs
+  libreadline); (4) whether `#[inline(never)]` + `#[no_mangle]` survives
+  release+LTO so `compute` stays attachable (else build target-app
+  without LTO).
+- **Note:** these introduce the user-space side; the new memory rule is
+  "uprobe reads belong to the traced process → user probe helpers".
+  Remaining Part-3 chapters (USDT, sslsniff, funclatency, runtimes) build
+  on this attach model.

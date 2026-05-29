@@ -32,13 +32,13 @@ one may merge with its neighbour.
 
 ## Phase 3 — User-space & language probing (Part: uprobes, USDT, runtimes)
 
-| r# | Chapter(s) | Topics |
-|----|-----------|--------|
-| r06 | 13–14 | `uprobe` + `bashreadline`; `uprobe rust` (probe a Rust binary's symbols) |
-| r07 | 15 | `btf uprobe` — BTF-assisted user probes |
-| r08 | 16 | bootstrap for user-space targets — Java and Python target examples |
-| r09 | 17–18 | `sslsniff`; `funclatency` — uprobe-based latency histograms |
-| r10 | 19–20 | trace goroutine states; `javagc` — runtime-aware probing |
+| r# | Chapter(s) | Topics | Status |
+|----|-----------|--------|--------|
+| r06 | 13–14 | `uprobe` + `bashreadline`; `uprobe rust` (probe a Rust binary's symbols) | **shipped (unverified)** |
+| r07 | 15 | `btf uprobe` — BTF-assisted user probes | open |
+| r08 | 16 | bootstrap for user-space targets — Java and Python target examples | open |
+| r09 | 17–18 | `sslsniff`; `funclatency` — uprobe-based latency histograms | open |
+| r10 | 19–20 | trace goroutine states; `javagc` — runtime-aware probing | open |
 
 ## Phase 4 — Performance & resources
 
