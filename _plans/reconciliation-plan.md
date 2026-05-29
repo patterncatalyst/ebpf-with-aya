@@ -157,6 +157,17 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `#[uprobe]` + `ProbeContext::arg(0)` reads the C-ABI first argument | Ch 14 |
 | unverified | uprobe attaches to `compute` in the deployed target-app path | Ch 14 |
 
+### Chapter 15 — BTF-assisted uprobe (r7.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/15-btf-uprobe` builds (snoop + target-app with debug info) | Ch 15 |
+| unverified | `bpf_probe_read_user::<Order>(ptr)` copies a whole struct from target memory | Ch 15 |
+| unverified | `ProbeContext::arg(0)` yields the `*const Order` pointer | Ch 15 |
+| unverified | shared `#[repr(C)] Order` layout matches across app/ebpf/user | Ch 15 |
+| unverified | `pahole -J` + `bpftool btf dump file target-app` shows `Order` with offsets | Ch 15 |
+| unverified | `ebpf_events_total{program="btf-uprobe",status=...}` appears in Grafana | Ch 15 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -297,3 +308,19 @@ Later chapters' rows are added as each iteration drafts them (see the
   clearly-licensed code; no line-for-line copying/porting.
 - **Verified:** N/A (wording change). No country references remain in
   the repo.
+
+### r7.0 — Chapter 15: BTF-assisted uprobe
+- **Shipped:** `_docs/15-btf-uprobe.md`; `examples/15-btf-uprobe/`
+  (target-app passing a `*const Order`, a uprobe reading the whole
+  struct via `bpf_probe_read_user`, BTF inspection via `pahole -J` +
+  `bpftool btf dump`); reconciliation Section C rows for Ch 15.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) `bpf_probe_read_user::<T>` reading
+  a whole struct (vs str/bytes variants) in aya 0.13.x; (2)
+  attachability of `process_order` under release+LTO; (3) `debug = true`
+  leaving DWARF that `pahole -J` can convert; (4) `Order` `#[repr(C)]`
+  offsets matching the BTF dump.
+- **Scope note:** framed user-space CO-RE honestly — kernel CO-RE is
+  turnkey, user-space relocation is newer; the robust path taught is the
+  shared/BTF-generated `#[repr(C)]` mirror + `bpf_probe_read_user`. Full
+  relocation deferred to the CO-RE deep-dive (Ch 56).

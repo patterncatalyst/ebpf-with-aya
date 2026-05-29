@@ -1,0 +1,16 @@
+[package]
+name = "btf-uprobe-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya-ebpf = "0.1"
+aya-log-ebpf = "0.1"
+btf-uprobe-common = { path = "../btf-uprobe-common" }
+[[bin]]
+name = "btf-uprobe"
+path = "src/main.rs"
+[profile.dev]
+opt-level = 3
+[profile.release]
+lto = true

@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = ["btf-uprobe", "btf-uprobe-common", "target-app"]
+exclude = ["btf-uprobe-ebpf"]
+[workspace.package]
+license = "Apache-2.0"
+edition = "2021"
+[profile.release]
+lto = true
+codegen-units = 1
+# Keep debug info so the target binary carries type info (DWARF), which
+# `pahole -J` can convert to BTF — the whole point of this chapter.
+debug = true
