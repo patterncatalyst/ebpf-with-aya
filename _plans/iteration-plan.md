@@ -28,7 +28,7 @@ one may merge with its neighbour.
 | r02 | 7 | `kprobe` + `unlink` — first kprobe, read syscall args | **shipped (unverified)** |
 | r03 | 8 | `fentry` + `unlink` — BTF-based, lower overhead than kprobes; compare | **shipped (unverified)** |
 | r04 | 9–10 | `opensnoop`, `sigsnoop` — ring buffers, per-event records | **shipped (unverified)** |
-| r05 | 11–12 | `execsnoop`, `exitsnoop` — process lifecycle tracepoints | open |
+| r05 | 11–12 | `execsnoop`, `exitsnoop` — process lifecycle tracepoints | **shipped (unverified)** |
 
 ## Phase 3 — User-space & language probing (Part: uprobes, USDT, runtimes)
 

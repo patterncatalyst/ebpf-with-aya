@@ -131,6 +131,19 @@ Later chapters' rows are added as each iteration drafts them (see the
 | unverified | `sys_enter_kill` offsets pid@16/sig@24 read correctly | Ch 10 |
 | unverified | signal number→name mapping + `signal` metric label work | Ch 10 |
 
+### Chapters 11–12 — execsnoop, exitsnoop (r5.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/11-execsnoop` builds; tracepoint attaches to `sys_enter_execve` | Ch 11 |
+| unverified | the bounded argv loop (array of user pointers → fixed slots) passes the verifier | Ch 11 |
+| unverified | `bpf_probe_read_user` (single ptr) + `bpf_probe_read_user_str_bytes` read argv | Ch 11 |
+| unverified | ~800B `ExecEvent` writes directly into the reserved ring slot (not stack) | Ch 11 |
+| unverified | user space reassembles the command line; `ebpf_events_total{program="execsnoop"}` in Grafana | Ch 11 |
+| unverified | `examples/12-exitsnoop` builds; tracepoint attaches to `sys_enter_exit_group` | Ch 12 |
+| unverified | `error_code`@16 reads correctly; exit code decode is `& 0xff` (raw arg, not wait-encoded) | Ch 12 |
+| unverified | `ebpf_events_total{program="exitsnoop",status="ok|nonzero"}` splits in Grafana | Ch 12 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -207,3 +220,22 @@ Later chapters' rows are added as each iteration drafts them (see the
   (minimal single tracepoint). The four together cover the main
   attach mechanisms before process-lifecycle tracing (execsnoop/
   exitsnoop) in r5.0.
+
+### r5.0 — Chapters 11–12: execsnoop + exitsnoop
+- **Shipped:** `_docs/11-execsnoop.md`, `_docs/12-exitsnoop.md`;
+  `examples/11-execsnoop/` (execve tracepoint, bounded argv read into
+  fixed slots, event written into the ring slot) and
+  `examples/12-exitsnoop/` (exit_group tracepoint, exit-code decode);
+  reconciliation Section C rows for Ch 11–12. Closes the "Tracing the
+  kernel" part.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) the argv bounded loop passing the
+  verifier — highest risk in the whole iteration set; (2)
+  `bpf_probe_read_user` single-value signature; (3) writing an ~800B
+  event into the ring slot via `reserve`; (4) execve/exit_group offsets;
+  (5) the exit-code decode (`& 0xff` on the raw exit_group arg, NOT the
+  `>> 8` used for task_struct->exit_code).
+- **Correctness note:** chose the `exit_group` tracepoint over
+  `sched:sched_process_exit` specifically to avoid a `task_struct`
+  CO-RE read, keeping Ch 12 robust; documented that signal-deaths won't
+  appear (they don't call exit_group).
