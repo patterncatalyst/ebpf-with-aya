@@ -1,0 +1,14 @@
+# Workspace for fentrysnoop — fentry+fexit on do_unlinkat, reporting whether
+# each unlink succeeded. Same workspace shape as Chapters 6 and 7.
+[workspace]
+resolver = "2"
+members = ["fentrysnoop", "fentrysnoop-common"]
+exclude = ["fentrysnoop-ebpf"]
+
+[workspace.package]
+license = "Apache-2.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+codegen-units = 1

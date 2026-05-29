@@ -26,7 +26,7 @@ one may merge with its neighbour.
 | r# | Chapter(s) | Topics | Status |
 |----|-----------|--------|--------|
 | r02 | 7 | `kprobe` + `unlink` — first kprobe, read syscall args | **shipped (unverified)** |
-| r03 | 8 | `fentry` + `unlink` — BTF-based, lower overhead than kprobes; compare | open |
+| r03 | 8 | `fentry` + `unlink` — BTF-based, lower overhead than kprobes; compare | **shipped (unverified)** |
 | r04 | 9–10 | `opensnoop`, `sigsnoop` — ring buffers, per-event records | open |
 | r05 | 11–12 | `execsnoop`, `exitsnoop` — process lifecycle tracepoints | open |
 

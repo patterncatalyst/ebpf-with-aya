@@ -105,6 +105,19 @@ implicitly assumes these.
 Later chapters' rows are added as each iteration drafts them (see the
 [iteration roadmap](./iteration-plan.html)).
 
+### Chapter 8 — fentry + unlink (r3.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/08-fentry-unlink` builds with `cargo build --release` | Ch 8 |
+| unverified | `#[fentry]`/`#[fexit]` on `do_unlinkat` load against kernel BTF and attach | Ch 8 |
+| unverified | `Btf::from_sys_fs()` + `FEntry::load("do_unlinkat", &btf)` + `attach()` API is correct | Ch 8 |
+| unverified | fexit return value reads correctly as `ctx.arg::<i64>(2)` (after the 2 args) | Ch 8 |
+| unverified | `HashMap<u64, UnlinkEvent>` INFLIGHT bridges entry→exit keyed by pid_tgid | Ch 8 |
+| unverified | A failing unlink reports a negative `ret` (-errno); a success reports 0 | Ch 8 |
+| unverified | `ebpf_events_total{program="fentrysnoop",result=...}` splits ok/fail in Grafana | Ch 8 |
+| unverified | `bpftrace -e 'fexit:do_unlinkat { @[retval==0]=count() }'` split tracks the tool | Ch 8 |
+
 ## D. Iteration log
 
 ### r1.0 — scaffold + Foundations
@@ -145,3 +158,20 @@ Later chapters' rows are added as each iteration drafts them (see the
   contrast kprobe fragility with fentry's BTF-typed argument access —
   that contrast is the pedagogical payoff, so r3.0 should be drafted to
   build directly on this chapter's code.
+
+### r3.0 — Chapter 8: fentry + unlink + CI build-on-push
+- **Shipped:** `_docs/08-fentry-unlink.md`; `examples/08-fentry-unlink/`
+  (`fentrysnoop` — fentry+fexit on `do_unlinkat`, `HashMap` entry→exit
+  correlation, return-value capture, RingBuf events, OTLP with
+  ok/fail label, `demo.sh`); reconciliation Section C rows for Ch 8;
+  **`.github/workflows/pages.yml` updated** to build on every push (any
+  branch) and on PRs, deploying only from `main`.
+- **Verified:** nothing — `unverified` pending a real Fedora 44 run.
+- **Known risks to check first:** (1) fexit return-value access
+  `ctx.arg::<i64>(2)`; (2) `Btf::from_sys_fs()` + `FEntry`/`FExit`
+  `load(fn, &btf)` + `attach()` API names in aya 0.13.x; (3) the
+  `struct filename` layout assumption (shared with Ch 7); (4) whether
+  the target kernel permits fentry/fexit (BTF + not locked down).
+- **CI note:** the deploy job is now guarded
+  `if: github.event_name == 'push' && github.ref == 'refs/heads/main'`,
+  so feature-branch pushes and PRs build (validate) without deploying.
