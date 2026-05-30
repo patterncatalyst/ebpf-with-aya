@@ -890,3 +890,20 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - **Networking part (Ch 27–36) is now complete.** New deps unchanged
   (network-types already in; Ch 35 adds `libc` to that one loader). Diagrams
   31 → 33.
+
+### r20.0 — Part 5 (Security & LSM) opens: BPF LSM + signal programs — UNVERIFIED
+- **Ch 37 (lsm-confine)** — first BPF LSM program: `#[lsm(hook="socket_connect")]`
+  denies connect() for processes in a confined cgroup (return -EPERM),
+  loaded against kernel BTF; teaches the allow/deny model, prior-verdict
+  respect, and the `bpf` LSM enablement requirement. New diagram `lsm-decide`,
+  new lab helper `scripts/lab/enable-bpf-lsm.sh`. Risks: Aya LSM API
+  (`Lsm::load(hook,&btf)`/`attach`), `LsmContext` arg indexing (ret at 3),
+  cgroup-id == dir inode.
+- **Ch 38 (signal-kill)** — signal program: tracepoint on sys_enter_execve
+  matches a forbidden filename prefix and calls `bpf_send_signal(SIGKILL)`
+  to kill the process pre-exec; emits KillEvents over a RingBuf. New diagram
+  `signal-kill`. Framed LAB-ONLY. Risks: bpf_send_signal from a tp, execve
+  filename offset 16, bounded `starts_with`.
+- Pulled Ch 38 (bpf_send_signal) into r20 alongside Ch 37 (plan had it in
+  r21); iteration plan reconciled. Diagrams 33 → 35. Part 5 card now shows
+  2 chapters.

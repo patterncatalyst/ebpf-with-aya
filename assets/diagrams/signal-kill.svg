@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="40" y="120" width="190" height="64" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="135.0" y="150.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">process</text>
+<text x="135.0" y="167.0" font-size="11.5" fill="#555555" text-anchor="middle">execve(/tmp/forbidden…)</text>
+<rect x="310" y="110" width="230" height="80" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="425.0" y="148.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">tracepoint</text>
+<text x="425.0" y="165.0" font-size="11.5" fill="#555555" text-anchor="middle">sys_enter_execve</text>
+<rect x="610" y="62" width="230" height="56" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="725.0" y="88.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">filename matches?</text>
+<text x="725.0" y="105.0" font-size="11.5" fill="#555555" text-anchor="middle">prefix → yes</text>
+<rect x="610" y="160" width="230" height="62" rx="9" fill="#111111" stroke="#111111" stroke-width="2"/>
+<text x="725.0" y="189.0" font-size="13.5" font-weight="700" fill="#ffffff" text-anchor="middle">bpf_send_signal(SIGKILL)</text>
+<text x="725.0" y="206.0" font-size="11.5" fill="#dddddd" text-anchor="middle">process dies before exec</text>
+<path d="M230,152 L310,152" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="270.0" y="144.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">exec</text>
+<text x="270.0" y="144.0" font-size="11" fill="#555" text-anchor="middle">exec</text>
+<path d="M540,140 L610,90" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="579.0" y="109.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">read filename</text>
+<text x="579.0" y="109.0" font-size="11" fill="#555" text-anchor="middle">read filename</text>
+<path d="M725,118 L725,160" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<text x="765.0" y="139.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">matched</text>
+<text x="765.0" y="139.0" font-size="11" fill="#b8650a" text-anchor="middle">matched</text>
+<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">react, don&#x27;t just watch: kill the process the moment it execs a forbidden binary</text>
+<text x="440" y="284" font-size="11" fill="#888" text-anchor="middle">a &#x27;signal program&#x27; — lab-only offense that illuminates defense</text>
+</svg>

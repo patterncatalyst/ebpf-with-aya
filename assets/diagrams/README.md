@@ -55,6 +55,8 @@ Embed a diagram in a chapter with the include:
 | `xdp-lb` | 34 | XDP UDP load balancer: rewrite dest port round-robin across backends |
 | `xdp-test-run` | 35 | BPF_PROG_TEST_RUN: run a program against a synthetic packet |
 | `tcx-chain` | 36 | tcx: a kernel-ordered chain of bpf_link programs (vs legacy clsact) |
+| `lsm-decide` | 37 | BPF LSM allow/deny: the return value decides (cgroup-scoped) |
+| `signal-kill` | 38 | signal program: match an exec and bpf_send_signal(SIGKILL) |
 
 ## Regenerating
 

@@ -66,8 +66,8 @@ one may merge with its neighbour.
 
 | r# | Chapter(s) | Topics |
 |----|-----------|--------|
-| r20 | 37 | `lsm connect` — deny operations via the LSM hook |
-| r21 | 38–39 | hiding process/file information; `bpf_send_signal` to terminate malicious processes |
+| r20 | 37–38 | `lsm connect` — deny via LSM (cgroup-scoped); `signal kill` — bpf_send_signal to terminate processes | **shipped (unverified)** |
+| r21 | 39–40 | hiding process/file information (lab-only offense); LSM file/tamper protection |
 | r22 | 40 | sudo privilege-escalation via file-content manipulation (offense, lab-only, in the VM) |
 | r23 | 41 | runtime hardening & security — telemetry, threat shielding (modern theme) |
 
