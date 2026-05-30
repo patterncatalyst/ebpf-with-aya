@@ -34,19 +34,57 @@ format file), but those offsets are part of a stable ABI the kernel
 maintains deliberately, not internal struct layout that drifts:
 
 ```rust
-#[tracepoint] pub fn inet_sock_set_state(ctx) {
-    if ctx.read_at::<u8>(PROTOCOL)? != IPPROTO_TCP { return; }   // TCP only
-    emit(TcpStateEvent {
-        oldstate: ctx.read_at::<i32>(OLDSTATE)?,
-        newstate: ctx.read_at::<i32>(NEWSTATE)?,
-        saddr: ctx.read_at::<[u8;4]>(SADDR)?, daddr: ctx.read_at::<[u8;4]>(DADDR)?,
-        sport: ctx.read_at::<u16>(SPORT)?,    dport: ctx.read_at::<u16>(DPORT)?,
-    });
+#[tracepoint]
+pub fn inet_sock_set_state(ctx: TracePointContext) -> u32 {
+    let proto = unsafe { ctx.read_at::<u8>(PROTOCOL) }.unwrap_or(0);
+    if proto != IPPROTO_TCP { return 0; }                       // ignore UDP, etc.
+    let ev = TcpStateEvent {
+        oldstate: unsafe { ctx.read_at::<i32>(OLDSTATE) }.unwrap_or(0) as u32,
+        newstate: unsafe { ctx.read_at::<i32>(NEWSTATE) }.unwrap_or(0) as u32,
+        saddr:    unsafe { ctx.read_at::<[u8; 4]>(SADDR) }.unwrap_or([0; 4]),
+        daddr:    unsafe { ctx.read_at::<[u8; 4]>(DADDR) }.unwrap_or([0; 4]),
+        sport:    unsafe { ctx.read_at::<u16>(SPORT) }.unwrap_or(0),
+        dport:    unsafe { ctx.read_at::<u16>(DPORT) }.unwrap_or(0),
+    };
+    if let Some(mut slot) = EVENTS.reserve::<TcpStateEvent>(0) {
+        unsafe { *slot.as_mut_ptr() = ev; }
+        slot.submit(0);
+    }
+    0
 }
 ```
 
-User space maps the numeric states to names (`1 = ESTABLISHED`,
-`2 = SYN_SENT`, …) and prints each transition.
+Every field comes straight from the tracepoint record via `read_at` at
+the offset the format file lists — no pointer to follow, no helper
+copy. The only filter is `PROTOCOL`: `inet_sock_set_state` fires for any
+inet socket, so we drop non-TCP early. Reading the addresses as
+`[u8; 4]` rather than a `u32` keeps the bytes in wire order, so user
+space can hand them straight to `Ipv4Addr::from` without a byte swap.
+
+## The user side
+
+One tracepoint, one attach, then map the state numbers to names:
+
+```rust
+let tp: &mut TracePoint = ebpf.program_mut("inet_sock_set_state").unwrap().try_into()?;
+tp.load()?;
+tp.attach("sock", "inet_sock_set_state")?;
+
+fn state_name(s: u32) -> &'static str {
+    match s { 1=>"ESTABLISHED", 2=>"SYN_SENT", 3=>"SYN_RECV", 4=>"FIN_WAIT1",
+              5=>"FIN_WAIT2", 6=>"TIME_WAIT", 7=>"CLOSE", 8=>"CLOSE_WAIT",
+              9=>"LAST_ACK", 10=>"LISTEN", 11=>"CLOSING", _=>"?" }
+}
+// in the drain loop, per event:
+let new = state_name(ev.newstate);
+counter.add(1, &[KeyValue::new("newstate", new)]);
+```
+
+The TCP state constants (`TCP_ESTABLISHED = 1`, and so on) are kernel
+ABI, so the name mapping is stable. Counting transitions by `newstate`
+turns into a connection-health signal: a rising share of `TIME_WAIT` or
+`CLOSE_WAIT` points at connection churn or sockets that never get
+closed.
 
 ## Stable tracepoint vs. kprobe — when to choose which
 

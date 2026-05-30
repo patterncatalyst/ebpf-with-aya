@@ -41,6 +41,52 @@ handle **IPv4 with no options** (IHL == 5, so the IP header is exactly
 20 bytes) and we parse the **TCP data offset** to skip TCP options. Both
 are flagged — real-world parsers handle options and IPv6.
 
+Each `ctx.load::<T>(offset)` is a **bounded** read into the packet — the
+socket-filter analogue of `read_at`, with the kernel checking the offset
+is in range. That bounds requirement is also *why* we special-case
+IPv4-without-options: a variable-length IP header would make the payload
+offset unprovable to the verifier, so we assert `IHL == 5` and compute
+from a fixed 20-byte header. When the first five payload bytes look like
+HTTP, we copy the 4-tuple and the first line and emit:
+
+```rust
+let tcp_off = ETH_HLEN + 20;
+if looks_http(&ctx.load::<[u8; 5]>(payload)?) {
+    if let Some(mut slot) = EVENTS.reserve::<HttpEvent>(0) {
+        let ev = slot.as_mut_ptr();
+        unsafe {
+            (*ev).saddr = ctx.load::<u32>(ETH_HLEN + 12)?;
+            (*ev).daddr = ctx.load::<u32>(ETH_HLEN + 16)?;
+            (*ev).sport = ctx.load::<u16>(tcp_off)?;
+            (*ev).dport = ctx.load::<u16>(tcp_off + 2)?;
+            let _ = ctx.load_bytes(payload, &mut (*ev).line);   // first ~80 bytes
+        }
+        slot.submit(0);
+    }
+}
+```
+
+## Attaching to a raw socket
+
+Here's what makes a socket filter different from every program so far:
+it's not attached to a named hook — it's attached to an actual **socket
+file descriptor**. So user space first opens a raw `AF_PACKET` socket
+bound to the interface, then hands its fd to `SocketFilter::attach`:
+
+```rust
+let sock = open_packet_socket(&ifname)?;   // AF_PACKET/SOCK_RAW bound to the NIC (libc)
+let prog: &mut SocketFilter = ebpf.program_mut("http_filter").unwrap().try_into()?;
+prog.load()?;
+prog.attach(sock.as_fd())?;                // the filter now sees every frame on that socket
+```
+
+`AF_PACKET` + `SOCK_RAW` is what delivers *raw frames including the
+Ethernet header* to the socket — which is why the parser starts at
+offset 0 with a 14-byte `ETH_HLEN`. Binding to one interface scopes the
+capture to that NIC. After that it's the familiar `RingBuf` drain:
+decode each `HttpEvent`, print the flow and request line, and count by
+method (`ebpf_http_lines_total{method}`).
+
 ## The complement: syscalls and uprobes
 
 A socket filter sees the **wire**, which has one hard limit: **HTTPS is

@@ -33,21 +33,55 @@ and 4-tuple — which the context hands us **directly**, no packet or
 struct parsing:
 
 ```rust
-#[sock_ops] pub fn track(ctx: SockOpsContext) -> u32 {
+#[sock_ops]
+pub fn track(ctx: SockOpsContext) -> u32 {
     let dir = match ctx.op() {
         BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB  => DIR_ACTIVE,   // we connected
         BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB => DIR_PASSIVE,  // we accepted
-        _ => return 0,
+        _ => return 0,                                       // ignore other callbacks
     };
-    emit(SockEvent { local_ip4: ctx.local_ip4(), remote_ip4: ctx.remote_ip4(),
-                     local_port: ctx.local_port(), remote_port: ctx.remote_port(), dir });
+    if let Some(mut slot) = EVENTS.reserve::<SockEvent>(0) {
+        let ev = SockEvent {
+            local_ip4:  ctx.local_ip4(),  remote_ip4:  ctx.remote_ip4(),
+            local_port: ctx.local_port() as u16, remote_port: ctx.remote_port() as u16,
+            dir,
+        };
+        unsafe { *slot.as_mut_ptr() = ev; }
+        slot.submit(0);
+    }
     0
 }
 ```
 
+`ctx.op()` is the dispatch: one program is invoked for *every* lifecycle
+moment, and the `match` picks out the two we care about, returning early
+for the rest. The accessors (`ctx.local_ip4()`, `ctx.remote_port()`, …)
+read the connection's 4-tuple straight from the `bpf_sock_ops` context
+the kernel passes in — no packet to parse, no struct offset to chase.
+
 The cgroup scoping is the point: attach to a container's cgroup and you
 observe exactly that workload's connections, no PID or tuple filtering
 needed.
+
+## Attaching to the cgroup
+
+A `sock_ops` program attaches to a **cgroup-v2 directory**, not a
+function or an interface. User space opens the cgroup as a file and
+passes it to `attach`:
+
+```rust
+let cgroup = std::fs::File::open("/sys/fs/cgroup")?;   // the unified v2 root
+let prog: &mut SockOps = ebpf.program_mut("track").unwrap().try_into()?;
+prog.load()?;
+prog.attach(cgroup)?;
+```
+
+Attaching at the root covers every socket on the box; point `attach` at
+a container's cgroup directory instead and the same program watches
+exactly that workload — the scoping the diagram promises, with no
+in-program filtering. Draining is the usual `RingBuf` loop: decode each
+`SockEvent`, format the local/remote endpoints, and count by direction
+(`ebpf_sock_established_total{dir}`).
 
 ## It can act, not just observe
 

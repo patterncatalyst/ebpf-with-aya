@@ -743,3 +743,20 @@ Later chapters' rows are added as each iteration drafts them (see the
   HashMap aggregation with race + frame-pointer notes; `get_stackid`
   stack walking; OTLP **observable-gauge** percentile callbacks; RAPL +
   VM fallback). No rewrites needed.
+
+### r16.5 — code-depth pass, Part 4 (Networking) — rollout complete
+- Brought Ch 27–30 to the Ch 9 walkthrough standard (these were the
+  tersest chapters). Each now shows the real handler(s) and a user-side
+  walkthrough with per-call explanation:
+  - Ch 27 (tcpconnlat): full two-kprobe handlers (sock* key, struct-field
+    reads), user-side dual `KProbe` attach + ring drain + OTLP histogram.
+  - Ch 28 (tcpstates): full tracepoint handler (PROTOCOL filter, [u8;4]
+    addr reads), user-side attach + state-name map + counter.
+  - Ch 29 (http-l7): completed the parse→capture→submit, plus the
+    distinctive AF_PACKET raw-socket open + `SocketFilter::attach(fd)`.
+  - Ch 30 (sockops): concrete `ctx.op()` handler with reserve/submit,
+    plus cgroup-v2 `SockOps::attach(File)` user side.
+- **Code-depth rollout now complete** across Parts 0–4: Part 1 (r16.2)
+  deepened Ch 10/12; Part 2 (r16.3) deepened Ch 13; Parts 2/3 otherwise
+  already at depth; Part 4 (r16.5) deepened all four. Docs-only; code
+  remains unverified.

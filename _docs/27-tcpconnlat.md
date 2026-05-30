@@ -59,44 +59,104 @@ established. Two kprobes bracket that window:
    caption="Figure 27.2 — connection latency across two kprobes" %}
 
 ```rust
-#[kprobe] pub fn tcp_v4_connect(ctx) {           // SYN sent
-    let sk = ctx.arg(0)?;                         // struct sock *
-    START.insert(&sk, &ConnStart { ts: ktime(), .. });
+// connect(): the SYN is going out. Stamp the start keyed by the sock
+// pointer, and grab the destination from the head of struct sock.
+#[kprobe]
+pub fn tcp_v4_connect(ctx: ProbeContext) -> u32 {
+    let sk: u64 = match ctx.arg(0) { Some(p) => p, None => return 0 };
+    let daddr = unsafe { bpf_probe_read_kernel((sk as usize + SKC_DADDR) as *const u32) }.unwrap_or(0);
+    let dport = unsafe { bpf_probe_read_kernel((sk as usize + SKC_DPORT) as *const u16) }.unwrap_or(0);
+    let start = ConnStart {
+        ts: unsafe { bpf_ktime_get_ns() },
+        pid: (bpf_get_current_pid_tgid() >> 32) as u32,
+        daddr, dport, comm: bpf_get_current_comm().unwrap_or_default(),
+    };
+    let _ = START.insert(&sk, &start, 0);
+    0
 }
-#[kprobe] pub fn tcp_rcv_state_process(ctx) {     // SYN-ACK processed
-    let sk = ctx.arg(0)?;
-    let start = START.get(&sk)?; START.remove(&sk);
-    emit(now - start.ts);
+
+// tcp_rcv_state_process(): the SYN-ACK is being handled. Pair, compute, emit.
+#[kprobe]
+pub fn tcp_rcv_state_process(ctx: ProbeContext) -> u32 {
+    let sk: u64 = match ctx.arg(0) { Some(p) => p, None => return 0 };
+    let start = match unsafe { START.get(&sk) } { Some(s) => *s, None => return 0 };
+    let _ = START.remove(&sk);                       // first hit ≈ SYN-ACK; don't refire
+    let lat_ns = unsafe { bpf_ktime_get_ns() }.saturating_sub(start.ts);
+    if let Some(mut slot) = EVENTS.reserve::<ConnEvent>(0) {
+        let ev = ConnEvent { pid: start.pid, daddr: start.daddr,
+                             dport: start.dport, lat_ns, comm: start.comm };
+        unsafe { *slot.as_mut_ptr() = ev; }
+        slot.submit(0);
+    }
+    0
 }
 ```
 
-The new idea is the **key**. Kernel-side, we don't have a `pid_tgid` to
-correlate on — we have the **`struct sock *`** pointer, which is the
-same for both probes of one connection. It's the kernel analogue of the
-entry/exit key you've used since Chapter 8. The first time our sk shows
-up in `tcp_rcv_state_process` is essentially the SYN-ACK arriving, so we
-compute the latency there and forget the socket.
+The new idea is the **key**. Kernel-side, we have no `pid_tgid` to
+correlate on — `tcp_rcv_state_process` runs in softirq context, not in
+the connecting task. What we *do* have is `ctx.arg(0)`, the
+**`struct sock *`** pointer, which is identical for both probes of one
+connection. So the sock pointer is the kernel analogue of the
+entry/exit key you've used since Chapter 8: stash under it at connect,
+look it up at the SYN-ACK. The first time a sock we stamped reappears in
+`tcp_rcv_state_process` is essentially the SYN-ACK being processed, so we
+compute the latency there, `remove` the entry so a later call can't
+double-count, and emit.
 
 ## Reading kernel struct fields (the fragile part)
 
-To report *which* connection, we read the destination from the socket.
+Those two lines in the connect handler — reading `daddr` and `dport`
+from `sk` at `SKC_DADDR` (0) and `SKC_DPORT` (12) — are the soft spot.
 The address and port live at the very head of `struct sock` (inside
-`sock_common`), and we copy them with `bpf_probe_read_kernel`:
+`sock_common`). `bpf_probe_read_kernel` is mandatory here for the same
+reason as Chapter 8: you cannot dereference a kernel pointer directly,
+you copy through the helper. The fragility isn't the *read*, it's the
+hardcoded **offsets**. They sit at the head of the struct, which is
+*fairly* stable — but "fairly" isn't "guaranteed," and hardcoding
+offsets is exactly the brittleness kprobes are infamous for. The real
+fix is **CO-RE**, which relocates field offsets at load time against the
+running kernel's BTF so the same binary works everywhere; that's the
+deep-dive in Chapter 56. For now, verify the offsets with
+`pahole -C sock_common` and treat them as provisional. (Chapter 28
+sidesteps the problem entirely with a tracepoint that hands you the
+fields — a pointed contrast.)
+
+## The user side
+
+Both kprobes attach by kernel-function name, and we drain the shared
+ring into an OTLP histogram:
 
 ```rust
-let daddr = bpf_probe_read_kernel((sk + SKC_DADDR) as *const u32)?;  // offset 0
-let dport = bpf_probe_read_kernel((sk + SKC_DPORT) as *const u16)?;  // offset 12
+for name in ["tcp_v4_connect", "tcp_rcv_state_process"] {
+    let p: &mut KProbe = ebpf.program_mut(name).unwrap().try_into()?;
+    p.load()?;                 // verifier gate
+    p.attach(name, 0)?;        // 0 = attach at function entry
+}
+let hist = meter.f64_histogram("tcp_connect_latency_ms").build();
+let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 ```
 
-Those offsets are the soft spot. They're at the head of the struct,
-which is fairly stable, but "fairly" isn't "guaranteed" — struct layouts
-shift between kernel versions, and hardcoding offsets is exactly the
-fragility kprobes are infamous for. The real fix is **CO-RE**, which
-relocates field offsets at load time against the running kernel's BTF so
-the same binary works everywhere; that's the deep-dive in Chapter 56.
-For now, verify the offsets with `pahole -C sock_common` and treat them
-as provisional. (Chapter 28 sidesteps the whole problem with a
-tracepoint that hands you the fields directly — a pointed contrast.)
+`attach(name, 0)` is the kprobe form you met in Chapter 7 — the function
+name plus an entry offset of `0` — just applied to two TCP-stack
+functions instead of one. In the drain loop, each `ConnEvent` becomes a
+console row and a histogram sample, with the destination decoded from
+network byte order:
+
+```rust
+while let Some(item) = ring.next() {
+    let ev: ConnEvent = unsafe { core::ptr::read_unaligned(item.as_ptr() as *const _) };
+    let ms = ev.lat_ns as f64 / 1_000_000.0;
+    let dest = format!("{}:{}", Ipv4Addr::from(u32::from_be(ev.daddr)), u16::from_be(ev.dport));
+    println!("{:<8} {:<16} {:<22} {:.3}", ev.pid, cstr(&ev.comm), dest, ms);
+    hist.record(ms, &[KeyValue::new("dport", u16::from_be(ev.dport).to_string())]);
+}
+```
+
+A `f64_histogram` (not the counter we've used so far) is the right
+instrument because latency is a *distribution* — the SDK buckets it, and
+Grafana can draw a heatmap or compute p99 without us precomputing
+anything. `daddr`/`dport` come off the wire big-endian, so `u32::from_be`
+/ `u16::from_be` put them in host order for display.
 
 ## Build, deploy, observe
 
