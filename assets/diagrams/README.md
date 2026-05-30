@@ -57,6 +57,8 @@ Embed a diagram in a chapter with the include:
 | `tcx-chain` | 36 | tcx: a kernel-ordered chain of bpf_link programs (vs legacy clsact) |
 | `lsm-decide` | 37 | BPF LSM allow/deny: the return value decides (cgroup-scoped) |
 | `signal-kill` | 38 | signal program: match an exec and bpf_send_signal(SIGKILL) |
+| `pidhide` | 39 | rewrite the getdents64 buffer to splice out a /proc/<pid> entry |
+| `lsm-file-protect` | 40 | LSM inode_permission: deny writes to one protected inode |
 
 ## Regenerating
 

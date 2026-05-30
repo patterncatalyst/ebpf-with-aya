@@ -907,3 +907,20 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - Pulled Ch 38 (bpf_send_signal) into r20 alongside Ch 37 (plan had it in
   r21); iteration plan reconciled. Diagrams 33 → 35. Part 5 card now shows
   2 chapters.
+
+### r21.0 — Part 5 (Security & LSM): offense + defense pair — UNVERIFIED
+- **Ch 39 (pidhide)** — LAB-ONLY rootkit technique: two tracepoints on
+  getdents64 (enter captures the user buffer, exit walks linux_dirent64 and
+  splices out the target /proc/<pid> by extending the previous record's
+  d_reclen via `bpf_probe_write_user`). Heavy detection section (kernel taint,
+  bpftool prog show, /proc vs real task list). New diagram `pidhide`. Risks:
+  getdents64 enter/exit offsets (dirent @24, ret @16), linux_dirent64 offsets
+  (d_reclen @16, d_name @19), bpf_probe_write_user permission, bounded walk.
+- **Ch 40 (lsm-fileprotect)** — defensive counterpart: `#[lsm(hook=
+  "inode_permission")]` denies MAY_WRITE on one protected inode (read-only
+  even for root), reading `inode->i_ino` via `bpf_probe_read_kernel` at a
+  hard-coded `I_INO_OFFSET` (flagged version-specific; CO-RE in Part 9 fixes
+  it). Fail-open on read error. New diagram `lsm-file-protect`. Risks: arg
+  indexing (inode@0/mask@1/ret@2), MAY_WRITE value, i_ino offset.
+- Diagrams 35 → 37. The hard-coded i_ino offset is the canonical CO-RE
+  motivation; forward-ref to Ch 56 reinforced.
