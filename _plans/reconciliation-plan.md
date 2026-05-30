@@ -697,3 +697,14 @@ Later chapters' rows are added as each iteration drafts them (see the
   passes (pending author confirmation).
 - **Verified:** nothing new — diagrams are visual-only; code remains
   `unverified`.
+
+### r16.2 — code-depth pass, Part 1 (Tracing the kernel)
+- Brought Part 1 to the Ch 9 walkthrough standard ("explain what Rust+Aya
+  are doing, as if the reader were writing it, with a BCC side-by-side").
+- **Deepened:** Ch 10 (sigsnoop) — full kernel handler explained + the
+  previously-absent user-side attach/drain/format walkthrough; Ch 12
+  (exitsnoop) — real handler instead of a stub + concrete user-side
+  decode (kept the strong "encoding gotcha" section).
+- **Already at standard (left as-is):** Ch 7 (kprobe), Ch 8 (fentry —
+  BTF load explained), Ch 11 (execsnoop — argv-loop walkthrough).
+- Docs-only; code remains unverified.

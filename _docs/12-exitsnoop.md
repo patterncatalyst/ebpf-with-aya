@@ -33,11 +33,27 @@ and we're done — no `task_struct`, no CO-RE, robust across kernels:
 ```rust
 #[tracepoint]
 pub fn sys_enter_exit_group(ctx: TracePointContext) -> u32 {
-    let code = ctx.read_at::<i64>(16)? as i32;   // error_code arg
-    // + current pid/comm, submit one ExitEvent
+    let code = unsafe { ctx.read_at::<i64>(16) }.unwrap_or(0) as i32;  // error_code
+    if let Some(mut slot) = EVENTS.reserve::<ExitEvent>(0) {
+        let ev = ExitEvent {
+            pid: (bpf_get_current_pid_tgid() >> 32) as u32,
+            code,
+            comm: bpf_get_current_comm().unwrap_or([0u8; 16]),
+        };
+        unsafe { *slot.as_mut_ptr() = ev; }
+        slot.submit(0);
+    }
     0
 }
 ```
+
+`ctx.read_at::<i64>(16)` reads `error_code` from the 64-bit argument
+slot and narrows to `i32` (same widening rule as Chapter 10). The dying
+process *is* the current process, so `bpf_get_current_pid_tgid()` and
+`bpf_get_current_comm()` give us who it was — no argument needed — and
+one `reserve`/`submit` ships the `ExitEvent`. As with `sigsnoop` there's
+no `HashMap`: an exit is reported the instant it happens, nothing to
+pair.
 
 The trade-off: `exit_group` catches processes that exit *normally*. A
 process killed by a signal (`SIGKILL`, `SIGSEGV`) never calls it, so it
@@ -68,13 +84,21 @@ the value determines how it's encoded.
 
 ## The user side
 
-Identical tracepoint plumbing to Chapter 10, plus the decode and a
-`status` label so failures pop in Grafana:
+The attach and drain are the single-tracepoint pattern from Chapter 10 —
+`program_mut("sys_enter_exit_group").try_into::<&mut TracePoint>()`,
+`load()`, `attach("syscalls", "sys_enter_exit_group")`, then a
+`RingBuf::try_from` loop. The only new logic is applying the decode from
+the section above and turning it into a `status` label so failures pop
+in Grafana:
 
 ```rust
-let exit_code = ev.code & 0xff;
-let status = if exit_code == 0 { "ok" } else { "nonzero" };
-counter.add(1, &[KeyValue::new("program", "exitsnoop"), KeyValue::new("status", status)]);
+while let Some(item) = ring.next() {
+    let ev: ExitEvent = unsafe { core::ptr::read_unaligned(item.as_ptr() as *const _) };
+    let exit_code = ev.code & 0xff;                       // low byte — see "encoding gotcha"
+    let status = if exit_code == 0 { "ok" } else { "nonzero" };
+    println!("{:<7} {:<16} {:<5} {}", ev.pid, cstr(&ev.comm), exit_code, status);
+    counter.add(1, &[KeyValue::new("program", "exitsnoop"), KeyValue::new("status", status)]);
+}
 ```
 
 ## Build, deploy, observe
