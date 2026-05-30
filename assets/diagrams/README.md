@@ -53,6 +53,8 @@ Embed a diagram in a chapter with the include:
 | `xdp-path` | 32 | where XDP sits in the RX path (earliest, before sk_buff) and its verdicts |
 | `xdp-capture` | 33 | filter in-kernel at XDP, ship only matching records via RingBuf |
 | `xdp-lb` | 34 | XDP UDP load balancer: rewrite dest port round-robin across backends |
+| `xdp-test-run` | 35 | BPF_PROG_TEST_RUN: run a program against a synthetic packet |
+| `tcx-chain` | 36 | tcx: a kernel-ordered chain of bpf_link programs (vs legacy clsact) |
 
 ## Regenerating
 

@@ -872,3 +872,21 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - Confirmed the Ch 2 `T=$(./vm-ip.sh …) && P=$(./vm-ip.sh …) && echo …`
   command is correct: vm-ip.sh prints only the IP (errors to stderr, exits
   non-zero), and the line runs in scripts/lab/ as set by the preceding cd.
+
+### r19.0 — Part 4 (Networking) wrap-up: BPF_PROG_TEST_RUN + tcx — UNVERIFIED
+- **Ch 35 (xdp-test)** — a `BPF_PROG_TEST_RUN` harness: load a small XDP
+  filter (drop ICMP / pass else + PKTS counter), build synthetic Eth/IPv4
+  packets in user space, run each through the program, assert the verdict,
+  and check a map side-effect; exits non-zero on failure (CI-ready). New
+  diagram `xdp-test-run`. KEY risk: the test-run binding — the example issues
+  the bpf() command via a `libc::syscall` wrapper with a hand-laid `bpf_attr`
+  test struct + `prog.fd()`; confirm against the installed Aya/kernel (or use
+  Aya's own test_run if present).
+- **Ch 36 (tcx)** — the Ch 31 classifier reattached via **tcx** (kernel 6.6+):
+  no `qdisc_add_clsact`, `attach(&iface, TcAttachType::Ingress)` returns a
+  bpf_link that auto-detaches on drop; cross-check shows `tcx/ingress` in
+  `bpftool net show` with an empty `tc filter show` and no clsact qdisc. New
+  diagram `tcx-chain`. Risk: exact Aya tcx attach API + link lifetime.
+- **Networking part (Ch 27–36) is now complete.** New deps unchanged
+  (network-types already in; Ch 35 adds `libc` to that one loader). Diagrams
+  31 → 33.

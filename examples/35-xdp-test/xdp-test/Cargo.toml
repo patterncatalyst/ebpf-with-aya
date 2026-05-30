@@ -1,0 +1,13 @@
+[package]
+name = "xdp-test"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya = "0.13"
+anyhow = "1"
+env_logger = "0.11"
+log = "0.4"
+libc = "0.2"
+[build-dependencies]
+aya-build = "0.1"
