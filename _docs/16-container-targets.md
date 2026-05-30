@@ -167,8 +167,7 @@ count to the same cgroup id should track what `contrace` reports.
 These two targets return in later chapters — `sslsniff` against their
 TLS, `funclatency` and `javagc` against the JVM, and the L7/HTTP
 networking chapters. Next in this part: TLS data with **`sslsniff`** and
-latency histograms with **`funclatency`**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+latency histograms with **`funclatency`**.
 
 ---
 

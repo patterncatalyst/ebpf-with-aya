@@ -212,9 +212,6 @@ and a first program proving it all works together. Every chapter from
 here is a new program type and a new thing to measure — `kprobe` and
 `unlink` next — but the machinery is the machinery you just built.
 
-See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}) for the
-full chapter list and which iteration ships each one.
-
 ---
 
 *Verification status: <span class="status status--unverified">unverified</span>.

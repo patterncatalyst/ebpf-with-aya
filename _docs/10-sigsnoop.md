@@ -137,8 +137,7 @@ the offsets you hardcoded come straight from that format.
   applied to signal-name mapping and metric labelling.
 
 This closes the first sweep of "Tracing the kernel." Next we turn to
-process lifecycle with **`execsnoop`** and **`exitsnoop`**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+process lifecycle with **`execsnoop`** and **`exitsnoop`**.
 
 ---
 

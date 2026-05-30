@@ -145,8 +145,7 @@ check for this chapter, since the argv loop is the tricky part.
 - Command-line visibility is what makes execve tracing powerful.
 
 Next, the bookend: **`exitsnoop`** — process termination and exit
-codes, completing the lifecycle. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+codes, completing the lifecycle.
 
 ---
 

@@ -124,7 +124,7 @@ unless the binary was built with `-ldflags=-s`.)
 - eBPF sees the OS thread, not the goroutine.
 
 Last in this part: **`javagc`**, timing JVM garbage collection through
-USDT probes. See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+USDT probes.
 
 ---
 

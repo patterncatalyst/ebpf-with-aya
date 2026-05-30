@@ -58,17 +58,30 @@ A uretprobe whose entire job is to read the return pointer:
 ```rust
 #[uretprobe]
 pub fn readline_ret(ctx: RetProbeContext) -> u32 {
-    let line_ptr: *const u8 = ctx.ret().ok_or(0)?;   // char * return value
-    // reserve a slot; read the user string at line_ptr into ev.line; submit
+    let line_ptr: *const u8 = match ctx.ret() { Some(p) => p, None => return 0 };
+    if let Some(mut slot) = EVENTS.reserve::<ReadlineEvent>(0) {
+        let ev = slot.as_mut_ptr();
+        unsafe {
+            (*ev).pid  = (bpf_get_current_pid_tgid() >> 32) as u32;
+            (*ev).uid  = (bpf_get_current_uid_gid() & 0xffff_ffff) as u32;
+            (*ev).comm = bpf_get_current_comm().unwrap_or([0u8; 16]);
+            let _ = bpf_probe_read_user_str_bytes(line_ptr, &mut (*ev).line);
+        }
+        slot.submit(0);
+    }
     0
 }
 ```
 
-`ctx.ret()` gives the return value (the uretprobe analogue of
-`ctx.arg(n)`). The pointer is into the **bash process's** memory, so we
-copy the string with `bpf_probe_read_user_str_bytes` — the user reader,
-exactly as in `opensnoop`. Plus the usual pid/uid/comm, into a
-`RingBuf`.
+`ctx.ret()` gives the return value — the uretprobe analogue of
+`ctx.arg(n)` — which for `readline` is a `char *` to the line the user
+just typed. That pointer is into the **bash process's** memory, so we
+can't dereference it; `bpf_probe_read_user_str_bytes` copies the string
+into the event. Note the shape we'll reuse for every ring-buffer
+program: `reserve` a typed slot, write *through* its pointer (filling the
+cheap-to-get `pid`/`uid`/`comm` directly, then the user string), and
+`submit`. There's no entry probe and no map to bridge — the line only
+exists at *return*, so a single uretprobe is the whole program.
 
 ## The user side
 
@@ -137,8 +150,7 @@ print the same lines.
   binary or library holds the symbol (`objdump`/`nm`).
 
 Next: pointing a uprobe at a **Rust** binary, where symbol mangling and
-calling conventions come into play. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+calling conventions come into play.
 
 ---
 

@@ -125,8 +125,7 @@ are both right.
   basis for service tracing in later chapters.
 
 Next, the part continues with USDT/BTF-assisted user probes and runtime
-tracing (`sslsniff`, `funclatency`, language runtimes). See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+tracing (`sslsniff`, `funclatency`, language runtimes).
 
 ---
 

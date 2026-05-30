@@ -122,8 +122,7 @@ working while you sort the resolution out.
 
 That completes **User-space & language probing**. Next the tutorial
 turns to **Performance & resources** — scheduling latency, IRQs,
-profiling, memory. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+profiling, memory.
 
 ---
 

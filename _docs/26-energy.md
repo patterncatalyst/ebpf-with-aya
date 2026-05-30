@@ -2,7 +2,7 @@
 title: "Energy monitoring"
 order: 26
 part: Performance & resources
-description: "Attribute power consumption to individual processes — the modern sustainability use of eBPF — by crediting each task its on-CPU time and multiplying its share by system power from RAPL, with an honest look at why virtualization makes this hard."
+description: "Attribute power consumption to individual processes — the modern sustainability use of eBPF — by crediting each task its on-CPU time and multiplying its share by system power from RAPL, and why virtualization makes this hard."
 duration: 30 minutes
 ---
 
@@ -11,7 +11,7 @@ people reach for eBPF: **energy**. Data-center power is expensive and
 carbon-relevant, and "which process is burning the watts?" has become a
 real operational question. The CNCF project **Kepler** answers it with
 eBPF, and this chapter builds a small version of its core idea —
-attributing system power to processes — while being honest about where
+attributing system power to processes — while being clear about where
 the hardware fights you.
 
 The code is in `examples/26-energy/`.
@@ -80,7 +80,7 @@ User space aggregates by `comm`, prints a table, and exports
 `estimated_power_watts{comm}` plus `system_power_watts` to Grafana — a
 live "what's costing watts" panel.
 
-## The honest part: virtualization breaks the hardware path
+## The hard part: virtualization breaks the hardware path
 
 Here's the reality the marketing slides skip: **RAPL is almost never
 exposed inside a VM**, and hardware performance counters often aren't
@@ -144,8 +144,7 @@ and watch them rise to the top of the power table, with
 That closes **Performance & resources**. The signals built here —
 latency, profiles, power — are exactly what a **`sched_ext`** scheduler
 (Part 6) can consume to make power- and QoS-aware decisions; first,
-Part 5 takes on **networking**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+Part 5 takes on **networking**.
 
 ---
 

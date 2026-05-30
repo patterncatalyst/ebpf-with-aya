@@ -159,8 +159,7 @@ Both produce comparable folds; the hot functions should agree.
   continuous profiling.
 
 Next: **`memleak`** and **`biopattern`** — tracking allocations that
-never free, and block-I/O access patterns. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+never free, and block-I/O access patterns.
 
 ---
 

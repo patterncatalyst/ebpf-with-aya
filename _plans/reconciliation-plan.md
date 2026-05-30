@@ -708,3 +708,38 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Already at standard (left as-is):** Ch 7 (kprobe), Ch 8 (fentry —
   BTF load explained), Ch 11 (execsnoop — argv-loop walkthrough).
 - Docs-only; code remains unverified.
+
+### r16.3 — code-depth pass, Part 2 (User-space & language probing)
+- Reviewed Ch 13–20 against the Ch 9 standard. **Already at depth (left
+  as-is):** Ch 14 (Rust uprobe / no_mangle), Ch 15 (struct read + BTF),
+  Ch 16 (cgroup-id scoping handler + inode resolution), Ch 17 (sslsniff
+  entry/return library probes), Ch 18 (entry/return timing + in-kernel-
+  vs-userspace histogram trade-off), Ch 19 (Go ABI pt_regs/RCX read,
+  no-uretprobe-on-Go), Ch 20 (USDT-as-uprobe at offset). These already
+  show real handlers, the Aya mechanics, and register/BTF cross-checks.
+- **Deepened:** Ch 13 (bashreadline) — replaced the stub uretprobe body
+  with the full reserve/read-user-string/submit handler + explanation.
+- Docs-only; code remains unverified.
+
+### r16.4 — diagram + wording fixes; Part 3 review
+- **Diagram fix:** `container-observe` (Ch 16) rebuilt — the "container"
+  is now a framing **band** (top-left label) so no centered text sits
+  behind the nested app/libjvm boxes. Audited all diagrams for
+  node-contains-node label-hiding; only this one was affected
+  (`lab-topology`'s labels are top-left, so it was a false positive).
+- **Wording:** removed all "roadmap" closers and the "(iteration)
+  roadmap" links from every chapter; removed "honest"/"an honest"
+  framing (6 spots) — reworded, e.g. Ch 15 "An honest scope note" → "Scope
+  note", Ch 26 "The honest part" → "The hard part". Repaired the two
+  sentences left dangling by the removals (Ch 0, Ch 7).
+- **Nav:** dropped the public "Roadmap" menu item; the "Tutorial" item
+  already points to the outline (more useful to readers).
+- **Ch 17 (sslsniff):** added a **FIPS** section — FIPS mode changes the
+  cipher/provider, not where plaintext sits, so the SSL_read/SSL_write
+  uprobes capture identically; with the kTLS caveat as the real
+  boundary-mover.
+- **Part 3 (Ch 21–26) review:** already at the Ch 9 depth standard
+  (in-kernel `Array` log2 histogram + `get_ptr_mut`; per-key/per-CPU
+  HashMap aggregation with race + frame-pointer notes; `get_stackid`
+  stack walking; OTLP **observable-gauge** percentile callbacks; RAPL +
+  VM fallback). No rewrites needed.

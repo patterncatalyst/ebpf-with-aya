@@ -128,7 +128,6 @@ The BCC tool reports the same outstanding allocations and stacks.
 - User-stack unwinding depends on **frame pointers**.
 
 Next: **`biopattern`**, classifying block I/O as sequential vs. random.
-See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
 
 ---
 

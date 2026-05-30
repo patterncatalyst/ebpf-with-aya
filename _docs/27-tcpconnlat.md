@@ -134,8 +134,7 @@ or a busy peer).
   **CO-RE** (Ch 56) is the portable fix.
 
 Next: **`tcpstates`** traces the whole TCP state machine — with a single
-tracepoint that needs none of this offset chasing. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+tracepoint that needs none of this offset chasing.
 
 ---
 

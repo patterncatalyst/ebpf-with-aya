@@ -71,6 +71,32 @@ The plaintext is available at different moments for the two directions:
 }
 ```
 
+## FIPS mode doesn't change the boundary
+
+A question that comes up in regulated environments: does **FIPS mode**
+affect this? On RHEL and Fedora, `fips-mode-setup --enable` switches
+OpenSSL to its FIPS-validated crypto provider and restricts the allowed
+algorithms. That changes *which* ciphers negotiate and *who does the
+math* — not *where the plaintext is*. `SSL_write` is still handed
+plaintext at entry and `SSL_read` still returns plaintext, because those
+functions sit **above** the provider boundary. So the same two uprobes
+capture identically whether or not FIPS is enabled — you attach to
+`libssl`'s read/write API, never to the provider (`fips.so`) underneath.
+
+Two corollaries worth stating plainly:
+
+- **It cuts both ways.** Probing the API boundary means a FIPS-validated
+  cipher gives you no protection against *this* kind of observation —
+  which is why the caution above matters more on a regulated system, not
+  less. The validation covers the cryptography, not the plaintext your
+  own process hands the library.
+- **kTLS is what actually moves the boundary.** If an application enables
+  *kernel* TLS offload (`setsockopt` `TLS_TX`/`TLS_RX`), bulk
+  encrypt/decrypt moves into the kernel and the userspace
+  `SSL_read`/`SSL_write` path can be bypassed for data transfer — then
+  you'd trace the kTLS or socket layer instead. FIPS alone doesn't do
+  that; kTLS does.
+
 ## Capturing bounded binary data
 
 Unlike a filename, plaintext is arbitrary binary of arbitrary length.
@@ -128,8 +154,7 @@ plaintext should match.
 - This power carries real responsibility — observe only what you're
   authorized to.
 
-Next: timing functions with **`funclatency`**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+Next: timing functions with **`funclatency`**.
 
 ---
 

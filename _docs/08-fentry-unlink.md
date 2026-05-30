@@ -177,9 +177,7 @@ return-value read and your entry/exit correlation are correct.
 - The same program now reports *outcomes*, not just attempts.
 
 Next we move from unlink to the file-open path with **`opensnoop`**,
-and start building per-event tooling in earnest. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}) for what's
-landed and what's next.
+and start building per-event tooling in earnest.
 
 ---
 

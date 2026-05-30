@@ -127,8 +127,7 @@ bucket shape should match yours.
 That closes the *User-space & language probing* part's core
 techniques. The remaining chapters in this part (goroutine states,
 `javagc`) apply them to specific runtimes; from there the tutorial moves
-into **Performance & resources**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+into **Performance & resources**.
 
 ---
 

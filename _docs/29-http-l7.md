@@ -97,7 +97,7 @@ method — the start of an L7 dashboard.
   encrypted-traffic complement.
 
 Next: **`sockops`** — reacting to TCP connection lifecycle from a
-cgroup. See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+cgroup.
 
 ---
 

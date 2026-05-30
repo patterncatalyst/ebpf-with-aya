@@ -65,8 +65,7 @@ runnable Aya project under `examples/`, a `demo.sh` that builds it,
 ships it to the target VM, runs it, drives load, and shows where the
 output appears in Grafana. The full chapter list — including the
 exact programs (`opensnoop`, `execsnoop`, `tcpconnlat`, `xdp`
-load balancer, `scx_nest`, `sslsniff`, `struct_ops`, and the rest) —
-is tracked in the [iteration roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+load balancer, `scx_nest`, `sslsniff`, `struct_ops`, and the rest) unfolds across the parts ahead.
 
 We start the eBPF work with **libbpf and libbpf-rs** for a single
 chapter so the C-and-CO-RE mental model is concrete, then move to
@@ -96,7 +95,7 @@ chapter so the C-and-CO-RE mental model is concrete, then move to
   in the [reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }})
   and is only promoted to <span class="status status--verified">verified (Fedora 44)</span>
   after it has been run end-to-end on real hardware. If a chapter
-  hasn't been verified yet, its claims are honestly marked as such.
+  hasn't been verified yet, its claims are marked as such.
 
 ## Prerequisite knowledge (not taught here)
 

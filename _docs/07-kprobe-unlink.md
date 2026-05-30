@@ -184,9 +184,7 @@ part flagged above.
 
 Next, the same `unlink` target with **`fentry`** — lower overhead than
 a kprobe, with typed, BTF-relocated argument access that fixes the
-fragility you just met. That chapter ships in the next iteration; see
-the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}) for what's
-landed and what's coming.
+fragility you just met.
 
 ---
 

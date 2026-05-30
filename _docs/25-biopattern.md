@@ -67,7 +67,7 @@ LAST_END.insert(&dev, &(sector + nr_sector), 0);
 
 Keying by device matters: interleaved I/O to *different* disks shouldn't
 look random just because the requests alternate. Per-device `LAST_END`
-keeps each disk's pattern honest.
+keeps each disk's classification accurate.
 
 ## Naming devices
 
@@ -114,7 +114,7 @@ Watch SEQ% sit high during the `dd`, then collapse during the random
 
 That's the heart of *Performance & resources*' tooling. Next, the part
 closes with a forward-looking chapter on **energy/power monitoring**
-with eBPF. See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+with eBPF.
 
 ---
 

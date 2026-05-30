@@ -57,7 +57,7 @@ let flags: i32 = ctx.read_at::<i32>(32)?;          // int flags
 
 These offsets are long-stable on x86_64, but they are exactly the kind
 of value to *verify against the format file* rather than trust blindly
-— which is why the chapter has you read it. That's the honest
+— which is why the chapter has you read it. That's the
 tracepoint discipline: stable, but confirm.
 
 ## User memory vs. kernel memory
@@ -245,8 +245,7 @@ language.
   tracepoints.
 
 Next, a shorter sibling — **`sigsnoop`** — one tracepoint, signal
-tracing, and friendly name mapping. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+tracing, and friendly name mapping.
 
 ---
 

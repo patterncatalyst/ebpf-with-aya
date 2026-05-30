@@ -100,8 +100,7 @@ states over time — a useful health signal (a spike in `TIME_WAIT` or
 - State-mix over time is a practical connection-health signal.
 
 Next part-section: **L7 tracing** (HTTP via socket filters and syscall
-tracepoints) and **`sockops`**. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+tracepoints) and **`sockops`**.
 
 ---
 

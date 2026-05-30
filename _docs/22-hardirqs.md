@@ -132,8 +132,7 @@ The network and block IRQ vectors should jump to the top of the table.
   simplifications — they're conscious trade-offs, not bugs.
 
 Next: sampling the CPU with a **profiler** (`profile`) to see *where*
-time goes, not just how long things wait. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+time goes, not just how long things wait.
 
 ---
 

@@ -138,8 +138,7 @@ right.
 
 That closes **Tracing the kernel**. The next part, *User-space &
 language probing*, turns the lens around — uprobes, USDT, and probing
-inside running applications, starting with `bashreadline`. See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+inside running applications, starting with `bashreadline`.
 
 ---
 

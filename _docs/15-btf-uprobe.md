@@ -81,7 +81,7 @@ support, the relocation source that lets the loader fix up offsets at
 attach time so your probe keeps working even if the target's struct
 changes between versions.
 
-> **An honest scope note.** Kernel CO-RE (relocating against
+> **Scope note.** Kernel CO-RE (relocating against
 > `vmlinux` BTF) is mature and turnkey in Aya. *User-space* CO-RE —
 > relocating against a target binary's BTF — is newer and less
 > push-button. The reliably-works-today technique is the one in this
@@ -137,8 +137,7 @@ what BTF exists to catch.
   eventually relocate offsets — for targets you don't control.
 
 Next, the part turns to language runtimes and userspace targets in
-earnest (Java/Python bootstrap, then `sslsniff`, `funclatency`). See the
-[roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+earnest (Java/Python bootstrap, then `sslsniff`, `funclatency`).
 
 ---
 

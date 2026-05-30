@@ -110,8 +110,7 @@ connection rates for the cgroup.
   `cb_flags`, and feed sockmaps — not just observe.
 
 That wraps the connection/socket section. Next: **`tc`** traffic control
-and the first **XDP** program — moving out to the edge of the stack. See
-the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
+and the first **XDP** program — moving out to the edge of the stack.
 
 ---
 

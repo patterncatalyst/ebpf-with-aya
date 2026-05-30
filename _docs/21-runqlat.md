@@ -150,7 +150,6 @@ match yours.
 - Export histogram percentiles with an OTLP **observable gauge**.
 
 Next: **`hardirqs`**, timing the kernel's hardware-interrupt handlers.
-See the [roadmap]({{ "/plans/iteration-plan/" | relative_url }}).
 
 ---
 
