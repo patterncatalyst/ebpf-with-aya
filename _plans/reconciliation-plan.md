@@ -834,3 +834,10 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   (`tc -s`, `ip link show`, `bpftool net show`) and expected output, and
   define `<target-ip>` with a concrete example. No remaining bare
   command-block placeholders.
+
+### r17.2 — document the lab credential model (docs only)
+- Made the lab credential model explicit in the Ch 2 conventions callout:
+  user `fedora`, SSH-key-only login (account password locked via cloud-init
+  `lock_passwd: true`), and passwordless sudo (`NOPASSWD:ALL`) — so there is
+  no sudo password to list, and every `[vm]$ sudo …` runs without a prompt.
+  Noted how to set a console password if ever needed.

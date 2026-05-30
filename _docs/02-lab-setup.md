@@ -40,6 +40,13 @@ All the scripts referenced here ship in the iteration tarball under
   ebpf-target)</code>. The example <code>demo.sh</code> scripts detect the IP
   and interface for you; you only substitute placeholders when running
   something by hand.</p>
+  <p><strong>Credentials:</strong> there is no password to remember. The
+  guest user is <code>fedora</code>, login is <em>SSH-key only</em> (the key
+  you create in the next section — the account password is locked), and
+  <code>sudo</code> is passwordless, which is why every <code>[vm]$ sudo
+  …</code> in these chapters runs without prompting. This is a throwaway lab
+  VM reachable only from your host on the libvirt network; if you ever need a
+  console password, set one with <code>[vm]$ sudo passwd fedora</code>.</p>
 </div>
 
 {% include excalidraw.html
