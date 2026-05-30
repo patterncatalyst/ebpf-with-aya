@@ -22,6 +22,7 @@ one may merge with its neighbour.
 | r1.1 | Verify Foundations on real Fedora 44; fix whatever the first `cargo build` / `./demo.sh` / VM provision surfaces; promote rows | open |
 | r6.1 | **site:** two-level Part/Chapter navigation (homepage shows Part cards; each Part page lists its chapters) | shipped (unverified) |
 | r7.1 | **conventions:** container policy (multi-stage UBI, all user space in Podman), version pins (Java 25/Quarkus 3.33, Python 3.14/FastAPI, crun 1.27.1), first Excalidraw diagram (lab topology) | shipped (unverified) |
+| r14.1 | **diagrams:** 19 Excalidraw+SVG diagrams (Tier 1–3) embedded across Ch 3–26; spec-based generator; networking diagrams deferred to r15+ | shipped (unverified) |
 
 ## Phase 2 — Tracing the kernel (Part: kprobes, fentry, tracepoints)
 

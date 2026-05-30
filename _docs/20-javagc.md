@@ -18,6 +18,11 @@ in this part — read the verification notes.
 
 ## What USDT is
 
+{% include excalidraw.html
+   file="usdt-uprobe"
+   alt="USDT probe mechanism: libjvm.so ships hotspot USDT probes described in .note.stapsdt; tools resolve a probe's offset and attach a plain uprobe there, here timing gc__begin to gc__end."
+   caption="Figure 20.1 — a USDT probe is a uprobe at a resolved offset" %}
+
 A **USDT** probe (User Statically-Defined Tracepoint) is a marker the
 *authors* of a binary placed at a specific point in their code — "a GC
 is starting here." At compile time it becomes a no-op instruction plus

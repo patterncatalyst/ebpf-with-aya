@@ -15,6 +15,11 @@ tracers from production ones: **aggregating in the kernel**.
 
 The code is in `examples/21-runqlat/`.
 
+{% include excalidraw.html
+   file="runqlat-timeline"
+   alt="Run-queue latency: sched_wakeup stamps when a task becomes runnable; it waits on the run queue; sched_switch records the wait when it comes on-CPU, bucketed into an in-kernel log2 histogram."
+   caption="Figure 21.1 — measuring run-queue latency across the sched tracepoints" %}
+
 ## What run-queue latency is
 
 A task's life cycle on the scheduler: it sleeps, something **wakes** it

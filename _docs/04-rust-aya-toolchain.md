@@ -14,6 +14,11 @@ target VM. But the eBPF half compiles to a special target with a
 special linker, so the setup has a few moving parts. We'll get them
 all in place and prove them with a build in Chapter 6.
 
+{% include excalidraw.html
+   file="workspace-build"
+   alt="The three-crate workspace: a common crate of shared types, an excluded ebpf crate compiled by build.rs (aya-build) into a BPF object, and a loader crate that embeds the object with include_bytes_aligned."
+   caption="Figure 4.1 — the three-crate workspace and build flow" %}
+
 ## Why rustup, not `dnf install rust`
 
 Fedora's packaged Rust is fine for ordinary programs, but eBPF

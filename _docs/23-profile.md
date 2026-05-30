@@ -16,6 +16,11 @@ chapter introduces two new things: the **`perf_event`** program type and
 
 The code is in `examples/23-profile/`.
 
+{% include excalidraw.html
+   file="profiler-pipeline"
+   alt="Sampling profiler pipeline: a perf_event timer fires at 99 Hz per CPU; each tick captures a stack with bpf_get_stackid into a StackTrace map; user space folds and symbolizes for a flame graph or Pyroscope."
+   caption="Figure 23.1 — the sampling profiler pipeline" %}
+
 ## Sampling, not tracing
 
 Every tool so far attached to a *specific event* — a syscall, a

@@ -16,6 +16,11 @@ people: **user memory versus kernel memory**.
 
 The code is in `examples/09-opensnoop/`.
 
+{% include excalidraw.html
+   file="mem-read-user-kernel"
+   alt="User vs kernel memory: an eBPF program may not dereference raw pointers; it copies bytes from the process's user memory with bpf_probe_read_user and from kernel memory with bpf_probe_read_kernel."
+   caption="Figure 9.1 — reading user vs kernel memory (the basis for chapters 9–12)" %}
+
 ## Why tracepoints here
 
 Syscalls have stable tracepoints (`syscalls:sys_enter_openat`,

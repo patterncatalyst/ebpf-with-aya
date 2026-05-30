@@ -15,6 +15,11 @@ that teaches the whole uprobe model.
 
 The code is in `examples/13-bashreadline/`.
 
+{% include excalidraw.html
+   file="uprobe-menu"
+   alt="User-space probing surfaces: an eBPF uprobe can attach to an executable symbol, a shared-library symbol, or a USDT marker; an entry probe sees arguments and a return probe sees results."
+   caption="Figure 13.1 — the user-space probing menu" %}
+
 ## What a uprobe is
 
 A **uprobe** attaches to a function in a *binary or shared library* —

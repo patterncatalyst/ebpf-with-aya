@@ -19,6 +19,11 @@ Aya for this program and everything after it.
 
 The code is in `examples/06-hello-world/`.
 
+{% include excalidraw.html
+   file="ringbuf-path"
+   alt="RingBuf event path: an eBPF program reserves and submits an event into a ring-buffer map in the kernel; the user-space loader drains it, decodes the bytes into a struct, and prints or exports it."
+   caption="Figure 6.1 — the RingBuf event path (kernel to user space)" %}
+
 ## Warm-up: the libbpf mental model
 
 The original eBPF toolchain is **libbpf** (C). You write a `.bpf.c`

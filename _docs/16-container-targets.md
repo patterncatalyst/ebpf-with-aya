@@ -16,6 +16,11 @@ container with eBPF.
 
 The code is in `examples/16-container-targets/`.
 
+{% include excalidraw.html
+   file="container-observe"
+   alt="Observing a containerized target: the VM kernel sees every container's processes; eBPF attaches by host PID or overlay path and scopes to one container by its cgroup id."
+   caption="Figure 16.1 — observing a process inside a container" %}
+
 ## Where the containers run, and why
 
 Until now, containers (the stack, the clients) ran on your **host**

@@ -13,6 +13,11 @@ verifier will and won't let you do, and how Aya's pieces map onto the
 kernel's. It's deliberately concept-only — no deploys — so that when
 Chapter 6's code appears, every line has a place to land.
 
+{% include excalidraw.html
+   file="ebpf-lifecycle"
+   alt="eBPF program lifecycle: Rust source compiles to BPF bytecode, is loaded and verified, JIT-compiled to native code, and attached to a hook (kprobe, tracepoint, uprobe, perf_event, XDP/tc/LSM) that fires it."
+   caption="Figure 5.1 — load, verify, JIT, attach" %}
+
 ## What an eBPF program is
 
 eBPF lets you load a small program into the running kernel and attach

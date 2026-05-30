@@ -16,6 +16,11 @@ hazard**.
 
 The code is in `examples/19-goroutine-states/`.
 
+{% include excalidraw.html
+   file="goroutine-states"
+   alt="Goroutine state machine: goroutines move between idle, runnable, running, waiting, and dead; runtime.casgstatus is called on every transition, so one uprobe observes the whole machine."
+   caption="Figure 19.1 — the goroutine state machine" %}
+
 ## One function sees every transition
 
 `runtime.casgstatus(gp *g, oldval, newval uint32)` is Go's
@@ -26,6 +31,11 @@ a live read on scheduler pressure (lots of `waiting ↔ runnable` churn
 means contention or blocking).
 
 ## Gotcha 1: Go's register ABI
+
+{% include excalidraw.html
+   file="go-vs-c-abi"
+   alt="Go register ABI vs C ABI: the C ABI puts arg0/arg1/arg2 in RDI/RSI/RDX, but Go's ABIInternal uses RAX/RBX/RCX, so ctx.arg(2) reads the wrong register and newval must be read from RCX."
+   caption="Figure 19.2 — why ctx.arg(n) is wrong for Go (register ABI)" %}
 
 Here's where naive probing breaks. Since Go 1.17, Go uses its **own**
 calling convention (ABIInternal), not the platform C ABI. Integer and

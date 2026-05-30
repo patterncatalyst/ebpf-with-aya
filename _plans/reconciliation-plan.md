@@ -586,3 +586,25 @@ Later chapters' rows are added as each iteration drafts them (see the
   (runqlat, hardirqs, profile, memleak, biopattern, energy), 27 chapters
   / 22 examples total. Parts 0–4 done. Next: Part 5 Networking (r15+),
   which needs the two-VM peer build-out.
+
+### r14.1 — diagrams pass (Tier 1–3)
+- **Shipped:** 19 new Excalidraw+SVG diagram pairs under
+  `assets/diagrams/` (plus a spec-based `generate.py`), embedded one or
+  two per chapter across Ch 3,4,5,6,8,9,11,13,15,16,17,19(×2),20,21,23,
+  24,25,26. Covers the foundational/reusable concepts (lifecycle,
+  RingBuf path, data path, workspace build, entry/exit correlation,
+  user-vs-kernel memory reads), the language-probing mechanics
+  (probing-surfaces menu, struct/BTF, container observation, TLS
+  boundary, goroutine state machine, Go-vs-C ABI, USDT-as-uprobe), and
+  the performance pipelines (runqlat timeline, profiler, memleak, bio
+  seq/random, energy attribution). README catalogue updated.
+- **Verified:** SVGs are well-formed XML; Excalidraw files parse; all
+  chapter front matter still parses; includes use the existing
+  `excalidraw.html` partial with alt text + figure captions.
+- **Not verified (rendering):** exact visual layout/overflow in a real
+  Jekyll build (no local Jekyll); `.svg` are clean themed exports rather
+  than the hand-drawn Excalidraw aesthetic — `.excalidraw` sources are
+  included so they can be refined/re-exported.
+- **Deferred by design:** networking diagrams (packet path / hook
+  points, two-VM topology, TCP lifecycle, XDP-vs-tc) ship with the
+  Part 5 chapters (r15+).

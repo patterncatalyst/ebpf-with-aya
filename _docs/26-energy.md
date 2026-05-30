@@ -16,6 +16,11 @@ the hardware fights you.
 
 The code is in `examples/26-energy/`.
 
+{% include excalidraw.html
+   file="energy-attribution"
+   alt="Energy attribution: system power (from RAPL, or a model on VMs) is split by each task's CPU-time share to estimate per-process power, exported as estimated_power_watts per comm."
+   caption="Figure 26.1 — attributing system power to processes" %}
+
 ## The problem: power isn't per-process
 
 A wattmeter (or the CPU's RAPL counters) tells you the *whole package's*

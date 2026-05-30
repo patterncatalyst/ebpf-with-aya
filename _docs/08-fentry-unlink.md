@@ -16,6 +16,11 @@ leveled up.
 
 The code is in `examples/08-fentry-unlink/`.
 
+{% include excalidraw.html
+   file="entry-exit"
+   alt="Entry/exit correlation: a probe at function entry stashes an argument or timestamp in a HashMap keyed by pid_tgid; a probe at return reads it back to pair the two events."
+   caption="Figure 8.1 — the entry/exit correlation pattern (reused throughout the book)" %}
+
 ## What fentry/fexit are
 
 A kprobe works by patching a breakpoint (`int3`) into the function's

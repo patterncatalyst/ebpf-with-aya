@@ -16,6 +16,11 @@ it even for binaries whose source you don't have.
 
 The code is in `examples/15-btf-uprobe/`.
 
+{% include excalidraw.html
+   file="struct-btf"
+   alt="Reading a struct argument: the uprobe takes the pointer argument and copies the struct with bpf_probe_read_user into a repr(C) mirror whose field layout must match the target's — a layout BTF can recover."
+   caption="Figure 15.1 — struct-argument read and the BTF layout contract" %}
+
 ## Reading a struct argument
 
 The target, `process_order(const Order *order)`, is passed a pointer to

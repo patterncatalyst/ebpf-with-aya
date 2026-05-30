@@ -16,6 +16,11 @@ exactly how a Rust user-space program turns "the kernel saw 4,812
 
 The example lives in `examples/03-observability-stack/`.
 
+{% include excalidraw.html
+   file="obs-data-path"
+   alt="Data path: an eBPF program writes to a map; the Aya loader reads the map and emits OTLP/HTTP metrics to the otel-lgtm stack, which Grafana visualizes."
+   caption="Figure 3.1 — from kernel counter to Grafana panel" %}
+
 ## One container for the whole backend
 
 Running Grafana, a trace store, a metric store, and a log store

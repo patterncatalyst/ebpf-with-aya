@@ -15,6 +15,11 @@ per-device kernel state.
 
 The code is in `examples/25-biopattern/`.
 
+{% include excalidraw.html
+   file="bio-seq-random"
+   alt="Sequential vs random I/O: on each block_rq_issue, if the request's starting sector equals the previous request's end sector it is sequential, otherwise random, tallied per device in a kernel HashMap."
+   caption="Figure 25.1 — classifying block I/O as sequential or random" %}
+
 ## Sequential vs. random, defined by sectors
 
 A block request targets a starting **sector** and spans `nr_sector`

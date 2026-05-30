@@ -16,6 +16,11 @@ crypto libraries are powerful — and sensitive.
 
 The code is in `examples/17-sslsniff/`.
 
+{% include excalidraw.html
+   file="tls-boundary"
+   alt="TLS boundary capture: the wire carries ciphertext, but plaintext is present at SSL_write's buffer on entry and SSL_read's buffer on return, where sslsniff's uprobes read it."
+   caption="Figure 17.1 — capturing plaintext at the TLS boundary" %}
+
 > **Ethics first.** This captures plaintext — credentials, request
 > bodies, anything an app sends over TLS. It's a legitimate debugging
 > and security tool *on systems you operate and traffic you're

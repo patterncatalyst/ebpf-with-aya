@@ -16,6 +16,11 @@ from `profile` for exactly that.
 
 The code is in `examples/24-memleak/`.
 
+{% include excalidraw.html
+   file="memleak-tracking"
+   alt="Leak tracking: malloc records each allocation's pointer, size, and call stack; free removes it; whatever remains outstanding is a candidate leak, grouped by the stack that allocated it."
+   caption="Figure 24.1 — tracking outstanding allocations by call site" %}
+
 ## The idea: a live allocation table
 
 The bookkeeping is simple:

@@ -16,6 +16,11 @@ accept.
 
 The code is in `examples/11-execsnoop/`.
 
+{% include excalidraw.html
+   file="tracepoint-flow"
+   alt="How a trace works: a process calls execve, a tracepoint fires, the eBPF program reads the event's fields by offset (and argv in a bounded loop), and ships the result to user space via a ring buffer."
+   caption="Figure 11.1 — anatomy of a trace" %}
+
 ## The challenge: argv is an array of pointers
 
 `opensnoop` read one user string (the filename). `execve`'s second
