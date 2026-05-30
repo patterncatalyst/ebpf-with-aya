@@ -26,6 +26,7 @@ Embed a diagram in a chapter with the include:
 | `obs-data-path` | 3 | kernel → map → loader → OTLP → Grafana |
 | `workspace-build` | 4 | common / ebpf / loader crates + aya-build flow |
 | `ebpf-lifecycle` | 5 | load → verify → JIT → attach, and hook types |
+| `ebpf-runtime-loop` | 5 | the runtime loop: hook fires program → writes map → loader reads → Grafana |
 | `ringbuf-path` | 6 | RingBuf event path, kernel → user space |
 | `entry-exit` | 8 | entry/exit correlation via a HashMap (reused widely) |
 | `mem-read-user-kernel` | 9 | user vs kernel memory reads (stages 9–12) |

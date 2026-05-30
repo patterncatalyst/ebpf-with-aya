@@ -35,27 +35,15 @@ program at the events you chose.
 ## The load-and-attach lifecycle
 
 Every Aya program follows the same arc, and it's worth memorizing
-because the API mirrors it exactly:
+because the API mirrors it exactly. Figure 5.1 showed the *build* side —
+source to bytecode to a verified, JIT-compiled program attached to a hook.
+Figure 5.2 shows what happens once it's running: the hook fires the program,
+the program writes a map, and your loader reads that map and reports it.
 
-```text
-   your Rust (-ebpf crate)
-        │  cargo + bpf-linker
-        ▼
-   BPF bytecode object  ──embedded into──>  user-space binary
-        │
-   user space calls the bpf() syscall to LOAD it
-        ▼
-   the VERIFIER checks it (safe? terminates? memory in bounds?)
-        │  pass
-        ▼
-   JIT compiles bytecode to native instructions
-        │
-   user space ATTACHES it to an event (kprobe, XDP hook, ...)
-        ▼
-   event fires ──> program runs in kernel ──> writes a MAP / logs
-        │
-   user space READS the map and reports (to Grafana, in our case)
-```
+{% include excalidraw.html
+   file="ebpf-runtime-loop"
+   alt="At runtime, the loader binary in user space loads and attaches the program once. Then in the kernel a hook (kprobe, XDP, tracepoint) fires the eBPF program, which writes to a map (RingBuf or HashMap); the loader reads that map and reports to Grafana over OTLP. The map is the only channel between kernel and user space."
+   caption="Figure 5.2 — at runtime: the hook fires the program, which writes a map the loader reads" %}
 
 In Aya, "load" is `Ebpf::load(...)`, "attach" is `program.load()`
 followed by `program.attach(...)`, and "read the map" is opening a

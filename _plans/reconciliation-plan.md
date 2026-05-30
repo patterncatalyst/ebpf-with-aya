@@ -859,3 +859,16 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   `XDP_REDIRECT` to remote backends) as forward work.
 - New diagrams: 28 → 30. Both reuse the `ptr_at` discipline from Ch 32; Ch 34
   introduces packet **mutation** and map-driven backend selection.
+
+### r18.1 — fix blank Fig 2.1 + lifecycle diagram (docs/diagrams only)
+- Regenerated `lab-topology` (Fig 2.1): the previous hand-authored SVG had
+  only its <defs> and no drawing body, so it rendered blank. Now generated
+  with the diagram tool (host + Podman containers, target VM, peer VM, with
+  scp/OTLP/traffic arrows).
+- Replaced the ASCII-art lifecycle "picture" in Ch 5 with a real diagram,
+  `ebpf-runtime-loop` (Fig 5.2): the runtime loop (hook fires → program
+  writes map → loader reads → Grafana), complementing Fig 5.1's build→attach
+  pipeline.
+- Confirmed the Ch 2 `T=$(./vm-ip.sh …) && P=$(./vm-ip.sh …) && echo …`
+  command is correct: vm-ip.sh prints only the IP (errors to stderr, exits
+  non-zero), and the line runs in scripts/lab/ as set by the preceding cd.
