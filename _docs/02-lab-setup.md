@@ -17,6 +17,31 @@ host-to-host traffic.
 All the scripts referenced here ship in the iteration tarball under
 `scripts/lab/`. Run them from that directory.
 
+<div class="callout">
+  <p class="callout__title">Reading the command blocks</p>
+  <p>From here on, a prefix on the prompt tells you <em>where</em> to run a
+  command, and angle brackets mark a value you substitute:</p>
+  <ul>
+    <li><code>[host]$</code> — your laptop / dev machine, where you build.
+    (Unprefixed commands and the <code>scripts/lab</code> scripts also run
+    here.)</li>
+    <li><code>[vm]$</code> — inside the <code>ebpf-target</code> guest (over
+    SSH). This is the single guest used by most chapters.</li>
+    <li><code>[peer]$</code> — inside the second guest,
+    <code>ebpf-peer</code> (networking chapters only).</li>
+    <li><code>&lt;iface&gt;</code>, <code>&lt;target-ip&gt;</code>,
+    <code>&lt;pid&gt;</code>, … — a placeholder: replace it (brackets and
+    all) with your real value. <code>&lt;iface&gt;</code> is the target's
+    network interface, almost always <code>enp1s0</code> — see
+    <a href="#finding-the-interface-to-attach-to">Finding the interface</a>
+    below.</li>
+  </ul>
+  <p>To get a shell on a guest: <code>[host]$ ssh fedora@$(scripts/lab/vm-ip.sh
+  ebpf-target)</code>. The example <code>demo.sh</code> scripts detect the IP
+  and interface for you; you only substitute placeholders when running
+  something by hand.</p>
+</div>
+
 {% include excalidraw.html
    file="lab-topology"
    alt="The lab: a Fedora 44 host laptop running the Aya build plus Podman containers (the otel-lgtm stack, Python clients, and Java/Python app targets), a target KVM VM where eBPF loads and attaches, and an optional peer KVM VM for two-host networking tests. The host scp's the built binary to the target and runs it under sudo; the target exports OTLP back to the stack; the target and peer exchange test traffic over the libvirt network."

@@ -820,3 +820,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - Both reinforce the in-kernel-aggregation lesson (no per-packet ring on
   a data path) and introduce **verdicts** (acting, not just observing).
 - New shared dep introduced: `network-types = "0.0.7"` (header parsing).
+
+### r17.1 — diagram fix + command-block clarity (docs only)
+- Fixed Fig 31.1 (`tc-clsact`): the two hook boxes were covering the
+  band's top-left "clsact qdisc (eth0)" label; boxes now start well below
+  the label so it's legible.
+- Added a "Reading the command blocks" callout to Ch 2 defining the
+  prompt prefixes (`[host]$`/`[vm]$`/`[peer]$`) and the `<…>` placeholder
+  convention, with how to get a shell and find `<iface>`.
+- Standardized the new networking chapters on `[vm]$`/`[peer]$` (were
+  `[target]$`); rewrote the Ch 31 and Ch 32 cross-checks to discover the
+  interface first (`ip -br link`, concrete `enp1s0`), show option meanings
+  (`tc -s`, `ip link show`, `bpftool net show`) and expected output, and
+  define `<target-ip>` with a concrete example. No remaining bare
+  command-block placeholders.

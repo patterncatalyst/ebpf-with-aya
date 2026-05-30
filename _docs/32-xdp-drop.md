@@ -157,16 +157,36 @@ Stop the program and ping recovers immediately.
 
 ## Cross-check
 
+On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`),
+first find the interface (usually `enp1s0`):
+
 ```bash
-[target]$ ip link show <iface>        # shows "xdp" / "xdpgeneric" when attached
-[target]$ bpftool net show            # lists the XDP prog bound to the iface
-[target]$ ping -c3 <target-ip>        # from the peer: times out while attached
+[vm]$ ip -br link        # the lab NIC is the UP one carrying the guest's IP
 ```
 
-`ip link show` reporting `xdp` (native) or `xdpgeneric` (SKB mode) next to
-the interface confirms the attach and tells you which mode you got;
-`bpftool net show` names the program. The ping going from replies to
-timeouts and back is the verdict, demonstrated end to end.
+With the program attached, check it from inside the target (substitute your
+interface where you see `enp1s0`):
+
+```bash
+[vm]$ ip link show enp1s0     # look for "xdp" (native) or "xdpgeneric" (SKB mode)
+3: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> ... xdpgeneric/id:42 ...
+
+[vm]$ sudo bpftool net show   # names the XDP program bound to each interface
+xdp:
+enp1s0(2) generic id 42
+```
+
+Then watch the verdict from the **peer**. `<target-ip>` is the target's lab
+IP — get it on the host with `scripts/lab/vm-ip.sh ebpf-target` (something
+like `192.168.122.50`):
+
+```bash
+[peer]$ ping -c3 192.168.122.50   # times out while attached; replies again once you stop it
+```
+
+`ip link show` reporting `xdp`/`xdpgeneric` confirms the attach and tells
+you which mode you got; `bpftool net show` names the program. The ping going
+from replies → timeouts → replies is the verdict, demonstrated end to end.
 
 ## What you learned
 

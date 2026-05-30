@@ -186,15 +186,31 @@ because their packets never leave the box.
 
 ## Cross-check
 
+These run **inside the target guest** — the `[vm]$` prefix (get a shell with
+`ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`). First find the interface
+the program attached to; on the lab guest it's almost always `enp1s0`:
+
 ```bash
-[target]$ tc qdisc show dev <iface>          # the clsact qdisc is present
-[target]$ tc filter show dev <iface> egress  # the BPF classifier is attached
-[target]$ tc -s qdisc show dev <iface>       # counters/drops at the qdisc level
+[vm]$ ip -br link        # the lab NIC is the UP one carrying the guest's IP
+lo               UNKNOWN  00:00:00:00:00:00
+enp1s0           UP       52:54:00:ab:cd:ef
 ```
 
-`tc filter show … egress` listing your program confirms the attach; the
-`-s` stats give the kernel's own view of what the qdisc dropped, next to
-your `ebpf_tc_dropped_total`.
+Then, substituting that name where the commands say `enp1s0`:
+
+```bash
+[vm]$ sudo tc qdisc show dev enp1s0           # is the clsact qdisc present?
+qdisc clsact ffff: parent ffff:fff1
+
+[vm]$ sudo tc filter show dev enp1s0 egress   # is the BPF classifier attached?
+filter protocol all pref 49152 bpf chain 0 ... tc_classify ... direct-action
+
+[vm]$ sudo tc -s qdisc show dev enp1s0        # -s = add statistics (sent/dropped)
+```
+
+Your program appearing under `tc filter show … egress` confirms the attach;
+the `-s` flag adds the kernel's own sent/dropped counters, which should
+track your `ebpf_tc_dropped_total` in Grafana.
 
 ## What you learned
 
