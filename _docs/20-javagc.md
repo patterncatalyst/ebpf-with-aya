@@ -73,6 +73,75 @@ Chapter 18, keyed by pid (a stop-the-world GC pauses the whole JVM):
 
 User space records each pause into the OTLP histogram `jvm_gc_pause_ms`.
 
+## What's observable inside the JVM
+
+GC pauses are the headline, but the same mechanism — a uprobe at a USDT
+offset — reaches the JVM's other subsystems, because HotSpot instruments
+all of them:
+
+{% include excalidraw.html
+   file="jvm-observable"
+   alt="The JVM (libjvm.so) exposes HotSpot USDT probes across its subsystems: garbage collector (gc__begin/gc__end), memory pools, JIT compiler (method__compile), threads (thread__start/stop), monitors/locks (monitor__contended), allocation (object__alloc) and class loading (class__loaded). Each is reachable as an eBPF uprobe at the probe's offset." %}
+
+So the same technique that times GC also surfaces JIT compilation
+(`method__compile__begin`/`__end`), lock contention
+(`monitor__contended__*`), allocation rate (`object__alloc`), thread
+lifecycle (`thread__start`/`__stop`), and class loading
+(`class__loaded`) — each a probe you resolve and attach exactly as we did
+`gc__begin`/`gc__end`. List what a given `libjvm.so` carries with
+`readelf -n libjvm.so` or `bpftrace -l 'usdt:/path/libjvm.so:*'`.
+
+One note on collectors: the JDK — and the OpenJDK UBI image we build on —
+ships **G1** (the default), **ZGC**, and **Shenandoah**, selected with
+`-XX:+UseG1GC` / `-XX:+UseZGC` / `-XX:+UseShenandoahGC`. All three fire
+`gc__begin`/`gc__end`, so this tool works against any of them — but the
+*shape* differs. G1's pauses are the stop-the-world kind you're timing
+here; ZGC and Shenandoah are mostly **concurrent**, so their
+stop-the-world phases are sub-millisecond and the signal of interest
+shifts toward concurrent-cycle frequency and allocation pressure.
+
+## Many JVMs on one node
+
+A real host rarely runs one JVM. Picture several services, each in its
+own container, each with its own `libjvm.so` under its own overlay
+filesystem — and possibly each on a different collector. Two things
+follow from Chapter 16:
+
+- **One probe per binary path.** A uprobe attaches to a *file*, and each
+  container's `libjvm.so` is a distinct path (under the container's
+  overlay, reachable on the host as `/proc/<pid>/root/.../libjvm.so`). To
+  watch every JVM you resolve the USDT offset and attach the probe once
+  per distinct `libjvm.so`.
+- **Attribute by cgroup / PID.** Events carry the host PID; map it to its
+  container via the cgroup id (Chapter 16) and label the metric
+  `jvm_gc_pause_ms{container=…,collector=…}`. Now one dashboard compares
+  GC behaviour across services — the G1 service's longer pauses beside
+  the ZGC service's flat line — which is exactly the kind of fleet view
+  per-JVM agents can't give you cheaply.
+
+## Why GC monitoring matters
+
+GC is where JVM performance quietly goes to die, which is why it's one of
+the most-watched signals in production Java:
+
+- **Stop-the-world pauses *are* tail latency.** A G1 pause freezes every
+  application thread; a 50 ms pause adds 50 ms to whatever requests were
+  in flight. Pause time tracks p99/p999 latency directly, and it's
+  invisible to in-process timers — the app wasn't running to measure
+  itself.
+- **Time-in-GC is a saturation signal.** Rising pause *frequency*, or a
+  climbing fraction of wall-clock spent in GC, means the heap is too
+  small or allocation too high — the lead indicator before an
+  `OutOfMemoryError` or a latency cliff.
+- **What to alert on:** p99 pause duration (e.g. "G1 pause > 100 ms"),
+  pauses per minute, and percent-time-in-GC — all three derivable from
+  `jvm_gc_pause_ms`.
+
+The out-of-process angle is the whole point: eBPF reads the JVM's own
+USDT probes with **no JVM flags to change in production, no Java agent
+inside the process, and no `-verbose:gc` log to parse** — uniformly
+across every JVM on the node, whatever collector each one runs.
+
 ## The lab-policy note
 
 Our app targets are normally containerized; this chapter runs the JVM

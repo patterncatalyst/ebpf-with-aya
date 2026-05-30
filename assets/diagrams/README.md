@@ -37,6 +37,7 @@ Embed a diagram in a chapter with the include:
 | `goroutine-states` | 19 | Go goroutine state machine |
 | `go-vs-c-abi` | 19 | Go register ABI vs C ABI |
 | `usdt-uprobe` | 20 | a USDT probe is a uprobe at a resolved offset |
+| `jvm-observable` | 20 | the JVM's HotSpot USDT probe surface (GC, JIT, locks, alloc, …) |
 | `runqlat-timeline` | 21 | run-queue latency across the sched tracepoints |
 | `profiler-pipeline` | 23 | sampling profiler → folded → flame graph |
 | `memleak-tracking` | 24 | outstanding allocations by call site |

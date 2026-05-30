@@ -760,3 +760,23 @@ Later chapters' rows are added as each iteration drafts them (see the
   deepened Ch 10/12; Part 2 (r16.3) deepened Ch 13; Parts 2/3 otherwise
   already at depth; Part 4 (r16.5) deepened all four. Docs-only; code
   remains unverified.
+
+### r16.6 — diagram 27.2 fix + Ch 20 (JVM/GC) expansion
+- **Diagram fix:** `tcp-handshake` (Fig 27.2) redrawn — both kprobe boxes
+  now sit above the client and each dashed connector lands on its event
+  (connect→client, rcv_state_process→the SYN-ACK arrow); the previous
+  dangling diagonal is gone.
+- **Ch 20 (javagc) expanded** per request:
+  - New `jvm-observable` diagram (Excalidraw+SVG): the HotSpot USDT probe
+    surface across GC / memory pools / JIT / threads / monitors /
+    allocation+classes, each reachable as a uprobe at its offset.
+  - Collectors: noted the JDK/OpenJDK-UBI ships G1 (default), ZGC, and
+    Shenandoah; all fire gc__begin/gc__end, but ZGC/Shenandoah are mostly
+    concurrent so the signal shifts to concurrent-cycle/allocation.
+  - "Many JVMs on one node": one probe per distinct libjvm.so path
+    (per container overlay), attribute by cgroup/PID, label by
+    container+collector (ties to Ch 16).
+  - "Why GC monitoring matters": stop-the-world pauses as tail latency,
+    time-in-GC as saturation, what to alert on, and the out-of-process
+    advantage (no JVM flags / agent / verbose:gc parsing).
+- Diagram catalogue updated (25 → 26 diagrams). Docs/diagrams only.
