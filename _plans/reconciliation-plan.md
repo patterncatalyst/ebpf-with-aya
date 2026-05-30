@@ -677,3 +677,23 @@ Later chapters' rows are added as each iteration drafts them (see the
   taught both ways: socket filter (wire/cleartext) vs. syscall+uprobe
   (buffer/encrypted, ties back to Ch 17). sock_ops framed as the
   observe-and-act, cgroup-scoped, callback model.
+
+### r16.1 — quality pass, part 1 (diagrams, VM/networking setup, code-depth model)
+- **#3 diagrams (fixed):** generator now draws nodes before edges so
+  arrowheads render *on top* of boxes (root cause of "arrows go behind
+  boxes / stop short"); arrowheads enlarged; edge labels get a white halo.
+  All 24 edge-bearing SVGs reordered; `goroutine-states` redesigned with
+  short adjacent arrows instead of one long cross-diagram arrow.
+  `assets/diagrams/generate.py` synced to the fixed generator.
+- **#4 VM/networking setup (clarified):** the two-VM lab already lives in
+  Foundations (Ch 2); added an explicit "What the networking part needs"
+  subsection (peer reachability / interface / cgroup-v2 table + resource
+  sizing) and a back-reference from Ch 27 to Ch 2.
+- **#2 code-explanation depth (model established):** Ch 9 (opensnoop)
+  rewritten with a full "How the code works" walkthrough — both maps and
+  why each type, the entry stash and exit pair/emit with per-call
+  explanation, and the user-space attach + ring-drain + decode. This is
+  the depth/style to roll through the remaining chapters in subsequent
+  passes (pending author confirmation).
+- **Verified:** nothing new — diagrams are visual-only; code remains
+  `unverified`.

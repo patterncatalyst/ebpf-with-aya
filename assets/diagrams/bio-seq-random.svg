@@ -1,7 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 270" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
-<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
-<path d="M240,127 L300,127" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<path d="M510,127 L580,127" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
 <rect x="40" y="95" width="200" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
 <text x="140.0" y="125.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">previous request</text>
 <text x="140.0" y="142.0" font-size="11.5" fill="#555555" text-anchor="middle">ended at sector E</text>
@@ -14,4 +12,6 @@
 <text x="680.0" y="152.5" font-size="11.5" fill="#555555" text-anchor="middle">no → RANDOM</text>
 <text x="410" y="45" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">block_rq_issue: compare each request&#x27;s start to the last one&#x27;s end</text>
 <text x="410" y="225" font-size="11" fill="#888" text-anchor="middle">per-device tally in a kernel HashMap → % sequential</text>
+<path d="M240,127 L300,127" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M510,127 L580,127" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 </svg>

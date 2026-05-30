@@ -1,14 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" font-family="'Red Hat Text', system-ui, sans-serif" role="img" aria-label="Lab topology: a Fedora 44 host laptop running Podman containers and the Aya build, a target KVM VM where eBPF loads, and a peer KVM VM for two-host networking tests">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
-    </marker>
-    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/>
-    </marker>
-  </defs>
-
-  <!-- ===== Host laptop ===== -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
   <rect x="18" y="40" width="404" height="430" rx="14" fill="#fff8ef" stroke="#111" stroke-width="2"/>
   <text x="38" y="68" font-size="17" font-weight="700" fill="#111">Host — Fedora 44 laptop</text>
   <text x="38" y="86" font-size="12" fill="#666">builds, clients, stack · kernel never the eBPF target</text>
@@ -67,4 +59,12 @@
   <!-- target <-> peer -->
   <path d="M681,236 L681,300" fill="none" stroke="#555" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
   <text x="690" y="272" font-size="11" fill="#555">test traffic</text>
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/>
+    </marker>
+  </defs>
+
+  <!-- ===== Host laptop ===== -->
 </svg>

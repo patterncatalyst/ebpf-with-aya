@@ -155,6 +155,30 @@ a server, the **target** runs your XDP/TC/socket eBPF program on the
 interface facing the peer, and you watch the program's view of the
 traffic in Grafana.
 
+### What the networking part needs
+
+This two-VM lab *is* the setup for the whole Networking part — there's no
+separate networking install step. The chapters lean on it in three ways,
+and each chapter's intro says which it uses:
+
+| Need | Why | Used by |
+|------|-----|---------|
+| **Peer reachable** from the target | real host-to-host traffic to observe | tcpconnlat, tcpstates, http-l7, sockops, XDP/TC |
+| **Interface name** on the target | XDP/TC/socket-filter programs attach to a NIC | http-l7, XDP, TC |
+| **cgroup-v2** at `/sys/fs/cgroup` | `sock_ops` attaches to a cgroup | sockops |
+
+All three come for free with a stock pair of guests: Fedora mounts
+unified cgroup-v2 by default, `provision-vm.sh` installs the traffic
+tools (`ncat`, `curl`, `socat`, `tcpdump`, `iproute`), and both guests
+share the `default` NAT subnet. The only step beyond the single-VM setup
+is provisioning the peer — so when a networking chapter says "bring up
+the peer," it means exactly the one command above.
+
+**Resource note:** two guests at the default 2 vCPU / 2 GB each want a
+host with headroom — 8 GB RAM and 4 cores is comfortable. On a tight
+laptop, shrink the peer (`VCPUS=1 RAM_MB=1536 ./provision-vm.sh
+ebpf-peer`); the networking demos are not CPU-bound.
+
 ### Finding the interface to attach to
 
 XDP and TC programs attach to a named interface. Inside the target,

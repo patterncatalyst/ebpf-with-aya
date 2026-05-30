@@ -77,43 +77,129 @@ error or garbage. The rule of thumb: **syscall arguments at entry are
 user memory; kernel structures are kernel memory.** Getting this right
 is half of writing correct syscall probes.
 
-## Entry and exit, paired
+## How the code works
 
-The kernel side (`opensnoop-ebpf/src/main.rs`) mirrors Chapter 8's
-structure, just with tracepoints:
+### Two maps, two jobs
+
+The kernel side (`opensnoop-ebpf/src/main.rs`) declares two maps, and the
+choice of type for each is the whole design:
+
+```rust
+#[map] static INFLIGHT: HashMap<u64, OpenInfo> = HashMap::with_max_entries(10240, 0);
+#[map] static EVENTS:   RingBuf               = RingBuf::with_byte_size(256 * 1024, 0);
+```
+
+`INFLIGHT` is a `HashMap` keyed by `pid_tgid` — scratch space that holds
+what we learned at *entry* until the matching *exit* fires. `EVENTS` is a
+`RingBuf` — the one-way kernel→user channel for *completed* opens. We
+don't emit at entry because we don't yet know if the open succeeded; we
+don't keep state in the ring buffer because a ring buffer isn't
+addressable by key. Each map type is doing the one thing it's good at.
+
+### Entry: stash what only entry knows
 
 ```rust
 #[tracepoint]
 pub fn sys_enter_openat(ctx: TracePointContext) -> u32 {
-    // read filename (user mem) + flags; store in INFLIGHT[pid_tgid]
-    0
-}
+    let pid_tgid = bpf_get_current_pid_tgid();
+    let filename_ptr: *const u8 = match unsafe { ctx.read_at(24) } { Ok(p) => p, _ => return 0 };
+    let flags: i32 = unsafe { ctx.read_at(32) }.unwrap_or(0);
 
-#[tracepoint]
-pub fn sys_exit_openat(ctx: TracePointContext) -> u32 {
-    // read ret@16; look up INFLIGHT; emit completed event; clear
+    let mut info = OpenInfo { flags, filename: [0u8; NAME_LEN] };
+    unsafe { let _ = bpf_probe_read_user_str_bytes(filename_ptr, &mut info.filename); }
+    let _ = INFLIGHT.insert(&pid_tgid, &info, 0);
     0
 }
 ```
 
-A return value `>= 0` is the new file descriptor; a negative value is
-`-errno` (e.g. `-2` = `ENOENT`). User space turns that into an
-`ok`/`err` label on the metric.
+Walking it: `bpf_get_current_pid_tgid()` returns a 64-bit value packing
+the thread id (low 32) and process id (high 32) — it's our correlation
+key *and* it's unique per in-flight syscall, because a thread can only be
+inside one `openat` at a time. `ctx.read_at(24)` pulls the `filename`
+argument out of the tracepoint record at the offset we read from the
+format file; note we get a *pointer*, not the string — the string lives
+in user memory (Figure 9.1), so `bpf_probe_read_user_str_bytes` copies it
+into our stack-allocated `info.filename`. That helper is the user-memory
+analogue of the kernel reader from Chapter 8, and it stops at the NUL or
+the buffer end, so it's bounded — which is what keeps the verifier happy.
+Finally `INFLIGHT.insert` stashes the struct under `pid_tgid`. Nothing is
+reported yet.
 
-## The user side
-
-Attaching tracepoints needs only their category and name — no BTF, no
-function symbol:
+### Exit: pair, decide, emit
 
 ```rust
-let enter: &mut TracePoint = ebpf.program_mut("sys_enter_openat").unwrap().try_into()?;
-enter.load()?;
-enter.attach("syscalls", "sys_enter_openat")?;
+#[tracepoint]
+pub fn sys_exit_openat(ctx: TracePointContext) -> u32 {
+    let pid_tgid = bpf_get_current_pid_tgid();
+    let ret: i64 = unsafe { ctx.read_at(16) }.unwrap_or(-1);
+    let info = match unsafe { INFLIGHT.get(&pid_tgid) } { Some(i) => *i, None => return 0 };
+    let _ = INFLIGHT.remove(&pid_tgid);
+
+    if let Some(mut slot) = EVENTS.reserve::<OpenEvent>(0) {
+        let ev = OpenEvent {
+            pid: (pid_tgid >> 32) as u32,
+            uid: (bpf_get_current_uid_gid() & 0xffff_ffff) as u32,
+            ret, comm: bpf_get_current_comm().unwrap_or_default(),
+            flags: info.flags, filename: info.filename,
+        };
+        unsafe { *slot.as_mut_ptr() = ev; }
+        slot.submit(0);
+    }
+    0
+}
 ```
 
-Draining the ring buffer and exporting is identical to the previous
-chapters. The metric is
-`ebpf_events_total{program="opensnoop",result="ok|err"}`.
+The exit record carries the **return value** at offset 16 — the one
+thing entry couldn't know. `INFLIGHT.get(&pid_tgid)` finds the entry we
+stashed; if it's missing (we started tracing mid-syscall) we bail. We
+`remove` immediately so the map doesn't leak entries for syscalls we've
+already reported. Then the emit pattern you'll see in every event-based
+chapter: `EVENTS.reserve::<OpenEvent>(0)` claims a slot *in* the ring
+buffer sized for our struct (no copy, no allocation — you write straight
+into kernel ring memory), we fill it — completing the record with `pid`,
+`uid`, and `comm` that are cheap to get at exit — and `slot.submit(0)`
+publishes it so user space can see it. If `reserve` returns `None` the
+ring is full and we simply drop the event rather than block; losing an
+event is always preferable to stalling the kernel.
+
+### User space: attach both, drain one
+
+```rust
+for (name, cat, tp) in [("sys_enter_openat", "syscalls", "sys_enter_openat"),
+                        ("sys_exit_openat",  "syscalls", "sys_exit_openat")] {
+    let p: &mut TracePoint = ebpf.program_mut(name).unwrap().try_into()?;
+    p.load()?;
+    p.attach(cat, tp)?;
+}
+let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
+```
+
+`program_mut(name)` looks the program up by the kernel function's name;
+the `try_into::<&mut TracePoint>()` is where Aya checks the program is
+actually a tracepoint (a `kprobe` cast would fail here). `load()` is the
+verifier gate — if the kernel rejects the program, it's this call that
+errors. `attach(category, name)` wires it to `syscalls:sys_enter_openat`.
+Tracepoints need only those two strings — no symbol, no BTF — which is
+the simplicity tracepoints buy you.
+
+Reading is the same poll loop as Chapter 6, but over a `RingBuf` instead
+of a per-CPU array:
+
+```rust
+while let Some(item) = ring.next() {
+    let ev: OpenEvent = unsafe { core::ptr::read_unaligned(item.as_ptr() as *const OpenEvent) };
+    let result = if ev.ret >= 0 { "ok" } else { "err" };
+    counter.add(1, &[KeyValue::new("program", "opensnoop"), KeyValue::new("result", result)]);
+    println!("{:<7} {:<6} {:<5} {:<16} {}", ev.pid, ev.uid, ev.ret,
+             cstr(&ev.comm), cstr(&ev.filename));
+}
+```
+
+`ring.next()` yields each submitted record as a byte view; we
+`read_unaligned` it back into an `OpenEvent` (unaligned because the ring
+packs records tightly, with no padding guarantees). The sign of `ret`
+becomes the `result` label, so one metric series splits cleanly into
+successes and failures — `ebpf_events_total{program="opensnoop",result="ok|err"}`.
 
 ## Build, deploy, observe
 

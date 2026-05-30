@@ -32,9 +32,11 @@ functions. Later chapters move outward to `tc`/`tcx` and XDP.
 
 ## Bring up the peer
 
-The connection-latency measurement needs something to connect *to*. Our
-provisioning script already takes a guest name, so the peer is one
-command:
+The connection-latency measurement needs something to connect *to*. The
+full two-VM setup — networking requirements, resource sizing, and how the
+guests reach each other — lives in [Chapter 2]({{ "/docs/02-lab-setup/" | relative_url }});
+the short version is that our provisioning script takes a guest name, so
+the peer is one command:
 
 ```bash
 scripts/lab/provision-vm.sh ebpf-peer

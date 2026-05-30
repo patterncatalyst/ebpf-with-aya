@@ -1,8 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 310" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
-<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
-<path d="M420,100 L160,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<path d="M440,100 L440,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<path d="M460,100 L720,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
 <rect x="350" y="40" width="180" height="60" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
 <text x="440.0" y="68.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">eBPF uprobe</text>
 <text x="440.0" y="85.0" font-size="11.5" fill="#555555" text-anchor="middle">(or uretprobe)</text>
@@ -20,4 +17,7 @@
 <text x="720.0" y="237.5" font-size="11.5" fill="#555555" text-anchor="middle">attach at its offset · Ch 20</text>
 <text x="440" y="25" font-size="11" fill="#888" text-anchor="middle" font-weight="700">user-space probing: attach to a symbol or marker in a binary</text>
 <text x="440" y="292" font-size="11" fill="#b8650a" text-anchor="middle">entry probe sees args (C ABI: RDI, RSI, …); return probe sees the result — but mind non-C ABIs (Go) and never uretprobe Go</text>
+<path d="M420,100 L160,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M440,100 L440,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M460,100 L720,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 </svg>
