@@ -802,3 +802,21 @@ Later chapters' rows are added as each iteration drafts them (see the
   stack/target/peer assumptions).
 - Docs-only. No test runner exists (`test-all-examples.sh` was stale in
   notes); examples are exercised via each `demo.sh` + `cargo build`.
+
+### r17.0 — Part 4 (Networking) continues: tc + first XDP — UNVERIFIED
+New chapters and examples (all unverified — not yet run on Fedora 44):
+- **Ch 31 (tc-classify)** — `#[classifier]` on clsact egress; counts
+  packets/bytes per L4 proto in-kernel HashMaps; drops traffic to
+  BLOCK_PORT with `TC_ACT_SHOT`. New diagram `tc-clsact`. Risks to
+  confirm: Aya tc API (`qdisc_add_clsact`, `SchedClassifier`,
+  `TcAttachType::Egress`), `network-types` 0.0.7 field/LEN names,
+  `TcContext::load`/`len`, user-space `HashMap::iter()/get` deltas,
+  that `TC_ACT_SHOT` drops on egress.
+- **Ch 32 (xdp-drop)** — `#[xdp]` ingress; raw `data`/`data_end` with a
+  `ptr_at` bounds check; counts per proto, drops ICMP with `XDP_DROP`.
+  New diagram `xdp-path`. Risks: `virtio-net` native XDP vs the
+  `SKB_MODE` fallback, `XdpContext::data/data_end`, verifier acceptance
+  of `ptr_at`, that `ping` to the target stops while attached.
+- Both reinforce the in-kernel-aggregation lesson (no per-packet ring on
+  a data path) and introduce **verdicts** (acting, not just observing).
+- New shared dep introduced: `network-types = "0.0.7"` (header parsing).

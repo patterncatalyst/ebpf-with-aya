@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="280" y="50" width="280" height="204" rx="12" fill="#fff8ef" stroke="#ddd"/>
+<text x="292" y="70" font-size="12" font-weight="700" fill="#888">clsact qdisc (eth0)</text>
+<rect x="40" y="70" width="120" height="54" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="100.0" y="95.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">wire</text>
+<text x="100.0" y="112.0" font-size="11.5" fill="#555555" text-anchor="middle">(RX)</text>
+<rect x="300" y="64" width="240" height="66" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="420.0" y="95.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">tc ingress</text>
+<text x="420.0" y="112.0" font-size="11.5" fill="#555555" text-anchor="middle">#[classifier]</text>
+<rect x="680" y="70" width="160" height="54" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="760.0" y="95.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">network</text>
+<text x="760.0" y="112.0" font-size="11.5" fill="#555555" text-anchor="middle">stack</text>
+<rect x="680" y="180" width="160" height="54" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="760.0" y="205.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">network</text>
+<text x="760.0" y="222.0" font-size="11.5" fill="#555555" text-anchor="middle">stack</text>
+<rect x="300" y="174" width="240" height="66" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="420.0" y="205.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">tc egress</text>
+<text x="420.0" y="222.0" font-size="11.5" fill="#555555" text-anchor="middle">#[classifier]</text>
+<rect x="40" y="180" width="120" height="54" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="100.0" y="205.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">wire</text>
+<text x="100.0" y="222.0" font-size="11.5" fill="#555555" text-anchor="middle">(TX)</text>
+<path d="M160,97 L300,97" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="230.0" y="89.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">RX</text>
+<text x="230.0" y="89.0" font-size="11" fill="#555" text-anchor="middle">RX</text>
+<path d="M540,97 L680,97" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="610.0" y="89.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">↑</text>
+<text x="610.0" y="89.0" font-size="11" fill="#555" text-anchor="middle">↑</text>
+<path d="M680,207 L540,207" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="610.0" y="199.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">↓</text>
+<text x="610.0" y="199.0" font-size="11" fill="#555" text-anchor="middle">↓</text>
+<path d="M300,207 L160,207" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="230.0" y="199.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">TX</text>
+<text x="230.0" y="199.0" font-size="11" fill="#555" text-anchor="middle">TX</text>
+<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">tc runs on the sk_buff — both directions — and returns a verdict</text>
+<text x="440" y="284" font-size="11" fill="#888" text-anchor="middle">verdict: TC_ACT_OK (pass) · TC_ACT_SHOT (drop) · TC_ACT_REDIRECT (to another iface)</text>
+</svg>

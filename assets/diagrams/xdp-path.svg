@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 395" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="340" y="20" width="200" height="42" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="440.0" y="46.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">IP · sockets (Ch 27–30)</text>
+<rect x="340" y="78" width="200" height="46" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="440.0" y="106.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">tc / clsact (Ch 31)</text>
+<rect x="340" y="136" width="200" height="46" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="440.0" y="164.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">sk_buff allocated</text>
+<rect x="320" y="212" width="240" height="74" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="440.0" y="247.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">XDP hook</text>
+<text x="440.0" y="264.0" font-size="11.5" fill="#555555" text-anchor="middle">#[xdp] · raw frame</text>
+<rect x="340" y="312" width="200" height="50" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="440.0" y="342.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">NIC driver (RX ring)</text>
+<rect x="630" y="184" width="150" height="44" rx="9" fill="#111111" stroke="#111111" stroke-width="2"/>
+<text x="705.0" y="211.5" font-size="13.5" font-weight="700" fill="#ffffff" text-anchor="middle">XDP_DROP</text>
+<rect x="630" y="238" width="150" height="44" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="705.0" y="265.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">XDP_TX / REDIRECT</text>
+<path d="M440,312 L440,286" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M440,212 L440,182" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="484.0" y="199.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">XDP_PASS</text>
+<text x="484.0" y="199.0" font-size="11" fill="#555" text-anchor="middle">XDP_PASS</text>
+<path d="M440,136 L440,124" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M440,78 L440,62" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M560,232 L630,206" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<text x="599.0" y="215.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">drop</text>
+<text x="599.0" y="215.0" font-size="11" fill="#b8650a" text-anchor="middle">drop</text>
+<path d="M560,252 L630,260" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="601.0" y="250.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">forward</text>
+<text x="601.0" y="250.0" font-size="11" fill="#555" text-anchor="middle">forward</text>
+<text x="160" y="250" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">runs in the driver,</text>
+<text x="160" y="267" font-size="11" fill="#b8650a" text-anchor="middle">before sk_buff</text>
+<text x="440" y="386" font-size="11" fill="#888" text-anchor="middle">XDP is the earliest, fastest hook — tc and the socket hooks all sit higher</text>
+</svg>

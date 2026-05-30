@@ -58,7 +58,7 @@ one may merge with its neighbour.
 |----|-----------|--------|--------|
 | r15 | 27–28 | `tcpconnlat`, `tcpstates` — connection latency, TCP state transitions (two-VM) | **shipped (unverified)** |
 | r16 | 29–30 | L7 tracing (http socket filters + syscall tracepoints); `sockops` | **shipped (unverified)** |
-| r17 | 31–32 | `tc` traffic control; `xdp` — first XDP program |
+| r17 | 31–32 | `tc` traffic control; `xdp` — first XDP program | **shipped (unverified)** |
 | r18 | 33–34 | `xdp tcpdump`; `xdp load balancer` (two-VM) |
 | r19 | 35–36 | `xdp test` (BPF_PROG_TEST_RUN); `tcx` — modern TC attach |
 

@@ -43,9 +43,13 @@ Embed a diagram in a chapter with the include:
 | `memleak-tracking` | 24 | outstanding allocations by call site |
 | `bio-seq-random` | 25 | sequential vs random block I/O |
 | `energy-attribution` | 26 | attributing system power to processes |
-
-Networking diagrams (packet path / hook points, two-VM topology, TCP
-lifecycle, XDP-vs-tc) are authored alongside the Part 5 chapters.
+| `net-hooks` | 27 | where eBPF hooks sit along the network path |
+| `tcp-handshake` | 27 | connection latency = connect() → SYN-ACK, across two kprobes |
+| `tcp-states` | 28 | the TCP state machine the tracepoint reports |
+| `l7-socketfilter` | 29 | a socket filter reading the HTTP request line off the wire |
+| `sockops-cb` | 30 | sock_ops callbacks scoped to a cgroup |
+| `tc-clsact` | 31 | clsact ingress/egress hooks and the tc verdict set |
+| `xdp-path` | 32 | where XDP sits in the RX path (earliest, before sk_buff) and its verdicts |
 
 ## Regenerating
 
