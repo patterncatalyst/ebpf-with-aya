@@ -608,3 +608,39 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Deferred by design:** networking diagrams (packet path / hook
   points, two-VM topology, TCP lifecycle, XDP-vs-tc) ship with the
   Part 5 chapters (r15+).
+
+### Chapters 27–28 — tcpconnlat, tcpstates (r15.0) — *opens Networking; two-VM*
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | two-VM build-out: `provision-vm.sh ebpf-peer`; both guests reach each other on the libvirt NAT net | Ch 27 |
+| unverified | cloud-init adds nmap-ncat/socat/iproute/iputils/curl/tcpdump to guests | Ch 27 |
+| unverified | `examples/27-tcpconnlat` builds | Ch 27 |
+| unverified | kprobe `tcp_v4_connect` + `tcp_rcv_state_process` attach; keyed by struct sock* | Ch 27 |
+| unverified | `sock_common` offsets skc_daddr@0 / skc_dport@12 read correctly (CO-RE in Ch 56) | Ch 27 |
+| unverified | first-`tcp_rcv_state_process`≈SYN-ACK assumption holds for active connects | Ch 27 |
+| unverified | `tcp_connect_latency_ms` histogram in Grafana | Ch 27 |
+| unverified | `examples/28-tcpstates` builds | Ch 28 |
+| unverified | `sock:inet_sock_set_state` tracepoint offsets (oldstate@16/newstate@20/sport@24/dport@26/protocol@30/saddr@32/daddr@36) | Ch 28 |
+| unverified | sport/dport byte order as stored by the tracepoint | Ch 28 |
+| unverified | `ebpf_tcp_state_transitions_total{newstate}` in Grafana | Ch 28 |
+
+### r15.0 — Chapters 27–28: tcpconnlat + tcpstates (opens Part 5, two-VM)
+- **Shipped:** `_docs/27-tcpconnlat.md`, `_docs/28-tcpstates.md`;
+  `examples/27-tcpconnlat/` (kprobes on the TCP connect path, sock* key,
+  sock-field offset reads) and `examples/28-tcpstates/`
+  (sock:inet_sock_set_state tracepoint, full state machine). Two-VM
+  build-out: cloud-init net tools (nmap-ncat/socat/iproute/iputils/curl/
+  tcpdump), `scripts/lab/lab-ips.sh` helper; peer is
+  `provision-vm.sh ebpf-peer`. Networking diagrams authored:
+  `net-hooks`, `tcp-handshake` (Ch 27), `tcp-states` (Ch 28).
+- **Verified:** nothing — `unverified` pending real Fedora 44 + two VMs.
+- **Known risks to check first:** (1) `sock_common` offsets (Ch 27 —
+  CO-RE removes this in Ch 56); (2) inet_sock_set_state tracepoint
+  offsets + port byte order (Ch 28); (3) kprobe attach to TCP symbols;
+  (4) two guests routing to each other.
+- **Pedagogical contrast (deliberate):** Ch 27 kprobe + struct-offset
+  (powerful, fragile) vs. Ch 28 stable tracepoint (less reach, durable)
+  — stated explicitly as the kernel-tracing through-line.
+- **Networking diagrams shipped with the chapters** (per the r14.1 plan
+  to fold net diagrams into r15+).

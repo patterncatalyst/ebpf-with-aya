@@ -1,0 +1,15 @@
+[package]
+name = "tcpconnlat-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya-ebpf = "0.1"
+tcpconnlat-common = { path = "../tcpconnlat-common" }
+[[bin]]
+name = "tcpconnlat"
+path = "src/main.rs"
+[profile.dev]
+opt-level = 3
+[profile.release]
+lto = true

@@ -54,10 +54,10 @@ one may merge with its neighbour.
 
 ## Phase 5 — Networking
 
-| r# | Chapter(s) | Topics |
-|----|-----------|--------|
-| r15 | 27–28 | `tcpconnlat`, `tcpstates` — connection latency, TCP state transitions (two-VM) |
-| r16 | 29–30 | L7 tracing (http socket filters + syscall tracepoints); `sockops` |
+| r# | Chapter(s) | Topics | Status |
+|----|-----------|--------|--------|
+| r15 | 27–28 | `tcpconnlat`, `tcpstates` — connection latency, TCP state transitions (two-VM) | **shipped (unverified)** |
+| r16 | 29–30 | L7 tracing (http socket filters + syscall tracepoints); `sockops` | open |
 | r17 | 31–32 | `tc` traffic control; `xdp` — first XDP program |
 | r18 | 33–34 | `xdp tcpdump`; `xdp load balancer` (two-VM) |
 | r19 | 35–36 | `xdp test` (BPF_PROG_TEST_RUN); `tcx` — modern TC attach |
