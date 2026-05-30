@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="20" y="150" width="860" height="120" rx="12" fill="#eef4fb" stroke="#ddd"/>
+<text x="32" y="170" font-size="12" font-weight="700" fill="#888">cgroup v2 (sockets inside it)</text>
+<path d="M420,109 L140,185" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M440,109 L345,185" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<path d="M460,109 L550,185" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M490,109 L740,185" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<rect x="350" y="45" width="200" height="64" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="450.0" y="75.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">sock_ops program</text>
+<text x="450.0" y="92.0" font-size="11.5" fill="#555555" text-anchor="middle">attached to the cgroup</text>
+<rect x="60" y="185" width="160" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="140.0" y="215.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">connect</text>
+<text x="140.0" y="232.0" font-size="11.5" fill="#555555" text-anchor="middle">TCP_CONNECT_CB</text>
+<rect x="250" y="185" width="190" height="64" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="345.0" y="215.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">established</text>
+<text x="345.0" y="232.0" font-size="11.5" fill="#555555" text-anchor="middle">ACTIVE / PASSIVE_CB</text>
+<rect x="470" y="185" width="160" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="550.0" y="215.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">RTT / state</text>
+<text x="550.0" y="232.0" font-size="11.5" fill="#555555" text-anchor="middle">RTT_CB · STATE_CB</text>
+<rect x="660" y="185" width="180" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="750.0" y="215.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">act: set options,</text>
+<text x="750.0" y="232.0" font-size="11.5" fill="#555555" text-anchor="middle">cong-ctrl, cb_flags</text>
+<text x="440" y="40" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">the TCP stack CALLS BACK into sock_ops at lifecycle moments</text>
+<text x="345" y="285" font-size="11" fill="#888" text-anchor="middle">this example emits the 4-tuple on established (active/passive)</text>
+</svg>

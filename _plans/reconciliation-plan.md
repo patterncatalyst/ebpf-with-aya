@@ -644,3 +644,36 @@ Later chapters' rows are added as each iteration drafts them (see the
   — stated explicitly as the kernel-tracing through-line.
 - **Networking diagrams shipped with the chapters** (per the r14.1 plan
   to fold net diagrams into r15+).
+
+### Chapters 29–30 — HTTP L7, sockops (r16.0)
+
+| Status | Claim | Chapter |
+|--------|-------|---------|
+| unverified | `examples/29-http-l7` builds | Ch 29 |
+| unverified | `socket_filter` program + `SkBuffContext` load/load_bytes in aya 0.13.x | Ch 29 |
+| unverified | AF_PACKET raw socket setup (libc) + `SocketFilter::attach(fd)` | Ch 29 |
+| unverified | Eth→IPv4(no-options)→TCP parse + data-offset math reaches payload | Ch 29 |
+| unverified | HTTP method/`HTTP/` detection + first-line capture; cleartext only | Ch 29 |
+| unverified | `ebpf_http_lines_total{method}` in Grafana | Ch 29 |
+| unverified | `examples/30-sockops` builds | Ch 30 |
+| unverified | `sock_ops` program + `SockOps::attach(cgroup)` in aya 0.13.x | Ch 30 |
+| unverified | `SockOpsContext` accessors (op/local_ip4/remote_ip4/local_port/remote_port) | Ch 30 |
+| unverified | established op constants (ACTIVE=4/PASSIVE=5); port byte-order convention | Ch 30 |
+| unverified | requires cgroup-v2 at /sys/fs/cgroup; `ebpf_sock_established_total{dir}` in Grafana | Ch 30 |
+
+### r16.0 — Chapters 29–30: HTTP L7 + sockops
+- **Shipped:** `_docs/29-http-l7.md`, `_docs/30-sockops.md`;
+  `examples/29-http-l7/` (socket_filter parsing Eth/IPv4/TCP → HTTP line,
+  AF_PACKET raw socket) and `examples/30-sockops/` (sock_ops on the
+  cgroup-v2 root, established callbacks, 4-tuple from the context).
+  Diagrams `l7-socketfilter` (Ch 29) and `sockops-cb` (Ch 30).
+- **Verified:** nothing — `unverified` pending real Fedora 44 + two VMs.
+- **Known risks to check first:** (1) socket_filter + SkBuffContext API
+  and AF_PACKET setup (Ch 29 — first packet-content program); (2)
+  sock_ops attach + SockOpsContext accessors + op constants (Ch 30 —
+  first cgroup-attached callback program); (3) byte-order conventions;
+  (4) IHL==5 / cleartext-only simplifications.
+- **Two new program types** introduced (socket_filter, sock_ops). L7
+  taught both ways: socket filter (wire/cleartext) vs. syscall+uprobe
+  (buffer/encrypted, ties back to Ch 17). sock_ops framed as the
+  observe-and-act, cgroup-scoped, callback model.

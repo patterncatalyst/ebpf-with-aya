@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<path d="M150,137 L180,137" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M330,137 L360,137" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M510,137 L540,137" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M700,137 L730,137" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<rect x="30" y="105" width="120" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="90.0" y="135.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">packet</text>
+<text x="90.0" y="152.0" font-size="11.5" fill="#555555" text-anchor="middle">on the socket</text>
+<rect x="180" y="105" width="150" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="255.0" y="135.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Ethernet → IPv4</text>
+<text x="255.0" y="152.0" font-size="11.5" fill="#555555" text-anchor="middle">→ TCP headers</text>
+<rect x="360" y="105" width="150" height="64" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="435.0" y="135.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">TCP payload</text>
+<text x="435.0" y="152.0" font-size="11.5" fill="#555555" text-anchor="middle">skip data-offset</text>
+<rect x="540" y="90" width="160" height="94" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="620.0" y="127.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">HTTP line?</text>
+<text x="620.0" y="144.5" font-size="11.5" fill="#555555" text-anchor="middle">GET / POST / HTTP/</text>
+<text x="620.0" y="159.5" font-size="11.5" fill="#555555" text-anchor="middle">capture first line</text>
+<rect x="730" y="105" width="130" height="64" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="795.0" y="135.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">RingBuf → user</text>
+<text x="795.0" y="152.0" font-size="11.5" fill="#555555" text-anchor="middle">method + path</text>
+<text x="440" y="40" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">a socket filter inspects packet CONTENTS — the wire, so cleartext only</text>
+<text x="440" y="225" font-size="11" fill="#888" text-anchor="middle">HTTPS is ciphertext here — use uprobes at the TLS boundary (Ch 17) instead</text>
+</svg>
