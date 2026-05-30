@@ -841,3 +841,21 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   `lock_passwd: true`), and passwordless sudo (`NOPASSWD:ALL`) — so there is
   no sudo password to list, and every `[vm]$ sudo …` runs without a prompt.
   Noted how to set a console password if ever needed.
+
+### r18.0 — Part 4 (Networking): XDP capture + XDP load balancer — UNVERIFIED
+- **Ch 33 (xdp-capture)** — `#[xdp]` read-only tap: parse Eth/IPv4/TCP via
+  `ptr_at`, count all packets in `SEEN`, and ship a `FlowRecord` over a
+  `RingBuf` only for TCP SYN/FIN/RST (in-kernel filter keeps volume low);
+  always `XDP_PASS`. New diagram `xdp-capture`. Confirm: RingBuf in `#[xdp]`,
+  network-types field names, TCP flags byte at offset 13, output matches
+  `tcpdump 'tcp[tcpflags] & (…) != 0'`.
+- **Ch 34 (xdp-lb)** — `#[xdp]` UDP port load balancer: `ptr_at_mut` to
+  rewrite `udp.dest` round-robin across an `Array` of backends (cursor via
+  `get_ptr_mut`), zero the optional IPv4 UDP checksum, `XDP_PASS`; per-backend
+  `HITS`. New diagram `xdp-lb`. Confirm: `ptr_at_mut` writes pass the
+  verifier, zeroed UDP checksum accepted end-to-end, `Array`
+  `get/get_ptr_mut/set`, native-vs-SKB attach, even split. Documents the
+  production gaps (return path / DSR / conntrack, incremental checksum,
+  `XDP_REDIRECT` to remote backends) as forward work.
+- New diagrams: 28 → 30. Both reuse the `ptr_at` discipline from Ch 32; Ch 34
+  introduces packet **mutation** and map-driven backend selection.

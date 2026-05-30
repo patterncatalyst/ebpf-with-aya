@@ -1,0 +1,17 @@
+[package]
+name = "xdp-lb"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya = "0.13"
+xdp-lb-common = { path = "../xdp-lb-common", features = ["user"] }
+anyhow = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }
+env_logger = "0.11"
+log = "0.4"
+opentelemetry = "0.27"
+opentelemetry_sdk = { version = "0.27", features = ["rt-tokio", "metrics"] }
+opentelemetry-otlp = { version = "0.27", features = ["http-proto", "reqwest-client", "metrics"] }
+[build-dependencies]
+aya-build = "0.1"

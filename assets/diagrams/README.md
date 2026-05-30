@@ -50,6 +50,8 @@ Embed a diagram in a chapter with the include:
 | `sockops-cb` | 30 | sock_ops callbacks scoped to a cgroup |
 | `tc-clsact` | 31 | clsact ingress/egress hooks and the tc verdict set |
 | `xdp-path` | 32 | where XDP sits in the RX path (earliest, before sk_buff) and its verdicts |
+| `xdp-capture` | 33 | filter in-kernel at XDP, ship only matching records via RingBuf |
+| `xdp-lb` | 34 | XDP UDP load balancer: rewrite dest port round-robin across backends |
 
 ## Regenerating
 
