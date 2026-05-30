@@ -14,7 +14,7 @@ Aggregate thousands of those samples and the hot paths emerge. This
 chapter introduces two new things: the **`perf_event`** program type and
 **stack walking**.
 
-The code is in `examples/23-profile/`.
+The code is in `examples/23-profile/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="profiler-pipeline"

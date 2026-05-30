@@ -14,7 +14,7 @@ eBPF, and this chapter builds a small version of its core idea —
 attributing system power to processes — while being clear about where
 the hardware fights you.
 
-The code is in `examples/26-energy/`.
+The code is in `examples/26-energy/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="energy-attribution"
@@ -144,7 +144,7 @@ and watch them rise to the top of the power table, with
 That closes **Performance & resources**. The signals built here —
 latency, profiles, power — are exactly what a **`sched_ext`** scheduler
 (Part 6) can consume to make power- and QoS-aware decisions; first,
-Part 5 takes on **networking**.
+Part 4 takes on **networking**.
 
 ---
 

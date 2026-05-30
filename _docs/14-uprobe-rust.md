@@ -14,7 +14,8 @@ and handling them is the point of the chapter. This is also the
 foundation for tracing your *own* Rust services later.
 
 The code is in `examples/14-uprobe-rust/`, which includes a small
-`target-app` to probe.
+`target-app` to probe. `./demo.sh` there builds, deploys, and runs it;
+its `README.md` covers what it does and how to drive it.
 
 ## The two Rust problems
 

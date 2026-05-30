@@ -14,7 +14,7 @@ it the *easy* way, with one tracepoint that was built for exactly this.
 The contrast is the lesson: when a stable tracepoint exists, prefer it
 over kprobes.
 
-The code is in `examples/28-tcpstates/`.
+The code is in `examples/28-tcpstates/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## One tracepoint, every transition
 

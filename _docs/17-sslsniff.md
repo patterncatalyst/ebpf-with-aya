@@ -14,7 +14,7 @@ sit exactly at those two points. `sslsniff` attaches to `SSL_write` and
 notwithstanding. It's the canonical demonstration of why uprobes on
 crypto libraries are powerful — and sensitive.
 
-The code is in `examples/17-sslsniff/`.
+The code is in `examples/17-sslsniff/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="tls-boundary"

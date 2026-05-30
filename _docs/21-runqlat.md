@@ -13,7 +13,7 @@ run but stuck waiting for a CPU to free up. `runqlat` measures exactly
 that wait, and building it teaches the technique that separates toy
 tracers from production ones: **aggregating in the kernel**.
 
-The code is in `examples/21-runqlat/`.
+The code is in `examples/21-runqlat/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="runqlat-timeline"

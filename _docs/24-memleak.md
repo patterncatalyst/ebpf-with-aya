@@ -14,7 +14,7 @@ but not freed by the end is a candidate leak. The trick that makes it
 leak names the code that caused it. This chapter reuses the stack-walking
 from `profile` for exactly that.
 
-The code is in `examples/24-memleak/`.
+The code is in `examples/24-memleak/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="memleak-tracking"

@@ -17,7 +17,7 @@ We start with a brief libbpf/libbpf-rs warm-up, because seeing the C
 mental model once makes Aya's design choices legible. Then we switch to
 Aya for this program and everything after it.
 
-The code is in `examples/06-hello-world/`.
+The code is in `examples/06-hello-world/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="ringbuf-path"

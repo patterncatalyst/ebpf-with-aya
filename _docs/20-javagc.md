@@ -14,7 +14,9 @@ engineering their internals. `javagc` attaches to HotSpot's
 `gc__begin`/`gc__end` and reports how long each pause lasts.
 
 The code is in `examples/20-javagc/`. It's the most experimental chapter
-in this part — read the verification notes.
+in this part — read the verification notes. `./demo.sh` there builds,
+deploys, and runs it; its `README.md` covers what it does and how to
+drive it.
 
 ## What USDT is
 

@@ -780,3 +780,25 @@ Later chapters' rows are added as each iteration drafts them (see the
     time-in-GC as saturation, what to alert on, and the out-of-process
     advantage (no JVM flags / agent / verbose:gc parsing).
 - Diagram catalogue updated (25 → 26 diagrams). Docs/diagrams only.
+
+### r16.7 — runnability + part-numbering pass (pre-r17)
+- **Part numbering fixed:** homepage cards render `Part {order}`, so
+  Networking (order 4) is **Part 4**. Corrected stale "Part 5" refs in
+  Ch 26 and Ch 27 (description + prose). ("Part 6" in Ch 26 = sched_ext,
+  order 6 — correct, left.)
+- **Ch 27 environment readiness:** added an up-front "Before you start —
+  this part needs two VMs" block (stack up / target running / peer
+  provisioned, with the exact checks) so the reader confirms the
+  environment before running; trimmed the now-redundant mid-chapter
+  peer-provisioning into a short topology note.
+- **Explicit run guidance in every chapter:** appended a one-line run
+  hint to each program chapter's code-location line ("`./demo.sh` there
+  builds, deploys, and runs it; its `README.md` covers …") — 25 chapters
+  (06–26, 28–30) plus tailored hints for Ch 03/14/20; Ch 27 carries the
+  fuller block.
+- **Getting-Started:** added a reader-facing "Running any chapter's
+  example" section (the universal `cd examples/NN` → `./demo.sh`
+  pattern, README per example, demo.sh self-docs, and the
+  stack/target/peer assumptions).
+- Docs-only. No test runner exists (`test-all-examples.sh` was stale in
+  notes); examples are exercised via each `demo.sh` + `cargo build`.

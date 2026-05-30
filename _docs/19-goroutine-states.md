@@ -14,7 +14,7 @@ Building it forces you to confront two things that make probing Go
 different from probing C: the **register ABI** and the **uretprobe
 hazard**.
 
-The code is in `examples/19-goroutine-states/`.
+The code is in `examples/19-goroutine-states/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="goroutine-states"

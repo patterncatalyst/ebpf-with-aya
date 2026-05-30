@@ -14,7 +14,7 @@ what flags, success or failure. Along the way you learn to read
 tracepoint arguments by offset and meet a distinction that bites
 people: **user memory versus kernel memory**.
 
-The code is in `examples/09-opensnoop/`.
+The code is in `examples/09-opensnoop/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="mem-read-user-kernel"

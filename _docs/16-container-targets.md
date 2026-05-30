@@ -14,7 +14,7 @@ both built as multi-stage UBI images — and teaches the thing that trips
 people up the first time: how to observe a process that lives *inside* a
 container with eBPF.
 
-The code is in `examples/16-container-targets/`.
+The code is in `examples/16-container-targets/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="container-observe"

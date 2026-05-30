@@ -2,7 +2,7 @@
 title: "tcpconnlat"
 order: 27
 part: Networking
-description: "Open Part 5 by building out the second VM and measuring active TCP connection latency — connect() to SYN-ACK — with kprobes on the kernel TCP stack keyed by the socket pointer, reading struct fields by offset."
+description: "Open Part 4 by building out the second VM and measuring active TCP connection latency — connect() to SYN-ACK — with kprobes on the kernel TCP stack keyed by the socket pointer, reading struct fields by offset."
 duration: 35 minutes
 ---
 
@@ -15,10 +15,33 @@ take to establish?" — and introduces probing the **kernel TCP stack**.
 
 The code is in `examples/27-tcpconnlat/`.
 
+> **Before you start — this part needs two VMs.** Everything through
+> Performance ran on a single guest; Networking needs a second one to
+> generate real host-to-host traffic. Confirm your environment is ready
+> before running anything:
+>
+> - **Observability stack up** — `http://127.0.0.1:3000` (Grafana) loads.
+>   That's the Chapter 3 stack (`examples/03-observability-stack`).
+> - **Target guest running** — `scripts/lab/vm-ip.sh ebpf-target` prints
+>   an IP. That's the Chapter 2 guest.
+> - **Peer guest provisioned** — bring it up once with
+>   `scripts/lab/provision-vm.sh ebpf-peer`, then
+>   `scripts/lab/lab-ips.sh` prints both IPs and confirms they're
+>   reachable.
+>
+> If any of those isn't true, set it up first — the networking demos
+> can't run without all three. Full setup details (networking
+> requirements, resource sizing) are in
+> [Chapter 2]({{ "/docs/02-lab-setup/" | relative_url }}).
+>
+> Then this chapter runs like every other: `cd examples/27-tcpconnlat`,
+> read its `README.md`, and `./demo.sh` builds on the host, deploys to
+> the target, and runs it (`./demo.sh build` just builds).
+
 ## Where eBPF sits in the network path
 
 Before the specifics, the lay of the land. eBPF can attach at many
-points along a packet's journey, and the whole of Part 5 is a tour of
+points along a packet's journey, and the whole of Part 4 is a tour of
 them — from the earliest (XDP, in the driver) to the latest (socket
 operations, up by the application):
 
@@ -30,22 +53,13 @@ operations, up by the application):
 This chapter lives in the **stack** layer: kprobes on the kernel's TCP
 functions. Later chapters move outward to `tc`/`tcx` and XDP.
 
-## Bring up the peer
+## The test topology
 
-The connection-latency measurement needs something to connect *to*. The
-full two-VM setup — networking requirements, resource sizing, and how the
-guests reach each other — lives in [Chapter 2]({{ "/docs/02-lab-setup/" | relative_url }});
-the short version is that our provisioning script takes a guest name, so
-the peer is one command:
-
-```bash
-scripts/lab/provision-vm.sh ebpf-peer
-```
-
-Both guests share the libvirt NAT network, so they reach each other by
-IP. `scripts/lab/lab-ips.sh` prints both. `tcpconnlat` runs on
-**ebpf-target**; the demo drives connects to a listener on
-**ebpf-peer**.
+`tcpconnlat` runs on **ebpf-target**; the demo starts a listener on
+**ebpf-peer** and drives connects to it across the libvirt NAT network
+the two guests share. So you watch the target's kernel time its own
+outbound connections to the peer — the simplest two-host setup, and the
+shape every networking chapter reuses.
 
 ## Timing the handshake
 
@@ -185,7 +199,7 @@ or a busy peer).
 
 ## What you learned
 
-- Part 5 needs **two VMs**; the peer is `provision-vm.sh ebpf-peer`.
+- Part 4 needs **two VMs**; the peer is `provision-vm.sh ebpf-peer`.
 - eBPF attaches all along the network path (Figure 27.1); this chapter
   is in the **TCP stack** via kprobes.
 - Correlate the two probes of one connection by the **`struct sock *`**

@@ -14,7 +14,7 @@ reads a struct argument the robust way, and explains how **BTF** —
 the same type-information format that powers kernel CO-RE — lets you do
 it even for binaries whose source you don't have.
 
-The code is in `examples/15-btf-uprobe/`.
+The code is in `examples/15-btf-uprobe/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="struct-btf"

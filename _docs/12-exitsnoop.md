@@ -14,7 +14,7 @@ detection. The interesting wrinkle here is getting the exit code
 *cleanly*, and understanding why the number you read isn't encoded the
 way you might expect.
 
-The code is in `examples/12-exitsnoop/`.
+The code is in `examples/12-exitsnoop/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## Getting the exit code without task_struct
 

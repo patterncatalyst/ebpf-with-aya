@@ -61,7 +61,31 @@ Chapter 4 is the full walkthrough. Then:
 cd examples/06-hello-world && ./demo.sh
 ```
 
-## 5. Working on the tutorial
+## 5. Running any chapter's example
+
+Every program chapter maps to a folder under `examples/` with the same
+shape, so once you've run one you've run them all:
+
+```bash
+cd examples/09-opensnoop      # the folder named at the top of the chapter
+cat README.md                 # what it does, how to drive it, verification notes
+./demo.sh                     # build on host -> deploy to the VM -> run (Ctrl-C to stop)
+./demo.sh build               # just build on the host, don't deploy
+```
+
+`demo.sh` is self-documenting — the comment header at the top of each
+one lists its subcommands and the environment variables it honors (e.g.
+`VM=` to target a differently-named guest). Each example is also a
+standalone Cargo workspace, so `cargo build --release` inside it works
+on its own.
+
+**What every example assumes:** the Chapter 3 observability stack is up
+(`http://127.0.0.1:3000`) and the `ebpf-target` guest (Chapter 2) is
+running and reachable. The **Networking** chapters (`tcpconnlat`
+onward) additionally need the `ebpf-peer` guest — each of those says so
+at the top.
+
+## 6. Working on the tutorial
 
 - Edit chapters in `_docs/NN-*.md`. Front matter: `title`, `order`,
   `part`, `description`, `duration`. The homepage and prev/next nav

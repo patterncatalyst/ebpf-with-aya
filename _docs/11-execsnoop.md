@@ -14,7 +14,7 @@ instant they `exec`. The new skill this chapter teaches is reading
 *array* of user-space string pointers, read in a loop the verifier will
 accept.
 
-The code is in `examples/11-execsnoop/`.
+The code is in `examples/11-execsnoop/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="tracepoint-flow"

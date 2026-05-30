@@ -14,7 +14,8 @@ metrics, and Loki for logs — all in a single container — plus a Python
 exactly how a Rust user-space program turns "the kernel saw 4,812
 `openat` calls" into a line on a Grafana panel.
 
-The example lives in `examples/03-observability-stack/`.
+The example lives in `examples/03-observability-stack/`. Its `./demo.sh`
+brings the stack up with podman-compose; its `README.md` has the details.
 
 {% include excalidraw.html
    file="obs-data-path"

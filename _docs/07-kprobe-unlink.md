@@ -15,7 +15,7 @@ reports who deleted what. Along the way you meet ring buffers (the
 modern way to stream events to user space) and the reality that reading
 kernel struct fields is where eBPF gets version-sensitive.
 
-The code is in `examples/07-kprobe-unlink/`.
+The code is in `examples/07-kprobe-unlink/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## kprobe vs tracepoint
 

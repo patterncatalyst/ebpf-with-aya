@@ -14,7 +14,7 @@ the thing percentiles and heatmaps are built from. This chapter builds
 it and feeds the durations into the observability stack as a real
 histogram.
 
-The code is in `examples/18-funclatency/`.
+The code is in `examples/18-funclatency/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## Timing by pairing entry and return
 

@@ -13,7 +13,7 @@ user-space programs and libraries. The classic first example —
 command a user types at an interactive prompt. It's a small program
 that teaches the whole uprobe model.
 
-The code is in `examples/13-bashreadline/`.
+The code is in `examples/13-bashreadline/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="uprobe-menu"

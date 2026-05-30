@@ -13,7 +13,7 @@ ideas with very little code: reading a couple of tracepoint arguments,
 and keeping the kernel program dumb while user space does the friendly
 formatting.
 
-The code is in `examples/10-sigsnoop/`.
+The code is in `examples/10-sigsnoop/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## One tracepoint, one event
 

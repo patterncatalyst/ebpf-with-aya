@@ -13,7 +13,7 @@ TCP stack **calls it back** at lifecycle moments — and it can **act**,
 not just watch. This chapter uses it to track established connections,
 and points at the things only `sock_ops` can do.
 
-The code is in `examples/30-sockops/`.
+The code is in `examples/30-sockops/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## A callback, scoped to a cgroup
 

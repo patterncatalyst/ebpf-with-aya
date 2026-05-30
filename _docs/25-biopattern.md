@@ -13,7 +13,7 @@ measures the split per device, so you can tell a streaming workload from
 a seeky one at a glance. It's a compact lesson in block-layer tracing and
 per-device kernel state.
 
-The code is in `examples/25-biopattern/`.
+The code is in `examples/25-biopattern/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="bio-seq-random"

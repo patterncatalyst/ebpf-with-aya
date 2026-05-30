@@ -13,7 +13,7 @@ filter**, the first program type that inspects packet *contents*, and
 then weighs it against the syscall/uprobe route for the cases a socket
 filter can't reach.
 
-The code is in `examples/29-http-l7/`.
+The code is in `examples/29-http-l7/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## A socket filter reads the wire
 

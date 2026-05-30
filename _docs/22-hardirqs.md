@@ -14,7 +14,7 @@ was running. `hardirqs` measures it per IRQ vector, so you can see which
 device is costing you. It also reinforces the in-kernel-aggregation
 technique from `runqlat`, with a per-CPU twist.
 
-The code is in `examples/22-hardirqs/`.
+The code is in `examples/22-hardirqs/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 ## Why hardirq time is hidden
 

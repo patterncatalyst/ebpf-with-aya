@@ -14,7 +14,7 @@ the function's **return value**, so we can report whether each delete
 actually *succeeded*. The program, `fentrysnoop`, is the kprobe chapter
 leveled up.
 
-The code is in `examples/08-fentry-unlink/`.
+The code is in `examples/08-fentry-unlink/`. `./demo.sh` there builds, deploys, and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="entry-exit"
