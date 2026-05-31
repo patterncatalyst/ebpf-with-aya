@@ -95,7 +95,7 @@ one may merge with its neighbour.
 | r31 | 51 | userspace eBPF (rbpf, bpftime) | **shipped (unverified)** |
 | r32 | 52 | `kfuncs` — typed kernel calls, KF_ACQUIRE/RELEASE | **shipped (unverified)** |
 | r33 | 53 | `bpf token` — delegating BPF into containers (kernel 6.9) | **shipped (unverified)** |
-| r34 | 54 | `bpf wq` — kernel workqueues / timers |
+| r34 | 54 | timers & workqueues — deferred in-kernel work | **shipped (unverified)** |
 | r35 | 55 | `struct_ops` (general) |
 | r36 | 56 | `dynptr` / `bpf arena` |
 | r37 | 57 | `bpf iterators` |

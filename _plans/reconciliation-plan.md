@@ -1191,3 +1191,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Kept at FULL DEPTH (the restored standard): ~ richer prose, problem framing,
   security reasoning, runtime integration, cross-check.
 - Next: Ch 54 BPF timers & workqueues (deferred work inside the kernel).
+
+### r34.0 — Advanced surface: timers & workqueues (Ch 54) — UNVERIFIED (full depth)
+- **Ch 54 (bpf-timer)** — deferred work for run-to-completion programs.
+  Shared model: timer/wq lives in a MAP VALUE (struct bpf_timer/bpf_wq field),
+  init → set_callback → start, callback (map,key,value) runs after the program
+  returns; map must have a user ref (fd/pin) or -EPERM; map lifecycle owns the
+  timer; pending timer keeps the prog loaded. TIMERS (5.15): softirq, non-
+  sleepable, self-rescheduling → in-kernel periodic aggregation with ZERO
+  user-space wakeups (the worked example: count/arm/tick computing per-second
+  rate, walked per-line). WORKQUEUES (6.10, Tissoires, kfunc-based): "bpf_timer
+  in process context", SLEEPABLE callback → fast-path/slow-path pattern; choose
+  timer for cheap periodic, wq when deferred work must sleep. Aya angle: helper/
+  kfunc calls are fine; the hard part is callback-as-subprogram → C reference
+  canonical (reference/timer.bpf.c), aya-ebpf a flagged sketch; USER side is
+  real Aya (holds map open, arms once via execve, reads rate, observable gauge).
+  New diagram bpf-timer. New metric ebpf_timer_events_per_sec. In-Grafana line
+  present. Kept at FULL DEPTH.
+- Next: Ch 55 struct_ops (general) — implementing kernel policy interfaces in
+  BPF, the mechanism beneath Part 6's schedulers.
