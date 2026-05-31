@@ -93,7 +93,7 @@ one may merge with its neighbour.
 | r29 | 49 | `syscall` programs — loader programs & light skeletons | **shipped (unverified)** |
 | r30 | 50 | user ring buffer (user → BPF) | **shipped (unverified)** |
 | r31 | 51 | userspace eBPF (rbpf, bpftime) | **shipped (unverified)** |
-| r32 | 52 | `kfuncs` — the modern typed helper alternative |
+| r32 | 52 | `kfuncs` — typed kernel calls, KF_ACQUIRE/RELEASE | **shipped (unverified)** |
 | r33 | 53 | `bpf token` — delegating BPF in containers |
 | r34 | 54 | `bpf wq` — kernel workqueues / timers |
 | r35 | 55 | `struct_ops` (general) |

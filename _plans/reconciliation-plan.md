@@ -1149,3 +1149,25 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   (nothing touches the kernel or OTLP). Single-crate example (no -ebpf/-common).
 - Plan Phase 9 resynced: 52–57 now mapped one chapter per row (kfuncs, bpf
   token, bpf wq, struct_ops general, dynptr/arena, bpf iters).
+
+### r32.0 — DEPTH CORRECTION + kfuncs (Ch 52) — UNVERIFIED
+- USER FEEDBACK (repeated): advanced-part chapters had grown sparse on context/
+  explanation. CORRECTED here and going forward: restore the full depth standard
+  (full handler walked the way the verifier reads it, the WHY behind each choice,
+  flags/mechanics in prose, stability caveats, real cross-check) even when Aya
+  code must be flagged. Ch 52 = 1711 words vs ~1050-1120 for the sparse ones.
+- **Ch 52 (kfunc-task)** — kfuncs: the modern typed alternative to the frozen
+  helper UAPI. WHY helpers stopped scaling (permanent ABI commitment; can't take
+  typed kernel pointers). kfuncs = BTF-registered kernel fns, typed pointer args,
+  per-fn flags, modular per-subsystem registration, NO ABI stability (pin
+  kernels). Flags explained: KF_ACQUIRE/KF_RELEASE (ref tracking), KF_RET_NULL
+  (forced null-check), KF_TRUSTED_ARGS, + KF_SLEEPABLE/KF_RCU/KF_DESTRUCTIVE/
+  KF_ITER_*. Worked example: bpf_task_from_pid (KF_ACQUIRE|KF_RET_NULL) +
+  bpf_task_release (KF_RELEASE), walked per-line as the verifier sees it; the
+  verifier REJECTS the load if the release is dropped on any path (README invites
+  deleting it to watch). Declared as extern fns resolved via BTF; task_struct from
+  aya-tool vmlinux (placeholder shipped; CO-RE → Part 9). New diagram kfuncs
+  (helpers vs kfuncs + acquire/release band). New metric ebpf_task_lookups_total
+  {result}. In-Grafana line present. UNVERIFIED bits: kfunc presence in kernel
+  BTF, aya kfunc-declaration + vmlinux/BTF ergonomics, verifier-rejects-on-leak.
+- Next: Ch 53 bpf token (delegating BPF into unprivileged containers) — at depth.
