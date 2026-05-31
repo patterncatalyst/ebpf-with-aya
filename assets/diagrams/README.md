@@ -62,6 +62,7 @@ Embed a diagram in a chapter with the include:
 | `sudo-escalate` | 41 | rewrite sudo's read() buffer to forge sudoers (lab-only) |
 | `security-sensor` | 42 | many security hooks → one SecEvent telemetry stream |
 | `scx-simple` | 43 | sched_ext/struct_ops: task → BPF callbacks → DSQ → CPU |
+| `scx-nest` | 44 | scx_nest: concentrate work on a warm nest of cores |
 
 ## Regenerating
 

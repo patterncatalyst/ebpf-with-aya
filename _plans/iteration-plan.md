@@ -75,7 +75,7 @@ one may merge with its neighbour.
 | r# | Chapter(s) | Topics |
 |----|-----------|--------|
 | r23 | 43 | `scx_simple` — minimal scheduler via `struct_ops`/`sched_ext` (model + run + Aya observer) | **shipped (unverified)** |
-| r24 | 44 | `scx_nest`-style policy — keeping work on warm cores (more realistic) |
+| r24 | 44 | `scx_nest`-style policy — keeping work on warm cores (more realistic) | **shipped (unverified)** |
 
 ## Phase 8 — Application targets
 

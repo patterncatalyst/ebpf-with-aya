@@ -967,3 +967,18 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   kernel ≥ 6.12, CONFIG_SCHED_CLASS_EXT. New part "Schedulers (sched_ext)".
 - NOTE: first chapter to use C for the (reference) BPF side — deliberate and
   documented, because that's the current reality of sched_ext tooling.
+
+### r24.0 — Part 7 (Schedulers): a realistic policy (scx_nest) — UNVERIFIED
+- **Ch 44 (scx-nest)** — the nest policy: concentrate work on a small set of
+  warm, high-frequency cores; primary nest + reserve, promote under load,
+  demote when idle. Shows simplified nest_select_cpu (C, ref) using
+  scx_bpf_pick_idle_cpu over cpumasks + bpf_cpumask_* kfuncs (kfunc forward-
+  ref to Part 8). Same honest pattern: run the real scx_nest (scx-scheds) and
+  OBSERVE it with an Aya per-CPU busy probe (sched_switch, attribute interval
+  to busy if prev_pid != 0 → ebpf_cpu_busy_ns_total{cpu}; live busy% bar), so
+  the nest is visible as a few hot cores. New diagram `scx-nest`. Example
+  44-scx-nest = cpu-busy probe + reference/scx_nest.bpf.c (simplified) +
+  moderate-load runbook. Risks: scx_nest availability, sched_switch prev_pid
+  offset (24), idle==prev_pid 0.
+- Schedulers part now has its two-chapter tour (minimal + realistic). Diagrams
+  40 → 41.
