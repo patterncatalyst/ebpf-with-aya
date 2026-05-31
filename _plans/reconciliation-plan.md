@@ -1135,3 +1135,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   samples → AGG count/sum (expect 1000 / 500500). New diagram user-ringbuf.
   New metric ebpf_userrb_messages_total (+ value_sum_total). In-Grafana line
   present. Renumber note: plan row split (50 done, 51 userspace eBPF next).
+
+### r31.0 — Advanced surface: userspace eBPF (Ch 51) — UNVERIFIED (host-only)
+- **Ch 51 (userspace-ebpf)** — eBPF is a portable bytecode ISA; user-space
+  runtimes run the same instructions with no kernel/root. Covers uBPF (C,
+  original; OVS/DPDK), rbpf (Rust port: interpreter + x86-64 JIT + assembler),
+  and bpftime (user-space uprobes/USDT, ~10x faster, shares maps with kernel,
+  runs libbpf/Aya programs). Example is HOST-ONLY (no lab VM, no root — the
+  point): rbpf assembles a tiny program (ldxb/call/exit), registers a Rust
+  helper (key 1 = double), runs interpreter + JIT, asserts they agree (->42),
+  and --disasm shows it's ordinary eBPF. Notes rbpf's toy verifier vs kernel's.
+  New diagram userspace-ebpf. No ebpf_ metric / no In-Grafana line, by design
+  (nothing touches the kernel or OTLP). Single-crate example (no -ebpf/-common).
+- Plan Phase 9 resynced: 52–57 now mapped one chapter per row (kfuncs, bpf
+  token, bpf wq, struct_ops general, dynptr/arena, bpf iters).

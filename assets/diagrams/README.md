@@ -71,6 +71,7 @@ Embed a diagram in a chapter with the include:
 | `pinning` | 48 | pin program/map/link to bpffs so they outlive the loader |
 | `syscall-prog` | 49 | loader programs: BPF that issues bpf() itself (light skeletons) |
 | `user-ringbuf` | 50 | the ring buffer that runs backwards: user space → BPF |
+| `userspace-ebpf` | 51 | the same eBPF bytecode in a user-space VM (rbpf) |
 
 ## Regenerating
 

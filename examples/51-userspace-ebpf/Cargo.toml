@@ -1,0 +1,17 @@
+[package]
+name = "userspace-ebpf"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+
+[dependencies]
+rbpf = "0.2"
+anyhow = "1"
+
+[[bin]]
+name = "userspace-ebpf"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1

@@ -92,10 +92,13 @@ one may merge with its neighbour.
 | r28 | 48 | `detach`/pinning — outliving the loader | **shipped (unverified)** |
 | r29 | 49 | `syscall` programs — loader programs & light skeletons | **shipped (unverified)** |
 | r30 | 50 | user ring buffer (user → BPF) | **shipped (unverified)** |
-| r31 | 51 | userspace eBPF |
-| r31 | 52–53 | `kfuncs`; `bpf token` |
-| r32 | 54–55 | `bpf wq` (workqueues); `struct_ops` (general) |
-| r33 | 56–57 | `dynptr`/`bpf arena`; `bpf iters` |
+| r31 | 51 | userspace eBPF (rbpf, bpftime) | **shipped (unverified)** |
+| r32 | 52 | `kfuncs` — the modern typed helper alternative |
+| r33 | 53 | `bpf token` — delegating BPF in containers |
+| r34 | 54 | `bpf wq` — kernel workqueues / timers |
+| r35 | 55 | `struct_ops` (general) |
+| r36 | 56 | `dynptr` / `bpf arena` |
+| r37 | 57 | `bpf iterators` |
 
 ## Phase 10 — Operating eBPF
 
