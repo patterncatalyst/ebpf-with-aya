@@ -137,9 +137,13 @@ cd examples/44-scx-nest && ./demo.sh
 
 The demo starts `scx_nest`, runs a *moderate* CPU load (fewer busy tasks than
 cores — the regime where the nest matters), and attaches the busy probe.
-Watch the per-CPU busy percentages: a handful of cores should run hot while
-the others stay cool, the nest made visible. Stop `scx_nest` and the same
-load spreads back out across all cores under the default scheduler.
+**In the terminal** where the probe runs you'll see a live per-CPU busy-percent
+bar (`cpu0: 98%  cpu1: 95%  cpu2: 3% …`); a handful of cores should run hot
+while the others stay cool — the nest made visible. **In Grafana**
+(`127.0.0.1:3000` → Explore), chart `ebpf_cpu_busy_ns_total{cpu}` with a
+`rate()` to watch the same concentration as a time series, one line per core.
+Stop `scx_nest` and the same load spreads back out evenly across all cores
+under the default scheduler.
 
 ## Cross-check
 

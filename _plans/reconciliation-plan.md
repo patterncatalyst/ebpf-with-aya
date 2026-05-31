@@ -1012,3 +1012,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Security row description updated to its 6 chapters.
 - De-numbered the CO-RE forward-refs (were "Chapter 56"/"Ch 56" in Ch 7, 8,
   15, 27) to "Part 9" so they can't drift as earlier parts grow.
+
+### r25.2 — docs: make the Grafana side of "observe" real (and referenced)
+- Ch 3: replaced the ASCII data-path block under "How Rust eBPF programs
+  report in" with a new diagram `reports-in` (Fig 3.2) showing the opensnoop
+  example fanning out to TWO faces of output — a live terminal table and
+  `ebpf_*` metrics pushed via OTLP to otel-lgtm/Grafana. Added a "Where your
+  output shows up" subsection that fixes the terminal-vs-Grafana distinction
+  and gives a concrete Grafana viewing recipe (127.0.0.1:3000 → Explore →
+  Prometheus → query `ebpf_`). Strengthened "Leave it running" to state every
+  later chapter feeds this stack, and updated the closing checklist.
+- Disambiguated chapter "Build, deploy, observe" steps so "watch X" is clearly
+  the terminal and the `ebpf_*` metric is clearly Grafana: Ch 44 (per-CPU
+  busy % in terminal; `ebpf_cpu_busy_ns_total{cpu}` rate() in Grafana) and
+  Ch 43 (`ebpf_ctxsw_total{cpu}`). Ch 45 already named its Grafana metric.
+- CONVENTION going forward: every program chapter's "Build, deploy, observe"
+  names both the terminal live view and the specific `ebpf_*` metric to chart
+  in Grafana. Older chapters (6–42) still describe terminal output well but
+  mostly don't name the Grafana panel — a focused "observe pass" can retrofit
+  them; tracked here as outstanding.

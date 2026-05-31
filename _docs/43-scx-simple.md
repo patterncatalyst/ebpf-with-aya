@@ -158,10 +158,11 @@ cd examples/43-scx-simple && ./demo.sh
 The demo installs `scx-scheds` if needed, starts `scx_simple` on the target
 (so it becomes the active scheduler), runs a short CPU workload, and attaches
 a tiny **Aya** probe — a `sched_switch` tracepoint counting context switches
-per CPU and exporting `ebpf_ctxsw_total{cpu}`. You'll see `scx_simple` go
-active in `/sys/kernel/sched_ext/state`, the workload run under it, and your
-own probe show the scheduling happening per core. Stopping `scx_simple`
-returns the system to the default scheduler.
+per CPU. **In the terminal** you'll see the per-CPU switch counts tick up as
+the workload runs under `scx_simple` (confirm it's active with
+`/sys/kernel/sched_ext/state`). **In Grafana** (`127.0.0.1:3000` → Explore),
+chart `ebpf_ctxsw_total{cpu}` to watch context switches per core over time.
+Stopping `scx_simple` returns the system to the default scheduler.
 
 ## Cross-check
 

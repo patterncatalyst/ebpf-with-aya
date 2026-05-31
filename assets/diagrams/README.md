@@ -24,6 +24,7 @@ Embed a diagram in a chapter with the include:
 |------|---------|-------|
 | `lab-topology` | 2 | host / target VM / peer VM and what runs where |
 | `obs-data-path` | 3 | kernel → map → loader → OTLP → Grafana |
+| `reports-in` | 3 | opensnoop: one probe, two faces of output (terminal + Grafana) |
 | `workspace-build` | 4 | common / ebpf / loader crates + aya-build flow |
 | `ebpf-lifecycle` | 5 | load → verify → JIT → attach, and hook types |
 | `ebpf-runtime-loop` | 5 | the runtime loop: hook fires program → writes map → loader reads → Grafana |

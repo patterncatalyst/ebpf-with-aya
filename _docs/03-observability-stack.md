@@ -98,15 +98,12 @@ program has two halves:
   `opentelemetry` + `opentelemetry-otlp` crates — pointed at the
   stack's OTLP endpoint.
 
-So the data path for, say, `opensnoop` is:
+So the data path for, say, `opensnoop` looks like this:
 
-```text
-kernel probe on openat ──> per-CPU map (count, latency)
-                              │
-            user space reads map every 1s
-                              │
-        opentelemetry-otlp ──> OTLP/HTTP :4318 ──> Mimir/Tempo/Loki ──> Grafana
-```
+{% include excalidraw.html
+   file="reports-in"
+   alt="The opensnoop openat probe in the guest kernel writes counts and latency into a per-CPU map. The user-space loader reads the map and produces two faces of output: it prints a live table to your terminal (what chapters tell you to watch), and it pushes ebpf_* metrics via OTLP on port 4318 to the otel-lgtm stack, which stores them and charts them in Grafana on port 3000 over time. The program runs in the guest while the stack runs on your laptop, so the loader pushes out via OTLP."
+   caption="Figure 3.2 — one probe, two faces of output: a live terminal table and ebpf_* metrics in Grafana" %}
 
 From the **target VM**, "the stack's OTLP endpoint" is the host's
 address on the libvirt network (the `192.168.x.1` gateway), not
@@ -122,6 +119,32 @@ you; when running by hand you pass it as
 > identically whether the program runs in a VM, a container, or bare
 > metal). It also gives us traces and logs on the same wire, which is
 > what makes the three-signal correlation in Grafana possible.
+
+### Where your output shows up
+
+Every program chapter from here produces output in **two places**, and it's
+worth fixing which is which now so later instructions are unambiguous:
+
+- **Your terminal** — the loader prints a small live view (a table, a
+  histogram, a per-CPU bar) to the terminal where you ran `demo.sh`. When a
+  chapter says "watch the per-CPU busy percentages" or "watch the latency
+  histogram fill in," *this* is what it means — the text scrolling in your
+  terminal, on the host, fed back over SSH from the program running in the
+  guest.
+- **Grafana** — the same loader exports metrics named **`ebpf_*`** over OTLP.
+  These land in the stack on your laptop and are what you chart over time. To
+  see them, open Grafana at `127.0.0.1:3000`, go to **Explore**, pick the
+  Prometheus data source (otel-lgtm bundles Prometheus-compatible storage
+  alongside Grafana), and start a query with `ebpf_` — autocomplete lists
+  every metric the chapters export. For `opensnoop` you'd find something like
+  `ebpf_opensnoop_opens_total`; graph it and you have opens-per-second by
+  process, live. Each chapter names the specific `ebpf_*` metric to look for
+  under its "Build, deploy, observe" step.
+
+The rule of thumb: the **terminal** view is for the quick "is it working right
+now" glance while you run the demo; **Grafana** is where the same numbers
+become a time series you can watch, compare across runs, and correlate with
+the traces and logs on the same wire.
 
 ## The three signals, and why eBPF touches all of them
 
@@ -141,8 +164,13 @@ reach for whichever the program's story needs.
 
 ## Leave it running
 
-Keep the stack up while you work through the tutorial; it's cheap.
-When you're done for the day:
+Keep the stack up while you work through the tutorial; it's cheap — and it's
+not scenery. **Every program chapter that follows exports its `ebpf_*`
+metrics to this stack**, so the demo you run in Chapter 6, the latency
+histograms in the tracing chapters, the per-CPU bars in the schedulers
+chapters, and the request timings in the application chapters all show up here
+in Grafana with no further setup. That's the payoff for standing it up once
+now. When you're done for the day:
 
 ```bash
 cd examples/03-observability-stack && ./demo.sh down
@@ -154,8 +182,8 @@ cd examples/03-observability-stack && ./demo.sh down
   `127.0.0.1:3000`
 - [x] The Python 3.14 client's metrics, traces, and logs visible in
   Grafana
-- [x] A clear picture of the kernel → map → user space → OTLP →
-  Grafana data path
+- [x] A clear picture of the two faces of output — a live table in your
+  terminal and `ebpf_*` metrics charted in Grafana at `127.0.0.1:3000`
 
 [Next: Chapter 4 — The Rust + Aya toolchain →]({{ "/docs/04-rust-aya-toolchain/" | relative_url }})
 
