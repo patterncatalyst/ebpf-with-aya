@@ -1365,3 +1365,24 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   ebpf_offload_packets_total (In-Grafana). New diagram offload. FULL DEPTH +
   deliberately careful about marketing-vs-deployable.
 - Next: Ch 61 power & efficiency (measuring/reducing energy cost).
+
+### r41.0 — Operating eBPF: power & efficiency (Ch 61) — UNVERIFIED (full depth)
+- **Ch 61 (power)** — the OS bills CPU TIME, not JOULES → per-workload energy
+  invisible. RAPL (Sandy Bridge+, AMD too) via powercap sysfs energy_uj per
+  domain (pkg/core/uncore/dram), monotonic µJ → diff = watts; SOCKET-level not
+  per-process, and usually ABSENT in VMs (no MSR/powercap passthrough). Attribution
+  model: energy(workload) ≈ energy(pkg) × cpu_time(workload)/cpu_time(total); eBPF
+  measures shares cheaply on sched_switch (Kepler/DEEP-mon/Wattmeter). HONEST
+  LIMITS: ignores DVFS frequency + C-states + per-op variance → comparative not
+  absolute (cluster-total accuracy criticised). Kepler (CNCF): production exporter,
+  REWROTE at 0.10 (0.9.x frozen) toward MEASURED sources (RAPL/HWMon/NVIDIA GPU/
+  Redfish) after ML-estimate accuracy criticism. eBPF efficiency two ways:
+  (1) low-overhead measurement (vs /proc polling), (2) CONTROL frontier cpufreq_ext
+  — first upstream-bound eBPF CPU-frequency governor via bpf_struct_ops (Ch55),
+  composable w/ sched_ext (Part 6) → observe→steer feedback loop. Example: real
+  Aya sched_switch per-comm on-CPU accumulator (HashMap<Comm,u64> + PerCpuArray
+  last_ts), loader reads RAPL if present → ebpf_estimated_watts{comm}, else
+  ebpf_oncpu_seconds_total{comm} (VM fallback). New diagram power. In-Grafana.
+  FULL DEPTH + honest re VM/accuracy.
+- Next: Ch 62 — book close-out (retrospective + where eBPF/Aya go next). CLOSES
+  Part 9 and the book.

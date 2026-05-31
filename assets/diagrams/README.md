@@ -82,6 +82,7 @@ Embed a diagram in a chapter with the include:
 | `core` | 58 | CO-RE: compile once, relocate to the target kernel via BTF |
 | `bpf-lifecycle` | 59 | operating eBPF: pinning, link update, state continuity |
 | `offload` | 60 | running eBPF off the host CPU (SmartNIC / DPU / FPGA / GPU) |
+| `power` | 61 | attribute socket energy to workloads via sched_switch shares |
 
 ## Regenerating
 
