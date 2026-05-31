@@ -91,7 +91,7 @@ assumption a future kernel can invalidate. If the read fails, we leave
 the filename empty and still emit the event — **degrade, don't crash**.
 The robust answer to this fragility is CO-RE (BTF-relocated field
 access), which `fentry` (Chapter 8) and the CO-RE deep-dive
-(Chapter 56) build out properly. For a first kprobe, the explicit
+(Part 9) build out properly. For a first kprobe, the explicit
 `probe_read` makes the underlying mechanic visible.
 
 ### Ring buffers

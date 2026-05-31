@@ -38,11 +38,11 @@ own once the lab exists.
 | **User-space &amp; language probing** | uprobes, USDT, runtimes | 13–20 |
 | **Performance &amp; resources** | scheduling, IRQs, memory, I/O, power | 21–26 |
 | **Networking** | sockets, TC, XDP, L7 | 27–36 |
-| **Security &amp; LSM** | enforcement, offense, defense | 37–41 |
-| **Schedulers (`sched_ext`)** | writing BPF schedulers | 42–43 |
-| **Application targets** | real workloads | 44–45 |
-| **Advanced kernel surface** | the 2024–2026 BPF feature set | 46–55 |
-| **Operating eBPF** | CO-RE, zero-downtime, frontiers | 56–60 |
+| **Security &amp; LSM** | enforcement, offense, defense | 37–42 |
+| **Schedulers (`sched_ext`)** | writing BPF schedulers | 43–44 |
+| **Application targets** | real workloads | 45–46 |
+| **Advanced kernel surface** | the 2024–2026 BPF feature set | 47–56 |
+| **Operating eBPF** | CO-RE, zero-downtime, frontiers | 57–61 |
 
 ## The Foundations chapters (do these first, in order)
 

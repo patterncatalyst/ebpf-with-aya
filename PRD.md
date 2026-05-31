@@ -109,11 +109,11 @@ in [`_plans/iteration-plan.md`](./_plans/iteration-plan.md).
 | User-space & language probing | 13–20 | uprobe+bashreadline, bootstrap (java/python targets), uprobe rust, btf uprobe, sslsniff, trace goroutine states, funclatency, javagc |
 | Performance & resources | 21–26 | runqlat, hardirqs, profile, memleak, biopattern, energy monitoring |
 | Networking | 27–36 | tcpconnlat, tcpstates, L7 http socket filters, sockops, tc, xdp, xdp tcpdump, xdp load balancer, xdp test, tcx |
-| Security & LSM | 37–41 | lsm connect, hiding process/file info, bpf_send_signal, sudo priv-esc demo, runtime hardening |
-| Schedulers (sched_ext) | 42–43 | scx_simple, scx_nest |
-| Application targets | 44–45 | nginx, postgres |
-| Advanced kernel surface | 46–55 | detach, syscall, user ringbuf, userspace ebpf, kfuncs, bpf token, bpf wq, struct_ops, dynptr, bpf arena, bpf iters |
-| Operating eBPF | 56–60 | CO-RE deep dive, L3AF zero-downtime upgrades, AI/GPU offloading, power management, where to go next |
+| Security & LSM | 37–42 | lsm connect, bpf_send_signal kill, hiding process info, LSM file protection, sudo priv-esc demo, security sensor/telemetry |
+| Schedulers (sched_ext) | 43–44 | scx_simple, scx_nest |
+| Application targets | 45–46 | nginx, postgres |
+| Advanced kernel surface | 47–56 | detach, syscall, user ringbuf, userspace ebpf, kfuncs, bpf token, bpf wq, struct_ops, dynptr, bpf arena, bpf iters |
+| Operating eBPF | 57–61 | CO-RE deep dive, L3AF zero-downtime upgrades, AI/GPU offloading, power management, where to go next |
 
 ---
 

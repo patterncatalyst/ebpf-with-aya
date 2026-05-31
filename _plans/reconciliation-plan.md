@@ -998,3 +998,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   signature (fn/offset/target/pid), /proc/<pid>/root resolution, ctx.arg(0)
   ABI. Reuses the funclatency (Ch18) histogram, keyed by request object.
 - Diagrams 41 → 42. First real third-party app target.
+
+### r25.1 — docs sync: Ch5 chapter-shape + outline tables + CO-RE refs
+- Ch 5 "shape of every chapter" rewritten to match the real chapter structure
+  (concept+diagram → How the code works → Build/deploy/observe → Cross-check →
+  What you learned → Verification status), instead of the old 6-step "recipe"
+  that listed three separate crate sections (they're one "How the code works"
+  section) and omitted the diagram and recap. Noted -common is per-chapter
+  (when a shared record exists), and that the book never self-promotes.
+- Fixed the outline tables in Ch 0 and PRD: Security & LSM grew to 6 chapters
+  (37–42), so everything after shifted +1 — Schedulers 43–44, Application
+  targets 45–46, Advanced kernel surface 47–56, Operating eBPF 57–61. PRD
+  Security row description updated to its 6 chapters.
+- De-numbered the CO-RE forward-refs (were "Chapter 56"/"Ch 56" in Ch 7, 8,
+  15, 27) to "Part 9" so they can't drift as earlier parts grow.

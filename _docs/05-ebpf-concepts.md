@@ -148,17 +148,20 @@ program reports matches what the kernel actually did.
 
 ## The shape of every chapter from here
 
-With this model, each program chapter is the same recipe:
+With this model, each program chapter follows the same shape:
 
-1. **Concept** — which event, which program type, what we'll measure.
-2. **Kernel crate** (`-ebpf`) — the handler, writing to a map or ring.
-3. **Common crate** — the shared record type.
-4. **User-space crate** — load, attach, read the map, export via OTLP.
-5. **Deploy** — `demo.sh` ships the binary to the target, runs it,
-   drives load (often from a Python client), shows the result in
-   Grafana, and cross-checks with `bpftool`/`bpftrace`.
-6. **Reconciliation** — claims start `unverified`, get promoted only
-   after a real run.
+1. **Concept** — which event, which program type, and what we'll measure,
+   with a diagram of the flow.
+2. **How the code works** — the maps (and why each type), the kernel handler
+   in full, and the user-space side (load, attach, drain the map, export via
+   OTLP); plus the shared record type, when the program has one.
+3. **Build, deploy, observe** — `demo.sh` ships the binary to the target,
+   drives load (often from a Python client), and shows the result in Grafana.
+4. **Cross-check** — confirm against `bpftool`, `bpftrace`, or the native
+   tool the program imitates.
+5. **What you learned** — a short recap.
+6. **Verification status** — every claim starts `unverified` and stays that
+   way until your own run on real hardware promotes it.
 
 [Next: Chapter 6 — Hello, eBPF →]({{ "/docs/06-hello-world/" | relative_url }})
 

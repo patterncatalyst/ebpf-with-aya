@@ -130,7 +130,7 @@ hardcoded **offsets**. They sit at the head of the struct, which is
 offsets is exactly the brittleness kprobes are infamous for. The real
 fix is **CO-RE**, which relocates field offsets at load time against the
 running kernel's BTF so the same binary works everywhere; that's the
-deep-dive in Chapter 56. For now, verify the offsets with
+deep-dive in Part 9. For now, verify the offsets with
 `pahole -C sock_common` and treat them as provisional. (Chapter 28
 sidesteps the problem entirely with a tracepoint that hands you the
 fields — a pointed contrast.)
@@ -205,7 +205,7 @@ or a busy peer).
 - Correlate the two probes of one connection by the **`struct sock *`**
   pointer — the kernel-side entry/exit key.
 - Reading kernel struct fields by **offset** works but is fragile;
-  **CO-RE** (Ch 56) is the portable fix.
+  **CO-RE** (Part 9) is the portable fix.
 
 Next: **`tcpstates`** traces the whole TCP state machine — with a single
 tracepoint that needs none of this offset chasing.

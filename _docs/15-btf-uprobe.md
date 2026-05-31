@@ -89,7 +89,7 @@ changes between versions.
 > or **generated from the target's BTF** when you don't), read with
 > `bpf_probe_read_user`. BTF is what makes that mirror *correct* and
 > lets you detect when a target's layout has drifted out from under
-> you. The full relocation story is the CO-RE deep-dive in Chapter 56.
+> you. The full relocation story is the CO-RE deep-dive in Part 9.
 
 ## Build, deploy, observe
 

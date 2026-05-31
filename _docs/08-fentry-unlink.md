@@ -107,7 +107,7 @@ arguments*, which makes the pointer's type trustworthy, but following a
 nested pointer to a string still goes through `bpf_probe_read_kernel`.
 The fully robust version uses BTF-generated kernel types (via
 `aya-tool generate`) so field offsets relocate automatically; that's
-the CO-RE machinery built out in Chapter 56. Here we keep the read
+the CO-RE machinery built out in Part 9. Here we keep the read
 explicit so the mechanic stays visible, and degrade to an empty
 filename if it fails.
 
