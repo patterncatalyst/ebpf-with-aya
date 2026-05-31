@@ -69,6 +69,7 @@ Embed a diagram in a chapter with the include:
 | `obi-arch` | 46 | OBI: eBPF probes → OTel signals (production picture) |
 | `pg-probe` | 47 | postgres: uprobes for query latency + lock waits, keyed by backend pid |
 | `pinning` | 48 | pin program/map/link to bpffs so they outlive the loader |
+| `syscall-prog` | 49 | loader programs: BPF that issues bpf() itself (light skeletons) |
 
 ## Regenerating
 

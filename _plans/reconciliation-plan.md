@@ -1107,3 +1107,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   eBPF lifecycle from the loader → forward-ref to Part 9 (zero-downtime).
 - Plan Phase 9 rows resynced to current numbering (Advanced = 48–57). Next:
   Ch 49 syscall programs.
+
+### r29.0 — Advanced surface: syscall programs (Ch 49) — UNVERIFIED (conceptual)
+- **Ch 49 (syscall-prog)** — BPF_PROG_TYPE_SYSCALL: attaches to nothing, run via
+  BPF_PROG_RUN, calls bpf() itself via bpf_sys_bpf (sleepable; bpf_sys_bpf/
+  bpf_sys_close/bpf_btf_find_by_name_kind). Teaches loader programs ("strace of
+  libbpf" replayed in-kernel) and light skeletons (bpftool gen skeleton -L
+  embeds a generated syscall/loader program + data → no libelf/libbpf at load;
+  path to signed loading). HONEST frame: Aya IS the user-space loader, so this
+  is mechanism-to-recognize, not a tool to wield; aya-ebpf syscall-program
+  authoring is experimental. Concept chapter: new diagram syscall-prog +
+  illustrative/loader_program.rs (read-only sketch, like sched_ext reference)
+  + demo using bpftool gen skeleton -L on a real built object. No ebpf_ metric
+  (inspection chapter, like Ch35) — no In-Grafana line, by design.
+- Next: Ch 50 user ring buffer (user space → BPF direction).
