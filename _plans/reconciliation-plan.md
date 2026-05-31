@@ -1326,3 +1326,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   ... a handful of advanced chapters are the exception"). Framed as: goal is
   all-Rust; 2026 reality is the newest kernel surface speaks C first, so the
   toolchain carries both. Ch4 now ~2480 words.
+
+### r39.0 — Operating eBPF: lifecycle/pinning/zero-downtime (Ch 59) — UNVERIFIED (full depth)
+- **Ch 59 (bpf-lifecycle)** — second Part 9 chapter. Default lifetime = loader's
+  fds → dies on exit; operating means decoupling. THREE PILLARS: (1) PINNING
+  (bpffs) decouples lifetime — loader disposable, privilege separation
+  (privileged pins, unprivileged from_pin; cf Ch53 token); aya
+  EbpfLoader::map_pin_path / MapData::from_pin / FdLink::pin. (2) LINKS + atomic
+  BPF_LINK_UPDATE — swap program under a LIVE link, new live before old gone →
+  zero gap (no dropped packets/events); XDP replace flags / tcx ordered links /
+  libxdp dispatcher. (3) PINNED MAPS reused across versions → state (counters/
+  conntrack/LRU) survives upgrade = hot-swap vs cold restart. Orchestrators:
+  L3AF (LF Networking/Walmart — full lifecycle, chaining, GRACEFUL RESTART of
+  control plane w/o touching data plane, CO-RE, k8s) and bpfman (CNCF, k8s-native
+  pin/manage). Example: real Aya — counter program, map_pin_path + FdLink.pin,
+  exits leaving pins, program keeps counting (bpftool shows pinned link w/ no
+  owner + climbing map), run 2 reuses pinned map → count CONTINUES. Metric
+  ebpf_service_events_total (In-Grafana, smooth across handoff). New diagram
+  bpf-lifecycle (3 pillars). link_update atomic-swap ergonomics flagged evolving.
+  FULL DEPTH.
+- Next: Ch 60 hardware/accelerator offload (program runs off the host CPU).
