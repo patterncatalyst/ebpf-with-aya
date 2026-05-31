@@ -1293,3 +1293,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   portability (one binary across unlike distros); musl is a build target you opt
   into (x86_64-unknown-linux-musl), Alpine's default — NOT Fedora/UBI (glibc).
   Edited both the "How Aya does it" passage and the What-you-learned bullet.
+
+### r38.2 — Ch 4 foundation expansion: compiler path + tooling + glibc/musl
+- Reader asked for detailed background on glibc vs musl, and on Clang/the eBPF
+  tooling, in a Foundations chapter. Added to Ch 4 (Rust + Aya toolchain), the
+  natural home (already owned bpf-linker + kernel tooling). Three additions:
+  (1) "What's actually compiling this: LLVM, Clang, and rustc" — eBPF is LLVM-
+  BPF-backend bytecode; C path = Clang, Rust/Aya path = rustc + bpf-linker (no
+  Clang); Clang still needed for reference .bpf.c, vmlinux.h, and aya-tool
+  (bindgen/libclang). (2) "The eBPF tooling landscape" — replaces the brief
+  VM-tooling note: bpftool/libbpf/BCC/bpftrace/Clang-LLVM/pahole-dwarves/
+  llvm-objdump/perf, build-on-laptop vs inspect-on-guest, Fedora-repos policy.
+  (3) "The loader's libc: glibc vs musl" — loader is an ordinary userspace
+  binary; glibc (Fedora/UBI default, dynamic, forward-compat) vs musl (Alpine
+  default; on Fedora a build target x86_64-unknown-linux-musl, static); dynamic
+  glibc right for our homogeneous Fedora fleet, static musl for cross-distro;
+  EXPLICITLY separate axis from CO-RE (userspace/distro vs kernel-version).
+  Lays the foundation the Ch58 r38.1 correction referenced. Intro tweaked ("no
+  Clang in the loop for the programs you write"), duration 25→35 min,
+  description quoted, checklist gained two understanding bullets. Ch4 1217→2258 words.

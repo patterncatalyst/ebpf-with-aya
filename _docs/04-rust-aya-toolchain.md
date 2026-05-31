@@ -2,15 +2,15 @@
 title: "The Rust + Aya toolchain"
 order: 4
 part: Foundations
-description: Install Rust 1.96.0 via rustup (not dnf), add the nightly BPF target and bpf-linker, scaffold projects with cargo-generate and the aya-template, and set up RustRover.
-duration: 25 minutes
+description: "Install Rust 1.96.0 via rustup (not dnf), add the nightly BPF target and bpf-linker, scaffold projects with cargo-generate and the aya-template, and set up RustRover. Plus the background that pays off later: the LLVM/Clang/rustc compiler path that turns code into BPF bytecode, the wider eBPF tooling landscape, and the glibc-vs-musl choice for your loader binary."
+duration: 35 minutes
 ---
 
 This chapter installs everything needed to *build* eBPF programs in
 Rust on your laptop. Aya is unusual and pleasant here: the kernel-side
-and user-side are both Rust, there's no C toolchain in the loop, and a
-release build produces one self-contained binary you ship to the
-target VM. But the eBPF half compiles to a special target with a
+and user-side are both Rust — no Clang in the loop for the programs you
+write — and a release build produces one self-contained binary you ship
+to the target VM. But the eBPF half compiles to a special target with a
 special linker, so the setup has a few moving parts. We'll get them
 all in place and prove them with a build in Chapter 6.
 
@@ -99,6 +99,33 @@ works because it bundles a compatible LLVM; the `--no-default-features`
 form links against the system LLVM you just installed, which is the
 fallback.)
 
+## What's actually compiling this: LLVM, Clang, and rustc
+
+eBPF is a **bytecode** — a small, verifiable instruction set the kernel runs in
+its in-kernel virtual machine. Nothing writes that bytecode by hand; a compiler
+backend emits it, and for eBPF that backend is **LLVM's BPF target**. Every
+mainstream eBPF toolchain, C or Rust, ultimately funnels through it. What
+differs is the *front end*:
+
+- **C eBPF** — the libbpf/BCC world most kernel docs assume — uses **Clang**, an
+  LLVM C front end, to compile a `.bpf.c` file straight to a BPF object:
+  `clang -O2 -g -target bpf -c prog.bpf.c -o prog.o`. The `-g` matters: it keeps
+  the BTF debug info that CO-RE relies on (Chapter 58).
+- **Rust eBPF** — Aya — uses **rustc**, also an LLVM front end, to emit BPF, and
+  then **`bpf-linker`** drives LLVM's BPF backend to produce and finalize the
+  object. So in the *Rust* path there is no Clang at all: rustc + bpf-linker
+  replace it end to end. That's the "both halves are Rust" pleasantness from
+  this chapter's opening, made concrete.
+
+Which is why this book installs *both*. Your Aya programs never call Clang — but
+the wider eBPF ecosystem is C, so the **reference programs** alongside the
+frontier chapters are `.bpf.c` compiled with Clang, and two CO-RE essentials
+need it too: generating `vmlinux.h` (`bpftool btf dump … format c`, then
+`#include`d by a Clang build) and **`aya-tool`**, which leans on **bindgen**
+(hence libclang) to turn kernel BTF into Rust bindings. So `clang` and `llvm`
+earn their place in the prerequisites even though your day-to-day Rust builds
+don't touch Clang.
+
 ## Install cargo-generate and scaffold from the Aya template
 
 Aya projects are scaffolded with `cargo-generate` from the official
@@ -177,13 +204,90 @@ the two-crate workspace.
    Chapter 2. Use RustRover to edit and to run `cargo build`/`clippy`;
    use the terminal to deploy.
 
-## Kernel-side tooling lives in the VM
+## The eBPF tooling landscape
 
-You already installed `bpftool`, `bpftrace`, `bcc-tools`, and `perf`
-*in the target VM* via cloud-init (Chapter 2). That's deliberate:
-those tools inspect the kernel where the program runs. You build on
-the laptop; you inspect on the guest. As a project policy these always
-come from Fedora/Red Hat repositories — never third-party binaries.
+A quick map of the tools you'll meet, because the ecosystem grew in layers and
+the names blur together:
+
+- **`bpftool`** — the swiss-army knife, and the one you'll reach for constantly.
+  It lists and inspects loaded programs and maps (`prog show`, `map dump`), dumps
+  BTF (`btf dump`), pins and registers things (`struct_ops register`, `iter
+  pin`), probes kernel features (`feature probe`), and generates skeletons. When
+  a chapter cross-checks Aya's behaviour against ground truth, it's almost always
+  `bpftool`.
+- **libbpf** — the canonical C loader library: it loads objects, performs the
+  CO-RE relocations (Chapter 58), and manages maps and links. Aya is its
+  pure-Rust counterpart and does *not* use it, but the kernel docs and the
+  reference `.bpf.c` programs assume it.
+- **BCC** — the original framework: it bundles Clang and compiles eBPF *on the
+  target at runtime*. Powerful but heavy (the very problem CO-RE later solved);
+  its Python tools (`opensnoop`, `execsnoop`) are echoed in this book's early
+  chapters, reimplemented in Aya.
+- **bpftrace** — a high-level tracing DSL on the same machinery, for one-liners
+  and quick scripts where a full program is overkill.
+- **Clang / LLVM** — the compiler backend underneath all of it, as above.
+- **pahole / `dwarves`** — turns DWARF debug info into BTF and shows struct
+  layouts; it's how a kernel gains the BTF that CO-RE and `vmlinux.h` depend on.
+- **`llvm-objdump` / `readelf`** — inspect the compiled object, including the
+  CO-RE relocation records (Chapter 58's cross-check).
+- **`perf`** — sampling and tracing that predates and complements eBPF, useful
+  for profiling alongside it (Chapter 23).
+
+The split that matters operationally: **you build on the laptop** (rustc,
+bpf-linker, cargo, and Clang for the C references) and **you inspect on the
+guest** (`bpftool`, `bpftrace`, `bcc-tools`, `perf`) — because those read the
+kernel where the program actually runs, which is why Chapter 2's cloud-init put
+them in the VM. As a project policy these always come from Fedora/Red Hat
+repositories, never third-party binaries.
+
+## The loader's libc: glibc vs musl
+
+Your eBPF object is special — verified bytecode for the kernel VM — but the
+**loader is an ordinary Linux userspace binary**, and like any such binary it
+links a C library for its syscalls, memory allocation, and DNS. *Which* libc,
+and whether it's linked statically or dynamically, decides where that binary can
+run — a portability axis entirely **separate** from the kernel-version
+portability CO-RE gives you (Chapter 58). The two get conflated constantly; keep
+them apart.
+
+- **glibc** — the GNU C Library, the default on Fedora, RHEL, the UBI images
+  this book uses, Debian, and nearly every mainstream distro. Rust's default
+  Linux target, `x86_64-unknown-linux-gnu`, links it, normally **dynamically**:
+  the binary carries a dependency on the host's glibc. glibc is forward
+  compatible (build against an older glibc, run on a newer one), so a binary
+  built on Fedora 44 runs on Fedora 44 and later without fuss — but drop it on a
+  distro with an *older* or absent glibc and it may refuse to start.
+- **musl** — a small, clean libc built for static linking. It is **Alpine
+  Linux's** default (a frequent confusion — Arch, despite the similar-sounding
+  name, uses glibc). On Fedora it isn't the system libc at all; it's a **Rust
+  build target you opt into**, `x86_64-unknown-linux-musl`, which by default
+  produces a **fully static** binary with *no* dynamic libc dependency.
+
+The practical upshot:
+
+- A **dynamic glibc** loader is the path of least resistance and exactly right
+  for this lab: we build on Fedora and `scp` the binary to Fedora 44 targets we
+  control, so the glibc versions line up by construction. That's what every
+  `demo.sh` here produces, and it's all a homogeneous fleet needs.
+- A **static musl** loader is what you build when *one* artifact must run across
+  unlike distributions — drop the same file on Alpine, Debian, and Fedora and it
+  just runs, because it depends on nothing outside the kernel ABI. This is the
+  deployment story Aya advertises, and it pairs naturally with CO-RE: musl static
+  fixes *userspace* portability, CO-RE fixes *kernel* portability, and together
+  they give a single self-contained binary for a heterogeneous fleet.
+
+If you ever want the musl build, it's a target away:
+
+```bash
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+```
+
+(On Fedora the musl target usually links self-contained, though some setups want
+`musl-gcc` from `sudo dnf install musl-gcc`.) The trade-offs are real — musl's
+allocator and DNS resolver behave differently from glibc's, and a few glibc-only
+features are absent — so reach for it when portability demands it, not by
+default. For everything in this book, the stock glibc target is correct.
 
 ## What you should have now
 
@@ -193,6 +297,11 @@ come from Fedora/Red Hat repositories — never third-party binaries.
 - [x] `bpf-linker` and `cargo-generate` installed
 - [x] A scaffolded `hello` workspace that **builds**
 - [x] RustRover opened on the workspace, toolchains resolving
+- [x] A mental model of the compiler path (rustc + bpf-linker for Aya;
+  Clang for the C references and `vmlinux.h`) and the inspect-on-the-guest
+  tooling (`bpftool` et al.)
+- [x] Awareness of the **glibc** (our default) vs **musl** (optional, static,
+  cross-distro) choice for the loader — distinct from CO-RE's kernel portability
 
 [Next: Chapter 5 — eBPF concepts and tools →]({{ "/docs/05-ebpf-concepts/" | relative_url }})
 
