@@ -1076,3 +1076,20 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - HIGHEST-uncertainty code in the book (3-signal OTel SDK wiring); marked
   unverified with the specific API surfaces to confirm.
 - A LARGER capstone is planned for the very end of the book to reinforce this.
+
+### r27.0 — Application targets closes: probing postgres (Ch 47) — UNVERIFIED
+- **Ch 47 (pg-probe)** — a multi-process database target. ONE uprobe on the
+  postgres binary covers every backend (attach pid=None); the single-threaded
+  backend pid is a clean per-connection key. uprobe/uretprobe on
+  exec_simple_query → per-query latency + SQL text (bpf_probe_read_user_str_bytes
+  of arg0, 128B bounded, PII note); uprobe/uretprobe on ProcSleep → lock-wait
+  time (contention invisible from outside). Introduces USDT (query__start /
+  lock__wait__start, .note.stapsdt) as the stable DB-observability API, with an
+  honest note that Aya USDT attach is still maturing so we uprobe the wrapped
+  functions. Cross-check against pg_stat_statements + pg_stat_activity (the DB's
+  own books). New diagram pg-probe. Example = pg-probe-{ebpf,common,loader} +
+  demo running stock postgres image + a lock-contention scenario. New metrics
+  ebpf_pg_query_duration_ms, ebpf_pg_lock_wait_ms. Symbol/debuginfo caveat
+  documented (stock images stripped; need debug symbols or --enable-dtrace).
+- Application targets part (45 nginx, 46 capstone, 47 postgres) now complete.
+  Next: Part 8 Advanced kernel surface (48+), opening with detach/pinning.

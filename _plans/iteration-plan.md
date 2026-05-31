@@ -83,7 +83,7 @@ one may merge with its neighbour.
 |----|-----------|--------|
 | r25 | 45 | `nginx` — uprobe per-request latency on a containerized server | **shipped (unverified)** |
 | r26 | 46 | capstone — three signals tied together (Java + Python, OTel/OBI) | **shipped (unverified)** |
-| r27 | 47 | `postgres` — query/lock observation |
+| r27 | 47 | `postgres` — query latency + lock waits (multi-process uprobes, USDT) | **shipped (unverified)** |
 
 ## Phase 9 — Advanced kernel surface (the 2024–2026 BPF feature set)
 

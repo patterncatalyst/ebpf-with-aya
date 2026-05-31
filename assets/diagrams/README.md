@@ -67,6 +67,7 @@ Embed a diagram in a chapter with the include:
 | `nginx-uprobe` | 45 | uprobes on nginx request functions, keyed by the request object |
 | `three-signals` | 46 | one request → span + log + metric sharing a trace_id |
 | `obi-arch` | 46 | OBI: eBPF probes → OTel signals (production picture) |
+| `pg-probe` | 47 | postgres: uprobes for query latency + lock waits, keyed by backend pid |
 
 ## Regenerating
 

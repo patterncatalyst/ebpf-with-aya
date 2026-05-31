@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="190" y="74" width="372" height="182" rx="12" fill="#fafafa" stroke="#ddd"/>
+<text x="202" y="94" font-size="12" font-weight="700" fill="#888">postgres — one binary, many backend processes</text>
+<rect x="34" y="132" width="120" height="56" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="94.0" y="158.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">clients</text>
+<text x="94.0" y="175.0" font-size="11.5" fill="#555555" text-anchor="middle">SQL</text>
+<rect x="210" y="116" width="150" height="40" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="285.0" y="141.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">backend (pid A)</text>
+<rect x="210" y="164" width="150" height="40" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="285.0" y="189.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">backend (pid B)</text>
+<rect x="374" y="110" width="172" height="48" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="460.0" y="132.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">uprobe</text>
+<text x="460.0" y="149.0" font-size="11.5" fill="#555555" text-anchor="middle">exec_simple_query</text>
+<rect x="374" y="170" width="172" height="48" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="460.0" y="192.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">uprobe</text>
+<text x="460.0" y="209.0" font-size="11.5" fill="#555555" text-anchor="middle">ProcSleep (lock wait)</text>
+<rect x="600" y="96" width="250" height="50" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="725.0" y="119.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">query latency + SQL text</text>
+<text x="725.0" y="136.0" font-size="11.5" fill="#555555" text-anchor="middle">keyed by backend pid</text>
+<rect x="600" y="176" width="250" height="50" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="725.0" y="199.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">time waiting on locks</text>
+<text x="725.0" y="216.0" font-size="11.5" fill="#555555" text-anchor="middle">→ Grafana</text>
+<path d="M154,160 L190,160" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="172.0" y="152.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">queries</text>
+<text x="172.0" y="152.0" font-size="11" fill="#555" text-anchor="middle">queries</text>
+<path d="M546,134 L600,120" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<text x="571.0" y="121.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">duration + text</text>
+<text x="571.0" y="121.0" font-size="11" fill="#b8650a" text-anchor="middle">duration + text</text>
+<path d="M546,194 L600,200" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="573.0" y="189.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">wait time</text>
+<text x="573.0" y="189.0" font-size="11" fill="#555" text-anchor="middle">wait time</text>
+<text x="440" y="30" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">see inside the database: per-query latency (with SQL) and time lost waiting on locks</text>
+<text x="440" y="284" font-size="11" fill="#888" text-anchor="middle">one uprobe on the postgres binary covers every backend; the backend pid separates connections</text>
+</svg>
