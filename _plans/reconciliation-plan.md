@@ -1093,3 +1093,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   documented (stock images stripped; need debug symbols or --enable-dtrace).
 - Application targets part (45 nginx, 46 capstone, 47 postgres) now complete.
   Next: Part 8 Advanced kernel surface (48+), opening with detach/pinning.
+
+### r28.0 — Part 8 (Advanced kernel surface) opens: detach/pinning (Ch 48) — UNVERIFIED
+- **Ch 48 (pin-demo)** — the lifecycle foundation. BPF programs/maps/links are
+  refcounted by fds; loader exit frees them. Pinning to bpffs (/sys/fs/bpf)
+  creates a named reference that keeps them alive. Map pinned via
+  HashMap::pinned (LIBBPF_PIN_BY_NAME) + EbpfLoader::map_pin_path; link pinned
+  via take_link → FdLink::try_from → FdLink::pin; read back elsewhere via
+  MapData::from_pin. pinctl load/read/detach demonstrates: load+pin+exit, the
+  program keeps counting execs, a fresh process reads the pinned map, rm the
+  pin detaches. Cross-check with bpftool prog/link/map show + map dump pinned.
+  New diagram `pinning`. New metric ebpf_pinned_execs_total. Decoupling the
+  eBPF lifecycle from the loader → forward-ref to Part 9 (zero-downtime).
+- Plan Phase 9 rows resynced to current numbering (Advanced = 48–57). Next:
+  Ch 49 syscall programs.
