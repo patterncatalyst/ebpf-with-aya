@@ -1312,3 +1312,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Lays the foundation the Ch58 r38.1 correction referenced. Intro tweaked ("no
   Clang in the loop for the programs you write"), duration 25→35 min,
   description quoted, checklist gained two understanding bullets. Ch4 1217→2258 words.
+
+### r38.3 — Ch 4 honesty pass: where the kernel side is C, not Rust
+- Reader correctly noted the "no Clang for the programs you write" line was too
+  clean — several chapters DO use C in kernel space because Aya cannot author
+  the feature yet. Audited the repo and added an explicit caveat to Ch 4 listing:
+  KERNEL-SIDE IS C (loaded via bpftool/scx, user side Rust/bpftool): Ch 43-44
+  sched_ext (scx_*.bpf.c; aya crate is a companion observer), Ch 55 struct_ops
+  (cc.bpf.c via bpftool struct_ops register), Ch 57 iterators (task_iter.bpf.c
+  via bpftool iter pin), Ch 56 arena (arena_list.bpf.c via clang+bpftool).
+  C-CANONICAL + flagged/approximate aya program built: Ch 50 user-rb, Ch 54
+  timer, Ch 56 dynptr, Ch 58 CO-RE. Intro softened ("great majority ... no Clang
+  ... a handful of advanced chapters are the exception"). Framed as: goal is
+  all-Rust; 2026 reality is the newest kernel surface speaks C first, so the
+  toolchain carries both. Ch4 now ~2480 words.

@@ -7,10 +7,12 @@ duration: 35 minutes
 ---
 
 This chapter installs everything needed to *build* eBPF programs in
-Rust on your laptop. Aya is unusual and pleasant here: the kernel-side
-and user-side are both Rust — no Clang in the loop for the programs you
-write — and a release build produces one self-contained binary you ship
-to the target VM. But the eBPF half compiles to a special target with a
+Rust on your laptop. Aya is unusual and pleasant here: for the great majority of this book
+the kernel-side and user-side are both Rust — no Clang in the loop —
+and a release build produces one self-contained binary you ship to the
+target VM. (A handful of advanced chapters are the exception, where a
+kernel feature Aya can't yet author is written in C; we flag it plainly
+each time, and the section below lists them.) But the eBPF half compiles to a special target with a
 special linker, so the setup has a few moving parts. We'll get them
 all in place and prove them with a build in Chapter 6.
 
@@ -125,6 +127,31 @@ need it too: generating `vmlinux.h` (`bpftool btf dump … format c`, then
 (hence libclang) to turn kernel BTF into Rust bindings. So `clang` and `llvm`
 earn their place in the prerequisites even though your day-to-day Rust builds
 don't touch Clang.
+
+**One honest caveat, and the real reason Clang is required.** For the great
+majority of this book the kernel-side program is Rust — but a handful of
+advanced chapters are the exception, where the *in-kernel* program that actually
+runs is **C**, because Aya's kernel-side authoring for that specific feature is
+still emerging in 2026. The user-space side stays Rust or `bpftool`; the kernel
+program is C, loaded with `bpftool` or the subsystem's own tooling:
+
+- **sched_ext schedulers** (Chapters 43–44) — the scheduler is `scx_*.bpf.c`,
+  loaded via the `scx` tooling; the Aya crate there is a companion *observer*,
+  not the scheduler itself.
+- **struct_ops** (Chapter 55) — the TCP congestion-control vtable is `cc.bpf.c`,
+  installed with `bpftool struct_ops register`.
+- **BPF iterators** (Chapter 57) — `task_iter.bpf.c`, installed with
+  `bpftool iter pin`.
+- **BPF arena** (Chapter 56) — `arena_list.bpf.c`, compiled with Clang and
+  loaded via `bpftool`.
+
+A few more chapters (the ring-buffer dynptr, timers, and CO-RE bindings —
+Chapters 50, 54, 58) ship a working Aya kernel program *and* a canonical C
+reference, because the Aya rendering is still approximate or depends on
+generated bindings; each says so in its verification note. The point isn't that
+Aya is lacking — it's that the goal is all-Rust while the reality in 2026 is
+that the newest kernel surface still speaks C first, so the toolchain carries
+both.
 
 ## Install cargo-generate and scaffold from the Aya template
 
