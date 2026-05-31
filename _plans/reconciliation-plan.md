@@ -1346,3 +1346,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   bpf-lifecycle (3 pillars). link_update atomic-swap ergonomics flagged evolving.
   FULL DEPTH.
 - Next: Ch 60 hardware/accelerator offload (program runs off the host CPU).
+
+### r40.0 — Operating eBPF: offload (Ch 60) — UNVERIFIED (full depth, careful-honest)
+- **Ch 60 (offload)** — run eBPF off the host CPU. XDP THREE MODES: generic(SKB,
+  emulated, slow), native(DRV, in driver, HOST CPU — Ch32-36), offload(HW, on
+  the NIC). Aya selects via XdpFlags::HW_MODE/DRV_MODE/SKB_MODE. TRUE HW OFFLOAD:
+  driver JITs eBPF → NIC machine code; flagship Netronome Agilio NFP (now
+  Corigine), ~5.5x vs host iptables; verifier stricter (NIC's helper/map subset).
+  HONEST CAVEAT: hardware narrow & waning — NFP basically the only lineage;
+  BlueField-2 does only DRIVER-mode XDP, offload "not supported"; virtio lab NIC
+  won't offload → falls back. DPU = practical 2026 answer: BlueField-3 = full ARM
+  Linux on the NIC; run ORDINARY eBPF on its Linux (switching plane redirects to
+  ARM cores before host); Aya UNCHANGED, cross-compile aarch64 + deploy (ties to
+  Ch58 CO-RE). FRONTIER: FPGA synthesis hXDP/eHDL (research, 10-100x); GPU/AI =
+  eBPF filters near wire + GPU/Tensor inference on telemetry (NVIDIA Morpheus) —
+  NOT eBPF-on-GPU (that's research). Example: real Aya XDP_PASS counter, attach
+  walks HW→DRV→SKB and REPORTS engaged mode (expect DRV/SKB on virtio); metric
+  ebpf_offload_packets_total (In-Grafana). New diagram offload. FULL DEPTH +
+  deliberately careful about marketing-vs-deployable.
+- Next: Ch 61 power & efficiency (measuring/reducing energy cost).

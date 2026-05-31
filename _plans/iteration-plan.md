@@ -104,6 +104,7 @@ one may merge with its neighbour.
 | r38.2 | 4 | foundation: LLVM/Clang/rustc compiler path, eBPF tooling landscape, glibc vs musl | **shipped (unverified)** |
 | r38.3 | 4 | honesty pass: list the chapters where kernel-side is C (sched_ext/struct_ops/iter/arena) | **shipped (unverified)** |
 | r39 | 59 | operating eBPF — lifecycle, pinning, zero-downtime (L3AF/bpfman) | **shipped (unverified)** |
+| r40 | 60 | offload — eBPF off the host CPU (SmartNIC/DPU/FPGA/GPU) | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 
