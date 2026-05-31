@@ -79,6 +79,7 @@ Embed a diagram in a chapter with the include:
 | `dynptr` | 56 | a verifier-tracked handle to variable-length memory |
 | `bpf-arena` | 56 | sparse shared heap where BPF builds pointer data structures |
 | `bpf-iter` | 57 | the kernel calls your program once per element of a set |
+| `core` | 58 | CO-RE: compile once, relocate to the target kernel via BTF |
 
 ## Regenerating
 

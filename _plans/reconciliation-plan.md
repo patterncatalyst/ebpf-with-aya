@@ -1264,3 +1264,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   dump) → no ebpf_ metric / no In-Grafana, stated explicitly. FULL DEPTH.
 - **PART 8 (Advanced kernel surface, Ch 48–57) COMPLETE.** Next: Part 9 Operating
   eBPF (58–62), opening with the CO-RE deep-dive forward-ref'd throughout.
+
+### r38.0 — Part 9 OPENS: CO-RE deep-dive (Ch 58) — UNVERIFIED (full depth)
+- **Ch 58 (core)** — pays off the portability machinery used since Ch15/52/56/57.
+  Problem: struct layouts change across kernels → baked-in offsets misread. Pre-
+  CO-RE: BCC (compile-on-target, heavy) or per-kernel binaries. CO-RE (Nakryiko,
+  kernels ≥5.8 w/ BTF; BTF from 4.18 Lau): compile ONCE vs generic vmlinux.h
+  (from BTF), compiler emits BTF RELOCATIONS naming fields (preserve_access_index)
+  — "field pid of type pid_t in task_struct" — loader reads target /sys/kernel/
+  btf/vmlinux and patches offsets BY NAME (survives moves/nesting). Building
+  blocks: vmlinux.h, field relocations (offset / EXISTENCE via
+  bpf_core_field_exists / size / enum-type), Kconfig externs, struct flavors.
+  BPF_CORE_READ + nested chains. AYA: does CO-RE TRANSPARENTLY when bindings
+  carry BTF; aya-tool generate task_struct → portable Rust bindings (needs
+  bpftool+bindgen); rustc intrinsics preserve_*; Aya+musl = single static binary
+  across fleet (the Part 9 thesis). Example: reference/core.bpf.c canonical
+  (BPF_CORE_READ + field_exists), core-ebpf aya rendering w/ placeholder
+  vmlinux.rs (regenerate via aya-tool — flagged), real loader → ebpf_core_reads_total
+  (In-Grafana). demo shows relocation records via llvm-objdump + BTF presence.
+  New diagram core (two-band dev/runtime). FULL DEPTH.
+- Next: Ch 59 lifecycle / pinning / zero-downtime upgrades (operating a fleet).

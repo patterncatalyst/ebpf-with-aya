@@ -99,6 +99,7 @@ one may merge with its neighbour.
 | r35 | 55 | `struct_ops` (general) — BPF implements a kernel vtable | **shipped (unverified)** |
 | r36 | 56 | `dynptr` & `bpf arena` — flexible/shared memory | **shipped (unverified)** |
 | r37 | 57 | `bpf iterators` — walk a kernel set, emit like a file | **shipped (unverified)** — Part 8 complete |
+| r38 | 58 | CO-RE deep-dive — compile once, run everywhere | **shipped (unverified)** — opens Part 9 |
 
 ## Phase 10 — Operating eBPF
 
