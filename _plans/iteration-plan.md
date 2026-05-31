@@ -96,7 +96,7 @@ one may merge with its neighbour.
 | r32 | 52 | `kfuncs` — typed kernel calls, KF_ACQUIRE/RELEASE | **shipped (unverified)** |
 | r33 | 53 | `bpf token` — delegating BPF into containers (kernel 6.9) | **shipped (unverified)** |
 | r34 | 54 | timers & workqueues — deferred in-kernel work | **shipped (unverified)** |
-| r35 | 55 | `struct_ops` (general) |
+| r35 | 55 | `struct_ops` (general) — BPF implements a kernel vtable | **shipped (unverified)** |
 | r36 | 56 | `dynptr` / `bpf arena` |
 | r37 | 57 | `bpf iterators` |
 

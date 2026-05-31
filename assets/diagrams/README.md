@@ -75,6 +75,7 @@ Embed a diagram in a chapter with the include:
 | `kfuncs` | 52 | helpers vs kfuncs + the KF_ACQUIRE/KF_RELEASE discipline |
 | `bpf-token` | 53 | delegating BPF into unprivileged containers (the four axes) |
 | `bpf-timer` | 54 | deferred work: self-rescheduling timer + sleepable workqueue |
+| `structops` | 55 | BPF implements a kernel vtable (TCP congestion control) |
 
 ## Regenerating
 

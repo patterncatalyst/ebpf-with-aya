@@ -1210,3 +1210,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   present. Kept at FULL DEPTH.
 - Next: Ch 55 struct_ops (general) — implementing kernel policy interfaces in
   BPF, the mechanism beneath Part 6's schedulers.
+
+### r35.0 — Advanced surface: struct_ops general (Ch 55) — UNVERIFIED (full depth)
+- **Ch 55 (structops-cc)** — generalizes Part 6's sched_ext. The inversion:
+  normal BPF reacts at a kernel-owned hook; struct_ops has the kernel define an
+  INTERFACE (struct of fn ptrs / vtable) and BPF supply the whole impl, which
+  the kernel calls at the interface's call sites — BPF as a pluggable kernel
+  module. Mechanism: BPF_MAP_TYPE_STRUCT_OPS map holds the struct (SEC
+  .struct_ops.link), SEC("struct_ops/<method>") programs fill slots, BTF
+  reflection matches members by name+kind+size, register via a link installs;
+  verifier permits writing the interface's required fields. Worked example: a
+  minimal Reno-style tcp_congestion_ops (ssthresh/cong_avoid/undo_cwnd) walked
+  as the TCP stack runs it; tcp_slow_start/tcp_cong_avoid_ai as exposed building
+  blocks; select via sysctl/setsockopt. Generalization: same machinery = sched_ext,
+  HID-BPF, bpf Qdisc, FUSE. Aya struct_ops authoring EMERGING → reference/cc.bpf.c
+  canonical + registered via bpftool struct_ops register (real, no Aya needed) +
+  illustrative/cc_aya.rs sketch. New diagram structops. Control-plane → no ebpf_
+  metric / no In-Grafana (observe via sysctl tcp_available_congestion_control,
+  bpftool struct_ops show, ss -ti). FULL DEPTH maintained.
+- Next: Ch 56 dynptr & bpf arena (variable-length data + shared large memory).
