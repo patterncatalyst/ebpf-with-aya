@@ -59,6 +59,8 @@ Embed a diagram in a chapter with the include:
 | `signal-kill` | 38 | signal program: match an exec and bpf_send_signal(SIGKILL) |
 | `pidhide` | 39 | rewrite the getdents64 buffer to splice out a /proc/<pid> entry |
 | `lsm-file-protect` | 40 | LSM inode_permission: deny writes to one protected inode |
+| `sudo-escalate` | 41 | rewrite sudo's read() buffer to forge sudoers (lab-only) |
+| `security-sensor` | 42 | many security hooks → one SecEvent telemetry stream |
 
 ## Regenerating
 

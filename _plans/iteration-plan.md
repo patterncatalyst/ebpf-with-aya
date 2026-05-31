@@ -68,8 +68,7 @@ one may merge with its neighbour.
 |----|-----------|--------|
 | r20 | 37–38 | `lsm connect` — deny via LSM (cgroup-scoped); `signal kill` — bpf_send_signal to terminate processes | **shipped (unverified)** |
 | r21 | 39–40 | hiding process/file information (lab-only offense); LSM file/tamper protection | **shipped (unverified)** |
-| r22 | 40 | sudo privilege-escalation via file-content manipulation (offense, lab-only, in the VM) |
-| r23 | 41 | runtime hardening & security — telemetry, threat shielding (modern theme) |
+| r22 | 41–42 | sudo privilege-escalation (offense, lab-only); security sensor — telemetry + shielding (modern theme) | **shipped (unverified)** |
 
 ## Phase 7 — Schedulers (`sched_ext`)
 

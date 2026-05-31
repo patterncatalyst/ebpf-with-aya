@@ -22,12 +22,12 @@
 <figure class="excalidraw-embed">
   <object type="image/svg+xml"
           data="{{ svg_path }}"
-          aria-label="{{ include.alt }}">
-    {{ include.alt }}
+          aria-label="{{ include.alt | escape }}">
+    {{ include.alt | escape }}
   </object>
 
   {%- if include.caption -%}
-    <figcaption class="excalidraw-embed__caption">{{ include.caption }}</figcaption>
+    <figcaption class="excalidraw-embed__caption">{{ include.caption | escape }}</figcaption>
   {%- endif -%}
 
   <p class="excalidraw-embed__links">

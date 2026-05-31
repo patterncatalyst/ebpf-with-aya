@@ -924,3 +924,31 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   indexing (inode@0/mask@1/ret@2), MAY_WRITE value, i_ino offset.
 - Diagrams 35 → 37. The hard-coded i_ino offset is the canonical CO-RE
   motivation; forward-ref to Ch 56 reinforced.
+
+### r21.1 — fix blank Ch 39 body (rendering bug)
+- Root cause: _includes/excalidraw.html emitted `{{ include.alt }}` as raw,
+  unescaped HTML fallback text inside <object>. Ch 39's alt contained
+  `/proc/<pid>`; the browser parsed `<pid>` as an unclosed tag and swallowed
+  the caption, links, and all prose after the figure (only the SVG showed).
+- Fix: `{{ include.alt | escape }}` in both the aria-label attribute and the
+  fallback text — protects every chapter from `<…>` in alt forever. Also
+  tidied Ch 39's alt (`/proc/<pid>` → `/proc/PID`). Ch 39 was the only
+  chapter with a tag-like alt. No content change to the chapter body.
+
+### r22.0 — Part 5 (Security & LSM) closes: escalation offense + sensor capstone — UNVERIFIED
+- **Ch 41 (sudoadd)** — LAB-ONLY: intercept sudo's read() (comm=="sudo"),
+  overwrite the returned buffer with an injected NOPASSWD sudoers line via
+  bpf_probe_write_user; on-disk file untouched. enter_read stashes buf/count,
+  exit_read rewrites; payload (`<user> ALL=(ALL:ALL) NOPASSWD:ALL #`) from a
+  map, write bounded to 64B. Detection section + LSM-can-block-the-primitive.
+  New diagram `sudo-escalate`. Risks: read enter/exit offsets (buf @24,
+  count @32, ret @16), comm match, payload/padding vs real sudoers layout.
+- **Ch 42 (secsensor)** — defensive capstone: three tracepoints (execve,
+  ptrace, setuid) emit a uniform SecEvent over one RingBuf; user side
+  classifies type+severity → ebpf_sec_events_total{type,severity}. Frames
+  observe-vs-shield (telemetry broad/cheap; enforce narrow via LSM). New
+  diagram `security-sensor`. Risks: tracepoint names (esp. setuid vs
+  setreuid/setresuid), one RingBuf shared by three programs.
+- **Security & LSM part complete (Ch 37–42):** confine, react, hide, protect,
+  escalate, sense. Pulled Ch 42 into r22 (plan had it as r23); plan
+  reconciled, the stray r23 row folded in. Diagrams 37 → 39.

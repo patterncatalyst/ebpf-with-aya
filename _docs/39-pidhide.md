@@ -21,7 +21,7 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="pidhide"
-   alt="getdents64 in the kernel writes directory entries into a user buffer. An eBPF exit hook uses bpf_probe_write_user to splice out the target /proc/<pid> entry before ps or ls /proc reads it, so the entry is gone from userspace's view. The process still exists — it is edited out of what userspace is allowed to see. Defense: bpf_probe_write_user taints the kernel, and you can compare /proc against the real task list."
+   alt="getdents64 in the kernel writes directory entries into a user buffer. An eBPF exit hook uses bpf_probe_write_user to splice out the target /proc/PID entry before ps or ls /proc reads it, so the entry is gone from userspace's view. The process still exists — it is edited out of what userspace is allowed to see. Defense: bpf_probe_write_user taints the kernel, and you can compare /proc against the real task list."
    caption="Figure 39.1 — The process still exists; it is edited out of what userspace can see" %}
 
 ## How process listing works — and how to break it

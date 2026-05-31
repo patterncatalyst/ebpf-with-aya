@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="20" y="58" width="300" height="214" rx="12" fill="#f4f4f4" stroke="#ddd"/>
+<text x="32" y="78" font-size="12" font-weight="700" fill="#888">kernel hooks</text>
+<rect x="44" y="92" width="250" height="44" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="169.0" y="119.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">execve (new process)</text>
+<rect x="44" y="150" width="250" height="44" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="169.0" y="177.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">ptrace (inject / debug)</text>
+<rect x="44" y="208" width="250" height="44" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="169.0" y="235.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">setuid (privilege change)</text>
+<rect x="400" y="130" width="190" height="80" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="495.0" y="168.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">SecEvent RingBuf</text>
+<text x="495.0" y="185.0" font-size="11.5" fill="#555555" text-anchor="middle">type · pid · comm</text>
+<rect x="660" y="92" width="190" height="54" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="755.0" y="117.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Grafana</text>
+<text x="755.0" y="134.0" font-size="11.5" fill="#555555" text-anchor="middle">events by type/severity</text>
+<rect x="660" y="196" width="190" height="54" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="755.0" y="221.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">shield (optional)</text>
+<text x="755.0" y="238.0" font-size="11.5" fill="#555555" text-anchor="middle">block via LSM →</text>
+<path d="M294,114 L400,150" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="341.0" y="128.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">emit</text>
+<text x="341.0" y="128.0" font-size="11" fill="#555" text-anchor="middle">emit</text>
+<path d="M294,172 L400,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M294,230 L400,190" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="341.0" y="216.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">emit</text>
+<text x="341.0" y="216.0" font-size="11" fill="#555" text-anchor="middle">emit</text>
+<path d="M590,160 L660,118" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="627.0" y="133.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">telemetry</text>
+<text x="627.0" y="133.0" font-size="11" fill="#555" text-anchor="middle">telemetry</text>
+<path d="M590,180 L660,210" fill="none" stroke="#555" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<text x="627.0" y="201.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">+ enforce</text>
+<text x="627.0" y="201.0" font-size="11" fill="#555" text-anchor="middle">+ enforce</text>
+<text x="600" y="40" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">the sensor layer of a runtime-security tool, in eBPF</text>
+<text x="440" y="304" font-size="11" fill="#888" text-anchor="middle">observe many attacker-relevant operations as one stream — then optionally shield</text>
+</svg>
