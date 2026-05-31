@@ -1171,3 +1171,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   {result}. In-Grafana line present. UNVERIFIED bits: kfunc presence in kernel
   BTF, aya kfunc-declaration + vmlinux/BTF ergonomics, verifier-rejects-on-leak.
 - Next: Ch 53 bpf token (delegating BPF into unprivileged containers) — at depth.
+
+### r33.0 — Advanced surface: BPF token (Ch 53) — UNVERIFIED (full depth)
+- **Ch 53 (bpf-token)** — kernel 6.9 (Andrii Nakryiko). The capability problem:
+  BPF needs init-ns CAP_BPF (+ CAP_PERFMON/CAP_NET_ADMIN); BPF isn't namespace-
+  scoped so there's no namespaced CAP_BPF → pre-6.9 was all-or-nothing for
+  containers. Token model: privileged runtime mounts a userns-bound bpffs with
+  four delegation axes (delegate_cmds/maps/progs/attachs, bitmasks); trusted
+  unprivileged container opens it, derives a token via BPF_TOKEN_CREATE, passes
+  token_fd to bpf(PROG_LOAD/MAP_CREATE/…); kernel checks the token not init-ns
+  caps. Bounded to owning userns; trust explicit (CAP_BPF still checked in the
+  container's own userns at create). Runtime wiring: LXD/Incus
+  security.delegate_bpf.*, systemd. Aya angle: token is a property of HOW you
+  load (loader threads token_fd through load/map/link) — EMERGING in Aya;
+  libbpf does it via bpf_token_path; program unchanged. Example: demo mounts a
+  delegated bpffs and prints the policy (runnable privileged half) +
+  illustrative/loader_with_token.rs (Aya sketch, flagged). New diagram bpf-token.
+  Control-plane feature → no ebpf_ metric / no In-Grafana line, by design.
+  Kept at FULL DEPTH (the restored standard): ~ richer prose, problem framing,
+  security reasoning, runtime integration, cross-check.
+- Next: Ch 54 BPF timers & workqueues (deferred work inside the kernel).
