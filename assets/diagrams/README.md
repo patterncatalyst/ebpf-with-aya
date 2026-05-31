@@ -65,6 +65,8 @@ Embed a diagram in a chapter with the include:
 | `scx-simple` | 43 | sched_ext/struct_ops: task → BPF callbacks → DSQ → CPU |
 | `scx-nest` | 44 | scx_nest: concentrate work on a warm nest of cores |
 | `nginx-uprobe` | 45 | uprobes on nginx request functions, keyed by the request object |
+| `three-signals` | 46 | one request → span + log + metric sharing a trace_id |
+| `obi-arch` | 46 | OBI: eBPF probes → OTel signals (production picture) |
 
 ## Regenerating
 

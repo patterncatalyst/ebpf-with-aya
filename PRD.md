@@ -111,9 +111,9 @@ in [`_plans/iteration-plan.md`](./_plans/iteration-plan.md).
 | Networking | 27–36 | tcpconnlat, tcpstates, L7 http socket filters, sockops, tc, xdp, xdp tcpdump, xdp load balancer, xdp test, tcx |
 | Security & LSM | 37–42 | lsm connect, bpf_send_signal kill, hiding process info, LSM file protection, sudo priv-esc demo, security sensor/telemetry |
 | Schedulers (sched_ext) | 43–44 | scx_simple, scx_nest |
-| Application targets | 45–46 | nginx, postgres |
-| Advanced kernel surface | 47–56 | detach, syscall, user ringbuf, userspace ebpf, kfuncs, bpf token, bpf wq, struct_ops, dynptr, bpf arena, bpf iters |
-| Operating eBPF | 57–61 | CO-RE deep dive, L3AF zero-downtime upgrades, AI/GPU offloading, power management, where to go next |
+| Application targets | 45–47 | nginx, three-signal capstone (Java + Python, OTel/OBI), postgres |
+| Advanced kernel surface | 48–57 | detach, syscall, user ringbuf, userspace ebpf, kfuncs, bpf token, bpf wq, struct_ops, dynptr, bpf arena, bpf iters |
+| Operating eBPF | 58–62 | CO-RE deep dive, L3AF zero-downtime upgrades, AI/GPU offloading, power management, where to go next |
 
 ---
 

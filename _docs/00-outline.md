@@ -40,9 +40,9 @@ own once the lab exists.
 | **Networking** | sockets, TC, XDP, L7 | 27–36 |
 | **Security &amp; LSM** | enforcement, offense, defense | 37–42 |
 | **Schedulers (`sched_ext`)** | writing BPF schedulers | 43–44 |
-| **Application targets** | real workloads | 45–46 |
-| **Advanced kernel surface** | the 2024–2026 BPF feature set | 47–56 |
-| **Operating eBPF** | CO-RE, zero-downtime, frontiers | 57–61 |
+| **Application targets** | real workloads | 45–47 |
+| **Advanced kernel surface** | the 2024–2026 BPF feature set | 48–57 |
+| **Operating eBPF** | CO-RE, zero-downtime, frontiers | 58–62 |
 
 ## The Foundations chapters (do these first, in order)
 

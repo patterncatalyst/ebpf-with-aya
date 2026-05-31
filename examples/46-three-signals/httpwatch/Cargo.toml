@@ -1,0 +1,19 @@
+[package]
+name = "httpwatch"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[dependencies]
+aya = "0.13"
+httpwatch-common = { path = "../httpwatch-common", features = ["user"] }
+anyhow = "1"
+bytes = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }
+log = "0.4"
+env_logger = "0.11"
+# OTel: all three signals over OTLP/HTTP to the otel-lgtm stack.
+opentelemetry = { version = "0.27", features = ["trace", "logs"] }
+opentelemetry_sdk = { version = "0.27", features = ["rt-tokio", "metrics", "trace", "logs"] }
+opentelemetry-otlp = { version = "0.27", features = ["http-proto", "reqwest-client", "metrics", "trace", "logs"] }
+[build-dependencies]
+aya-build = "0.1"

@@ -1051,3 +1051,28 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - The earlier "watch X — where?" gap is now closed end to end: terminal view
   for the live glance, named ebpf_* metric/query for Grafana, one dashboard
   that browses them all.
+
+### r26.0 — capstone: tying the three signals together (Ch 46) — UNVERIFIED
+- New **Ch 46 (three-signals)**, a short capstone in the Application targets
+  part. Core lesson: Java (JIT) and Python (interpreted) have no app symbols to
+  uprobe, so instrument at the kernel SOCKET layer — the OBI insight. kprobes
+  on tcp_recvmsg/tcp_sendmsg keyed by struct sock* (as u64), bpf_get_current_comm
+  to tag the service, ring buffer of Req{dur_ns,comm}. Loader mints ONE trace_id
+  per request and emits three correlated signals: span (Tempo), log (Loki), RED
+  metrics (Prometheus) — finally exercising the trace/log/metric correlation the
+  Ch3 datasources provisioned. Honest seams flagged: loader-minted trace_id is
+  intra-service (not distributed W3C propagation); exemplar (metric→trace) hop
+  may be missing in the Rust metrics SDK; recv/send pair is a simplification of
+  real L7 parsing. Positions OBI (OpenTelemetry eBPF Instrumentation, donated
+  Beyla) as the production tool, with its architecture diagram + docs link.
+- Example 46-three-signals: httpwatch-{ebpf,common,loader} + Java (plain JDK
+  HttpServer) and Python (FastAPI) containerized services + demo. Two new
+  diagrams: three-signals, obi-arch. New metrics: ebpf_http_server_requests_total,
+  ebpf_http_server_duration_ms.
+- RENUMBER (Security stayed 6, now capstone inserted): postgres 46→47;
+  Application targets 45→47; Advanced kernel surface 47–56 → 48–57; Operating
+  eBPF 57–61 → 58–62. Updated Ch0 + PRD tables, part blurb, Ch45 next-pointer,
+  plan rows. CO-RE refs already de-numbered to "Part 9" so unaffected.
+- HIGHEST-uncertainty code in the book (3-signal OTel SDK wiring); marked
+  unverified with the specific API surfaces to confirm.
+- A LARGER capstone is planned for the very end of the book to reinforce this.

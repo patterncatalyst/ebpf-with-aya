@@ -171,8 +171,9 @@ the network) — agreement between the two is the probe working.
   debuginfo if stripped) and **container namespaces** (attach via
   `/proc/<pid>/root/...` to reach the in-container inode).
 
-Next, Chapter 46 takes on a harder target — a **postgres** database — to
-observe queries and lock waits.
+Next, Chapter 46 is a short capstone that ties the whole observability story
+together — turning eBPF on Java and Python services to produce correlated
+metrics, logs, and traces.
 
 ---
 
