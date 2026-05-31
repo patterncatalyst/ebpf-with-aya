@@ -76,6 +76,8 @@ Embed a diagram in a chapter with the include:
 | `bpf-token` | 53 | delegating BPF into unprivileged containers (the four axes) |
 | `bpf-timer` | 54 | deferred work: self-rescheduling timer + sleepable workqueue |
 | `structops` | 55 | BPF implements a kernel vtable (TCP congestion control) |
+| `dynptr` | 56 | a verifier-tracked handle to variable-length memory |
+| `bpf-arena` | 56 | sparse shared heap where BPF builds pointer data structures |
 
 ## Regenerating
 

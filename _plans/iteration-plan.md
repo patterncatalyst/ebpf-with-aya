@@ -97,7 +97,7 @@ one may merge with its neighbour.
 | r33 | 53 | `bpf token` — delegating BPF into containers (kernel 6.9) | **shipped (unverified)** |
 | r34 | 54 | timers & workqueues — deferred in-kernel work | **shipped (unverified)** |
 | r35 | 55 | `struct_ops` (general) — BPF implements a kernel vtable | **shipped (unverified)** |
-| r36 | 56 | `dynptr` / `bpf arena` |
+| r36 | 56 | `dynptr` & `bpf arena` — flexible/shared memory | **shipped (unverified)** |
 | r37 | 57 | `bpf iterators` |
 
 ## Phase 10 — Operating eBPF

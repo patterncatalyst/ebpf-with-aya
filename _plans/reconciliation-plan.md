@@ -1229,3 +1229,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   metric / no In-Grafana (observe via sysctl tcp_available_congestion_control,
   bpftool struct_ops show, ss -ti). FULL DEPTH maintained.
 - Next: Ch 56 dynptr & bpf arena (variable-length data + shared large memory).
+
+### r36.0 — Advanced surface: dynptrs & arenas (Ch 56) — UNVERIFIED (full depth, 2 diagrams)
+- **Ch 56 (dynptr-arena)** — escaping fixed-size memory. DYNPTR (5.19, Koong): a
+  verifier-tracked HANDLE to a variable-length region; bpf_dynptr_data(off,len)
+  → bounds-checked slice (len const), read/write copy, slice/slice_rdwr for
+  skb/xdp (non-contiguous, may return NULL → null-check). Abstracts over backing
+  (local/ringbuf/skb/xdp/user-ringbuf) — the thing Ch50's callback received;
+  slice invalidated when dynptr is. Worked: ring-buffer dynptr emitting
+  variable-length records (exactly `len` bytes). ARENA (6.9, Starovoitov):
+  BPF_MAP_TYPE_ARENA sparse shared region (≤4GB), bpf_arena_alloc_pages +
+  __arena pointers → build real lists/trees/hashes with normal pointer ops;
+  user mmaps zero-copy bidirectional; replaces faking pointers with array-map
+  indices; use cases KV accelerator / in-kernel structures / BPF heap. Both
+  emerging in Aya → reference/{dynptr_ringbuf,arena_list}.bpf.c canonical;
+  dynptr-ebpf aya rendering (fixed Record + logical len, since aya dynptr reserve
+  emerging); REAL Aya loader reads variable-length records → ebpf_dynptr_records_total
+  (In-Grafana). Arena compiled+loaded via clang -D__BPF_FEATURE_ADDR_SPACE_CAST
+  + bpftool. Two diagrams dynptr + bpf-arena. FULL DEPTH.
+- Next: Ch 57 BPF iterators — closes the Advanced part.
