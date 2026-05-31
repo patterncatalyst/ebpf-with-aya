@@ -1,0 +1,18 @@
+# Multi-stage UBI build of nginx that KEEPS SYMBOLS, so uprobes can resolve
+# ngx_http_process_request / ngx_http_finalize_request from the binary's
+# symbol table. Adjust NGINX_VERSION to a current stable release.
+FROM registry.access.redhat.com/ubi9/ubi AS build
+ARG NGINX_VERSION=1.27.4
+RUN dnf -y install gcc make tar gzip pcre-devel zlib-devel openssl-devel findutils && dnf clean all
+RUN curl -fsSLO https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+ && tar xzf nginx-${NGINX_VERSION}.tar.gz && cd nginx-${NGINX_VERSION} \
+ && ./configure --prefix=/usr/local/nginx --with-debug --with-cc-opt='-g -O2' \
+ && make -j"$(nproc)" && make install
+# NOTE: we do NOT strip — ngx_http_* symbols stay in .symtab for uprobe resolution.
+
+FROM registry.access.redhat.com/ubi9/ubi
+RUN dnf -y install pcre zlib openssl && dnf clean all
+COPY --from=build /usr/local/nginx /usr/local/nginx
+RUN ln -sf /usr/local/nginx/sbin/nginx /usr/sbin/nginx
+EXPOSE 80
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]

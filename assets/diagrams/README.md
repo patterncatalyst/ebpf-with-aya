@@ -63,6 +63,7 @@ Embed a diagram in a chapter with the include:
 | `security-sensor` | 42 | many security hooks → one SecEvent telemetry stream |
 | `scx-simple` | 43 | sched_ext/struct_ops: task → BPF callbacks → DSQ → CPU |
 | `scx-nest` | 44 | scx_nest: concentrate work on a warm nest of cores |
+| `nginx-uprobe` | 45 | uprobes on nginx request functions, keyed by the request object |
 
 ## Regenerating
 

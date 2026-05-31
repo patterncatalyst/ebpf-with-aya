@@ -982,3 +982,19 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   offset (24), idle==prev_pid 0.
 - Schedulers part now has its two-chapter tour (minimal + realistic). Diagrams
   40 → 41.
+
+### r25.0 — Part 8 (Application targets) opens: probing nginx — UNVERIFIED
+- **Ch 45 (nginx-probe)** — uprobes on a containerized nginx's request
+  functions: req_start (ngx_http_process_request) stamps STARTS keyed by the
+  request pointer (ctx.arg(0), never dereferenced); req_done
+  (ngx_http_finalize_request) computes elapsed → log2(us) HIST. Teaches the
+  two real-target frictions: SYMBOLS (nm/objdump; distro nginx stripped →
+  debuginfo/build-with-symbols) and CONTAINER NAMESPACES (attach via
+  /proc/<worker-pid>/root/usr/sbin/nginx to reach the in-container inode).
+  Example = Aya uprobe latency tool + multi-stage UBI Containerfile building
+  nginx from source with --with-debug -g (keeps .symtab) + containerized
+  runbook (podman build/run on target, drive load, resolve worker, attach).
+  New diagram `nginx-uprobe`. Risks: nginx symbol presence, UProbe::attach
+  signature (fn/offset/target/pid), /proc/<pid>/root resolution, ctx.arg(0)
+  ABI. Reuses the funclatency (Ch18) histogram, keyed by request object.
+- Diagrams 41 → 42. First real third-party app target.

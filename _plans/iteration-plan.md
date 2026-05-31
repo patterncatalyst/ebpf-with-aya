@@ -81,8 +81,8 @@ one may merge with its neighbour.
 
 | r# | Chapter(s) | Topics |
 |----|-----------|--------|
-| r26 | 44 | `nginx` — probing a real server (UBI nginx workload) |
-| r27 | 45 | `postgres` — query/lock observation |
+| r25 | 45 | `nginx` — uprobe per-request latency on a containerized server | **shipped (unverified)** |
+| r26 | 46 | `postgres` — query/lock observation |
 
 ## Phase 9 — Advanced kernel surface (the 2024–2026 BPF feature set)
 
