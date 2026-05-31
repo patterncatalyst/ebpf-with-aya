@@ -106,6 +106,8 @@ build for a real service. Aim `funclatency` at any symbol in any binary
 (`SYM=… ./demo.sh`, or pass a path + symbol) and you can time arbitrary
 user-space functions — your code, a library, anything with a symbol.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), the latency lands as a histogram: graph `histogram_quantile(0.95, sum by (le) (rate(ebpf_function_latency_ms_bucket[1m])))` for the p95, or render `ebpf_function_latency_ms_bucket` as a heatmap to watch the whole distribution shift under load.
+
 ## Cross-check
 
 ```bash

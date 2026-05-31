@@ -129,6 +129,8 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 $(( $(nproc) 
 Watch the histogram shift right and p99 climb while the `yes` storm
 runs, then settle when it stops.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_runqueue_latency_us` (a gauge — no `rate()`) — how long tasks wait on the run queue before getting a CPU.
+
 ## Cross-check
 
 ```bash

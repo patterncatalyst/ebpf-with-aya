@@ -61,3 +61,13 @@ program's output through here end to end.
 
 *Status: unverified — not yet run end-to-end on Fedora 44. See the
 reconciliation plan.*
+
+## The provisioned dashboard
+
+`grafana/provisioning/dashboards/ebpf-overview.json` is mounted into the stack
+and loads automatically — open Grafana and find **eBPF with Aya — Overview**
+in the *eBPF with Aya* folder. Alongside the events and logs panels it has a
+**Metric (explorer)** variable listing every `ebpf_*` series the tutorial
+exports, feeding a rate panel (for `*_total` counters) and a raw panel (for
+gauges) — one front door for any chapter's output. Each chapter also names the
+exact Explore query.

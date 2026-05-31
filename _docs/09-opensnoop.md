@@ -224,6 +224,8 @@ split opens into successes and failures in Grafana.
 > For now, watching the firehose makes the point that the kernel sees
 > everything.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-opensnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — file opens, split out by program and result as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

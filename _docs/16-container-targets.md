@@ -144,6 +144,8 @@ container's file opens, and
 series per container, which is exactly the per-service view you want
 when several are running.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-contrace` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — events captured from inside the container as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

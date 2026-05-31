@@ -140,6 +140,8 @@ with its got/want verdict and PASS/FAIL — and a zero exit code when all
 pass. No peer VM and no traffic generation are involved; this is the fast
 inner-loop counterpart to the integration demos in the other chapters.
 
+**In Grafana:** nothing to chart here — this chapter is a one-shot correctness check (`BPF_PROG_TEST_RUN`) that prints its verdict to the terminal and exits, so it pushes no metric. The cross-check below is where you confirm the result.
+
 ## Cross-check
 
 There's no separate tool to compare against here — the test *is* the

@@ -80,7 +80,7 @@ async fn main() -> anyhow::Result<()> {
         let snap = snap.clone();
         // Registered ONCE; the SDK calls it at each export.
         let _gauge = meter
-            .f64_observable_gauge("runqueue_latency_us")
+            .f64_observable_gauge("ebpf_runqueue_latency_us")
             .with_callback(move |obs| {
                 let b = *snap.lock().unwrap();
                 for (q, name) in [(0.50, "p50"), (0.90, "p90"), (0.99, "p99")] {

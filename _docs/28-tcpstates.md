@@ -122,6 +122,8 @@ SRC                    DST                    OLD           -> NEW
 states over time — a useful health signal (a spike in `TIME_WAIT` or
 `CLOSE_WAIT`, say, points at connection-churn or leaked sockets).
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (state) (rate(ebpf_tcp_state_transitions_total[1m]))` — TCP state transitions, one line per state.
+
 ## Cross-check
 
 ```bash

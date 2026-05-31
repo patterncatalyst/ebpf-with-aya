@@ -107,6 +107,8 @@ Grafana as before (the classifier logic is unchanged), and — unlike
 Chapter 31 — there is **no clsact qdisc** on the interface, because tcx
 didn't create one.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (direction) (rate(ebpf_tcx_packets_total[1m]))` — packets by direction at the tcx hook.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`),

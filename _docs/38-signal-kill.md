@@ -133,6 +133,8 @@ see `killed forbidden-sleep (pid …)` lines from the loader and
 `ebpf_signal_kills_total` rising in Grafana, and on the target the forbidden
 command exits immediately with "Killed".
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_signal_kills_total[1m])` — forbidden executions killed.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):

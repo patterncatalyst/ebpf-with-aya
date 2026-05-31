@@ -1,47 +1,46 @@
 {
-  "uid": "ebpf-overview",
   "title": "eBPF with Aya — Overview",
-  "tags": ["ebpf", "aya"],
-  "timezone": "browser",
+  "uid": "ebpf-overview",
+  "tags": ["ebpf-with-aya"],
   "schemaVersion": 39,
-  "version": 1,
-  "refresh": "5s",
+  "version": 2,
   "time": { "from": "now-15m", "to": "now" },
+  "refresh": "5s",
+  "templating": {
+    "list": [
+      {
+        "name": "metric", "type": "query", "label": "Metric (explorer)",
+        "datasource": { "type": "prometheus" },
+        "query": "metrics(ebpf_.*)", "refresh": 2, "sort": 1,
+        "includeAll": false, "hide": 0
+      }
+    ]
+  },
   "panels": [
     {
-      "id": 1,
-      "type": "timeseries",
-      "title": "Events observed by eBPF programs (rate/s)",
-      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "targets": [
-        {
-          "expr": "sum by (program) (rate(ebpf_events_total[1m]))",
-          "legendFormat": "{{program}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": { "defaults": { "unit": "ops" } }
+      "id": 1, "title": "Events observed by eBPF programs (rate/s)", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [ { "refId": "A", "expr": "sum by (program) (rate(ebpf_events_total[1m]))", "legendFormat": "{{program}}" } ]
     },
     {
-      "id": 2,
-      "type": "stat",
-      "title": "Total events (last 15m)",
-      "gridPos": { "h": 9, "w": 6, "x": 12, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "targets": [
-        { "expr": "sum(increase(ebpf_events_total[15m]))", "refId": "A" }
-      ]
+      "id": 2, "title": "Total events (last 15m)", "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [ { "refId": "A", "expr": "sum(increase(ebpf_events_total[15m]))" } ]
     },
     {
-      "id": 3,
-      "type": "logs",
-      "title": "eBPF program logs",
-      "gridPos": { "h": 9, "w": 6, "x": 18, "y": 0 },
-      "datasource": { "type": "loki", "uid": "loki" },
-      "targets": [
-        { "expr": "{service_name=~\".*ebpf.*\"}", "refId": "A" }
-      ]
+      "id": 3, "title": "Selected metric — rate (use for *_total counters)", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [ { "refId": "A", "expr": "rate(${metric}[$__rate_interval])" } ]
+    },
+    {
+      "id": 4, "title": "Selected metric — raw value (use for gauges)", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [ { "refId": "A", "expr": "${metric}" } ]
+    },
+    {
+      "id": 5, "title": "eBPF program logs", "type": "logs",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [ { "refId": "A", "expr": "{service_name=~\".*ebpf.*\"}" } ]
     }
   ]
 }

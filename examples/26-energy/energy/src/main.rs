@@ -75,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
     let meter = global::meter("ebpf-energy");
     {
         let snap = snap.clone();
-        let _g = meter.f64_observable_gauge("estimated_power_watts")
+        let _g = meter.f64_observable_gauge("ebpf_estimated_power_watts")
             .with_callback(move |obs| {
                 for (comm, w) in snap.lock().unwrap().iter() {
                     obs.observe(*w, &[KeyValue::new("comm", comm.clone())]);
@@ -84,7 +84,7 @@ async fn main() -> anyhow::Result<()> {
     }
     {
         let sys_w = sys_w.clone();
-        let _g = meter.f64_observable_gauge("system_power_watts")
+        let _g = meter.f64_observable_gauge("ebpf_system_power_watts")
             .with_callback(move |obs| { obs.observe(*sys_w.lock().unwrap(), &[]); })
             .build();
     }

@@ -158,6 +158,8 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 20); do t=$(m
 A `PID UID COMM FILE` table fills in, and `ebpf_events_total` climbs on
 the Grafana overview dashboard with the `unlinksnoop` label.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-unlinksnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — unlink/delete attempts as they happen as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check against the kernel
 
 On the target VM, confirm independently:

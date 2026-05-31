@@ -168,6 +168,8 @@ see per-pause millisecond timings and `jvm_gc_pause_ms` in Grafana — the
 exact signal you'd alert on for a latency-sensitive service ("p99 GC
 pause crept over 10 ms").
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-javagc` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — JVM garbage-collection events as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check — bpftrace speaks USDT natively
 
 ```bash

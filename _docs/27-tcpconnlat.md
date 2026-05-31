@@ -190,6 +190,8 @@ PID      COMM             DEST                   LAT(ms)
 histogram — watch it climb if you add latency to the link (`tc qdelay`,
 or a busy peer).
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-tcpconnlat` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — completed TCP connections as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

@@ -157,6 +157,8 @@ report `0`, the bogus removal reports a negative errno. In Grafana, the
 `result` label splits `ebpf_events_total` into ok versus fail — a
 distinction the Chapter 7 kprobe couldn't make.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-fentrysnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — delete attempts seen via fentry as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check against the kernel
 
 ```bash

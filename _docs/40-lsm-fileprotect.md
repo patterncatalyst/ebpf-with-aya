@@ -129,6 +129,8 @@ loops: it reads the file (works), and tries to append to it (fails with
 "Operation not permitted"). `ebpf_lsm_denied_total` climbs with each blocked
 write; detach and the file is writable again.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_lsm_denied_total[1m])` — blocked writes to the protected file (filter to the `ebpf-lsm-fileprotect` service — it shares the metric name with Chapter 37).
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):

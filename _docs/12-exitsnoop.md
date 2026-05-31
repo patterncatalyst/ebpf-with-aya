@@ -117,6 +117,8 @@ The `PID COMM CODE STATUS` table shows `0`, `1`, and `3`; in Grafana
 the `status` label splits clean exits from failures — a fleet-wide
 "what's crashing?" panel in one query.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-exitsnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — process exits, by program as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

@@ -113,6 +113,8 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'ping -f -c 5000 GATEWAY >/dev/
 
 The network and block IRQ vectors should jump to the top of the table.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-hardirqs` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — hard IRQs, by handler as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

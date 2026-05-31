@@ -98,6 +98,8 @@ are reading a live argument out of a running Rust program from a probe
 in the kernel — without modifying or recompiling the app at attach
 time.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-uprobe-rust` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — calls into the instrumented Rust function as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

@@ -139,6 +139,8 @@ The same toolkit as Chapter 39, plus one policy control:
    `bpf` operations that load such tools, or restrict `bpf_probe_write_user`
    — defense turning eBPF against the very technique.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_sudo_tampered_total[1m])` — sudoers-tamper events.
+
 ## What you learned
 
 - A privileged process trusts `read()`; rewriting its result buffer with

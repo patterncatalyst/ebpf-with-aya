@@ -161,6 +161,8 @@ by ~50, and the log panel shows the kernel's `hello: execve observed`
 lines forwarded by `aya-log`. You just watched a program you wrote run
 *in the guest kernel* and report to your laptop.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-hello` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — the periodic hello counter ticking up as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check against the kernel
 
 Never fully trust your own reporting until an independent tool agrees.

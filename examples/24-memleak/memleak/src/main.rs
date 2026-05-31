@@ -101,7 +101,7 @@ async fn main() -> anyhow::Result<()> {
     }
     println!("total outstanding: {total_bytes} bytes");
 
-    let gauge = meter.u64_gauge("memleak_outstanding_bytes").build();
+    let gauge = meter.u64_gauge("ebpf_memleak_outstanding_bytes").build();
     gauge.record(total_bytes, &[KeyValue::new("pid", pid.to_string())]);
     provider.shutdown()?;
     Ok(())

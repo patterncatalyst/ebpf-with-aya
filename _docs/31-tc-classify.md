@@ -184,6 +184,8 @@ across protocols and `ebpf_tc_dropped_total` ticking up for the blocked
 port — and on the target, the connections to that port simply time out,
 because their packets never leave the box.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_tc_packets_total[1m])` — packets at the TC hook (with `ebpf_tc_bytes_total` and `ebpf_tc_dropped_total` for bytes and drops).
+
 ## Cross-check
 
 These run **inside the target guest** — the `[vm]$` prefix (get a shell with

@@ -141,6 +141,8 @@ confined `curl` fails with a connection error (the kernel returned `-EPERM`
 from `connect`), the normal one succeeds, and `ebpf_lsm_denied_total` climbs
 in Grafana. Stop the loader and both succeed again.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_lsm_denied_total[1m])` — blocked connection attempts per second.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):

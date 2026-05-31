@@ -113,6 +113,8 @@ all read live out of the struct the target passed, by a probe in the
 kernel. `ebpf_events_total{program="btf-uprobe",status=…}` breaks the
 orders down by status in Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-btf-uprobe` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — probed calls with their decoded struct fields as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

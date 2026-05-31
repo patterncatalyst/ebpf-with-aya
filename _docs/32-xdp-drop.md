@@ -155,6 +155,8 @@ TCP check keeps working — and `ebpf_xdp_packets_total` climbs while
 `ebpf_xdp_dropped_total{proto="icmp"}` tracks the dropped echo requests.
 Stop the program and ping recovers immediately.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_xdp_packets_total[1m])` — total packets at the XDP hook, against `rate(ebpf_xdp_dropped_total[1m])` for how many were dropped.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`),

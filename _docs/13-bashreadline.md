@@ -131,6 +131,8 @@ Each line appears in the `PID UID COMMAND` table the instant you press
 Enter, and `ebpf_events_total{program="bashreadline"}` climbs in
 Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-bashreadline` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — interactive bash commands as they are entered as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

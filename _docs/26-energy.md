@@ -125,6 +125,8 @@ Spin up some CPU burners on the VM (`sha256sum /dev/zero`, a busy loop)
 and watch them rise to the top of the power table, with
 `estimated_power_watts{comm}` tracking them in Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_estimated_power_watts` (a gauge — no `rate()`) — estimated power draw in watts (with `ebpf_system_power_watts` for the measured figure).
+
 ## Cross-check
 
 ```bash

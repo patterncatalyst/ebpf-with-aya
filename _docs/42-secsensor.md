@@ -127,6 +127,8 @@ and runs a small setuid transition. You'll see the classified lines stream
 from the loader and three labelled series in `ebpf_sec_events_total` — the
 `exec` line busy, `ptrace`/`setuid` punctuating it.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (kind) (rate(ebpf_sec_events_total[1m]))` — the unified security stream, one line per event kind.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):

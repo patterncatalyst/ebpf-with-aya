@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-funclatency");
-    let hist = meter.f64_histogram("function_latency_ms").build();
+    let hist = meter.f64_histogram("ebpf_function_latency_ms").build();
     let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 
     // log2(microseconds) buckets for a console histogram.

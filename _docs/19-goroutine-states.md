@@ -102,6 +102,8 @@ You'll see a stream of `NEW STATE` transitions, and
 by state — the shape of which tells you what the scheduler is spending
 its time on.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-goroutine` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — goroutine state transitions as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

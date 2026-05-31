@@ -157,6 +157,8 @@ The lesson cuts both ways: eBPF can hide things from userspace tools, and
 eBPF (plus the kernel's own bookkeeping) is also the most reliable way to
 catch that it happened.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_proc_hidden_total[1m])` — getdents entries rewritten to hide the PID.
+
 ## What you learned
 
 - **`getdents64` buffer rewriting** is how eBPF "rootkits" hide files and

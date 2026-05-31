@@ -138,6 +138,8 @@ cd examples/23-profile && SECS=10 ./demo.sh > out.folded
 Drive some CPU on the VM while it samples (`sha256sum /dev/zero`), then
 build the flame graph from `out.folded`.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_profile_samples_total[1m])` — CPU stack samples per second.
+
 ## Cross-check
 
 ```bash

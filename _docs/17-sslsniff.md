@@ -134,6 +134,8 @@ cleartext — an HTTP request line, a response header — captured at the
 moment OpenSSL handled it. `ebpf_events_total{program="sslsniff",dir=…}`
 splits reads from writes in Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-sslsniff` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — plaintext reads and writes around TLS as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

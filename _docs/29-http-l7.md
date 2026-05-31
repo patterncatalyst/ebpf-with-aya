@@ -125,6 +125,8 @@ FLOW                                     REQUEST / RESPONSE LINE
 `ebpf_http_lines_total{method}` in Grafana breaks requests down by
 method — the start of an L7 dashboard.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_http_lines_total[1m])` — HTTP request lines per second.
+
 ## Cross-check
 
 ```bash

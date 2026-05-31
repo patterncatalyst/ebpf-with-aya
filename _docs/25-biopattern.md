@@ -96,6 +96,8 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'fio --name=rand --filename=/tm
 Watch SEQ% sit high during the `dd`, then collapse during the random
 `fio` run — the pattern made visible.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_bio_sequential_ratio` (a gauge — no `rate()`) — the sequential-vs-random ratio of block I/O (0–1).
+
 ## Cross-check
 
 ```bash

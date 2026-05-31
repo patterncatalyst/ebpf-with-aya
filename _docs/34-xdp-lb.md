@@ -134,6 +134,8 @@ in turn, so all three listeners receive roughly a third — visible both in the
 listeners' output and as three roughly-equal `ebpf_xdp_lb_dispatch_total`
 series in Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (backend) (rate(ebpf_xdp_lb_dispatch_total[1m]))` — dispatch rate per backend — the load balance made visible.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):

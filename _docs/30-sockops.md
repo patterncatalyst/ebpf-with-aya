@@ -128,6 +128,8 @@ passive  10.0.0.21:9200         10.0.0.32:51777
 `ebpf_sock_established_total{dir}` in Grafana — active vs. passive
 connection rates for the cgroup.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_sock_established_total[1m])` — newly established connections over time.
+
 ## Cross-check
 
 ```bash

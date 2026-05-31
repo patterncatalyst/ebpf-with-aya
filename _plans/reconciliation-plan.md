@@ -1031,3 +1031,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   in Grafana. Older chapters (6–42) still describe terminal output well but
   mostly don't name the Grafana panel — a focused "observe pass" can retrofit
   them; tracked here as outstanding.
+
+### r25.3 — observe pass: every chapter now names its Grafana view
+- Renamed 5 stray metrics to the ebpf_ prefix so ALL series are discoverable
+  under `ebpf_`: ebpf_function_latency_ms (18), ebpf_runqueue_latency_us (21),
+  ebpf_memleak_outstanding_bytes (24), ebpf_bio_sequential_ratio (25),
+  ebpf_estimated_power_watts + ebpf_system_power_watts (26).
+- Added an "In Grafana" line to the "Build, deploy, observe" section of every
+  program chapter (06–45): the exact PromQL to graph, shaped per metric type —
+  counters → rate(); gauges (21,24,25,26) → raw; the funclatency histogram (18)
+  → histogram_quantile/heatmap; shared ebpf_events_total chapters → filter by
+  the chapter's `ebpf-*` service + sum by(program). 35 (BPF_PROG_TEST_RUN) is
+  noted terminal-only. 43/44/45 already had theirs (r25.2 / r25.0).
+- Enhanced the auto-provisioned dashboard (ebpf-overview.json, already mounted
+  into otel-lgtm) into the universal front door: added a "Metric (explorer)"
+  query variable over metrics(ebpf_.*) feeding a rate panel (counters) and a
+  raw panel (gauges), alongside the existing events + logs panels. Referenced
+  from Ch3 and the example README. (No manual import — it loads on stack up.)
+- The earlier "watch X — where?" gap is now closed end to end: terminal view
+  for the live glance, named ebpf_* metric/query for Grafana, one dashboard
+  that browses them all.

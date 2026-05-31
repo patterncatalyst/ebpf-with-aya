@@ -53,7 +53,7 @@ async fn main() -> anyhow::Result<()> {
     let meter = global::meter("ebpf-biopattern");
     {
         let snap = snap.clone();
-        let _g = meter.f64_observable_gauge("bio_sequential_ratio")
+        let _g = meter.f64_observable_gauge("ebpf_bio_sequential_ratio")
             .with_callback(move |obs| {
                 for (dev, ratio) in snap.lock().unwrap().iter() {
                     obs.observe(*ratio, &[KeyValue::new("dev", devname(*dev))]);

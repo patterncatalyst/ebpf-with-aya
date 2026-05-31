@@ -126,6 +126,8 @@ is exactly what makes execsnoop a security favourite: a suspicious
 `curl http://…​/x.sh | sh` is obvious in the cmdline and invisible in a
 bare process name.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-execsnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — process executions across the system as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash

@@ -152,6 +152,8 @@ and closes connections from the peer (a loop of short `curl`s). You'll see a
 feed of connection activity — while `ebpf_xdp_captured_total` rises in
 Grafana far more slowly than the underlying packet count.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_xdp_seen_total[1m])` — packets seen, against `rate(ebpf_xdp_captured_total[1m])` for how many matched the filter.
+
 ## Cross-check
 
 On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`),

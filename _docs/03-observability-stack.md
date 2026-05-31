@@ -146,6 +146,14 @@ now" glance while you run the demo; **Grafana** is where the same numbers
 become a time series you can watch, compare across runs, and correlate with
 the traces and logs on the same wire.
 
+
+If you'd rather click than type, the stack auto-loads a dashboard the moment
+it comes up — **eBPF with Aya — Overview**, in the *eBPF with Aya* folder in
+Grafana. It has a **Metric (explorer)** picker over every `ebpf_*` series (a
+rate panel for `*_total` counters, a raw panel for gauges) alongside the
+events and logs streams — a single front door for any chapter's output. Each
+chapter still names the precise query, but this is the quickest way to browse.
+
 ## The three signals, and why eBPF touches all of them
 
 Most eBPF tutorials only ever print counters. Wiring into Tempo and

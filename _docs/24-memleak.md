@@ -110,6 +110,8 @@ After the window, you'll see outstanding bytes accumulating from the
 a real leak versus steady-state churn. User frames print as hex; wire in
 `blazesym` to turn them into `leak_here`, `main`, and friends.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_memleak_outstanding_bytes` (a gauge — no `rate()`) — outstanding (un-freed) bytes — a steady climb is the leak.
+
 ## Cross-check
 
 ```bash

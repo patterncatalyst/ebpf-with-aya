@@ -119,6 +119,8 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'sleep 60 & p=$!; kill -TERM $p
 The `SENDER COMM SIGNAL TARGET` table shows the `SIGTERM`, and the
 `signal` label appears in Grafana.
 
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-sigsnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — signals as they are sent, by program as a live rate, the same events your terminal lists, now plotted over time.
+
 ## Cross-check
 
 ```bash
