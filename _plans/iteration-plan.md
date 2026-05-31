@@ -98,7 +98,7 @@ one may merge with its neighbour.
 | r34 | 54 | timers & workqueues — deferred in-kernel work | **shipped (unverified)** |
 | r35 | 55 | `struct_ops` (general) — BPF implements a kernel vtable | **shipped (unverified)** |
 | r36 | 56 | `dynptr` & `bpf arena` — flexible/shared memory | **shipped (unverified)** |
-| r37 | 57 | `bpf iterators` |
+| r37 | 57 | `bpf iterators` — walk a kernel set, emit like a file | **shipped (unverified)** — Part 8 complete |
 
 ## Phase 10 — Operating eBPF
 

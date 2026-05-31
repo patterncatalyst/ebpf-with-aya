@@ -78,6 +78,7 @@ Embed a diagram in a chapter with the include:
 | `structops` | 55 | BPF implements a kernel vtable (TCP congestion control) |
 | `dynptr` | 56 | a verifier-tracked handle to variable-length memory |
 | `bpf-arena` | 56 | sparse shared heap where BPF builds pointer data structures |
+| `bpf-iter` | 57 | the kernel calls your program once per element of a set |
 
 ## Regenerating
 

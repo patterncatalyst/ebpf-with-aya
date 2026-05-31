@@ -1248,3 +1248,19 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   (In-Grafana). Arena compiled+loaded via clang -D__BPF_FEATURE_ADDR_SPACE_CAST
   + bpftool. Two diagrams dynptr + bpf-arena. FULL DEPTH.
 - Next: Ch 57 BPF iterators — closes the Advanced part.
+
+### r37.0 — Advanced surface CLOSES: BPF iterators (Ch 57) — UNVERIFIED (full depth)
+- **Ch 57 (bpf-iter)** — the last inversion: kernel walks a SET (tasks/sockets/
+  map elements) and calls the program ONCE PER ELEMENT; you read fields directly
+  and emit via seq_file → cat. Push filtering into the kernel vs parsing /proc.
+  Two entities: iterator PROGRAM TYPE (SEC("iter/<target>"), ctx = bpf_iter__X
+  with meta{seq,seq_num} + element ptr; seq_num==0 header, NULL element summary;
+  BPF_SEQ_PRINTF; pin via `bpftool iter pin`, read via cat/read(); map-elem iter
+  takes `map MAP`) and OPEN-CODED iterators (bpf_for/bpf_repeat + bpf_iter_*
+  KF_ITER kfuncs from Ch52 — bounded loops in any program). Worked: iter/task
+  process table (tgid/pid/comm). Aya iterator support emerging → reference/
+  task_iter.bpf.c canonical + bpftool iter pin (real, no Aya) + illustrative/
+  iter_aya.rs sketch. New diagram bpf-iter. Inspection chapter (output IS the
+  dump) → no ebpf_ metric / no In-Grafana, stated explicitly. FULL DEPTH.
+- **PART 8 (Advanced kernel surface, Ch 48–57) COMPLETE.** Next: Part 9 Operating
+  eBPF (58–62), opening with the CO-RE deep-dive forward-ref'd throughout.
