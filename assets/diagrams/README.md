@@ -61,6 +61,7 @@ Embed a diagram in a chapter with the include:
 | `lsm-file-protect` | 40 | LSM inode_permission: deny writes to one protected inode |
 | `sudo-escalate` | 41 | rewrite sudo's read() buffer to forge sudoers (lab-only) |
 | `security-sensor` | 42 | many security hooks → one SecEvent telemetry stream |
+| `scx-simple` | 43 | sched_ext/struct_ops: task → BPF callbacks → DSQ → CPU |
 
 ## Regenerating
 

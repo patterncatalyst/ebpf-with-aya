@@ -952,3 +952,18 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - **Security & LSM part complete (Ch 37–42):** confine, react, hide, protect,
   escalate, sense. Pulled Ch 42 into r22 (plan had it as r23); plan
   reconciled, the stray r23 row folded in. Diagrams 37 → 39.
+
+### r23.0 — Part 7 (Schedulers) opens: sched_ext + struct_ops — UNVERIFIED
+- **Ch 43 (scx-simple)** — sched_ext/struct_ops model taught via the real
+  scx_simple callbacks (shown in C, faithful to upstream): select_cpu (idle
+  fast path → SCX_DSQ_LOCAL), enqueue (→ SCX_DSQ_GLOBAL), init/exit,
+  SCX_OPS_DEFINE; DSQs; the safety watchdog (evict → fall back to default).
+  HONEST framing callout: sched_ext today = BPF-in-C + Rust-userspace
+  (scx/scx_utils); Aya kernel-side struct_ops is emerging, so we run the
+  shipping scx_simple (Fedora scx-scheds) and OBSERVE it with an Aya
+  sched_switch probe (per-CPU ctx-switch counter → ebpf_ctxsw_total{cpu}).
+  New diagram `scx-simple`. Example 43-scx-simple = Aya observer (scx-watch)
+  + reference/scx_simple.bpf.c (read-only) + runbook demo. Requirements:
+  kernel ≥ 6.12, CONFIG_SCHED_CLASS_EXT. New part "Schedulers (sched_ext)".
+- NOTE: first chapter to use C for the (reference) BPF side — deliberate and
+  documented, because that's the current reality of sched_ext tooling.

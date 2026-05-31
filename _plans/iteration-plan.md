@@ -74,8 +74,8 @@ one may merge with its neighbour.
 
 | r# | Chapter(s) | Topics |
 |----|-----------|--------|
-| r24 | 42 | `scx_simple` — a minimal BPF scheduler via `struct_ops`/`sched_ext` |
-| r25 | 43 | `scx_nest` — a more realistic scheduling policy |
+| r23 | 43 | `scx_simple` — minimal scheduler via `struct_ops`/`sched_ext` (model + run + Aya observer) | **shipped (unverified)** |
+| r24 | 44 | `scx_nest`-style policy — keeping work on warm cores (more realistic) |
 
 ## Phase 8 — Application targets
 
