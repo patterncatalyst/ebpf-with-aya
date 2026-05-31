@@ -91,7 +91,8 @@ one may merge with its neighbour.
 |----|-----------|--------|
 | r28 | 48 | `detach`/pinning — outliving the loader | **shipped (unverified)** |
 | r29 | 49 | `syscall` programs — loader programs & light skeletons | **shipped (unverified)** |
-| r30 | 50–51 | user ringbuf; userspace eBPF |
+| r30 | 50 | user ring buffer (user → BPF) | **shipped (unverified)** |
+| r31 | 51 | userspace eBPF |
 | r31 | 52–53 | `kfuncs`; `bpf token` |
 | r32 | 54–55 | `bpf wq` (workqueues); `struct_ops` (general) |
 | r33 | 56–57 | `dynptr`/`bpf arena`; `bpf iters` |

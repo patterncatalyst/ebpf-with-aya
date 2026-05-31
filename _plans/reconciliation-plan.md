@@ -1121,3 +1121,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   + demo using bpftool gen skeleton -L on a real built object. No ebpf_ metric
   (inspection chapter, like Ch35) — no In-Grafana line, by design.
 - Next: Ch 50 user ring buffer (user space → BPF direction).
+
+### r30.0 — Advanced surface: user ring buffer (Ch 50) — UNVERIFIED (experimental)
+- **Ch 50 (user-rb)** — BPF_MAP_TYPE_USER_RINGBUF (kernel 6.1): the ring buffer
+  reversed — user space produces (reserve/submit), a BPF program consumes via
+  bpf_user_ringbuf_drain(&map, callback, ctx, flags); each sample arrives as a
+  bpf_dynptr (forward-ref to the dynptr chapter later in this part). When to use
+  vs a plain map: stream of variable-length messages vs a few settings. Drain
+  happens when the program runs (here a getpid tracepoint the loader triggers).
+  HONEST frontier: Aya knows the map type but producer + drain/dynptr wrappers
+  are settling → reference/user_ringbuf.bpf.c canonical, user-rb-ebpf an Aya
+  sketch (UserRingBuf::drain), flagged experimental. Example round-trips 1000
+  samples → AGG count/sum (expect 1000 / 500500). New diagram user-ringbuf.
+  New metric ebpf_userrb_messages_total (+ value_sum_total). In-Grafana line
+  present. Renumber note: plan row split (50 done, 51 userspace eBPF next).

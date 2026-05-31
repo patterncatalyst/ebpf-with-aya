@@ -70,6 +70,7 @@ Embed a diagram in a chapter with the include:
 | `pg-probe` | 47 | postgres: uprobes for query latency + lock waits, keyed by backend pid |
 | `pinning` | 48 | pin program/map/link to bpffs so they outlive the loader |
 | `syscall-prog` | 49 | loader programs: BPF that issues bpf() itself (light skeletons) |
+| `user-ringbuf` | 50 | the ring buffer that runs backwards: user space → BPF |
 
 ## Regenerating
 
