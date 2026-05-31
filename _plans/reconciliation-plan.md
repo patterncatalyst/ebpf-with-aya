@@ -1284,3 +1284,12 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   (In-Grafana). demo shows relocation records via llvm-objdump + BTF presence.
   New diagram core (two-band dev/runtime). FULL DEPTH.
 - Next: Ch 59 lifecycle / pinning / zero-downtime upgrades (operating a fleet).
+
+### r38.1 — Ch 58 correction: untangle CO-RE vs musl
+- Reader flagged the conflated "BTF + musl static binary" line. FIXED: CO-RE
+  gives KERNEL-version portability and is libc-INDEPENDENT (our loader is a
+  glibc Fedora binary scp'd to target — all a homogeneous Fedora fleet needs).
+  A musl-linked STATIC loader is a SEPARATE, optional axis for userspace DISTRO
+  portability (one binary across unlike distros); musl is a build target you opt
+  into (x86_64-unknown-linux-musl), Alpine's default — NOT Fedora/UBI (glibc).
+  Edited both the "How Aya does it" passage and the What-you-learned bullet.

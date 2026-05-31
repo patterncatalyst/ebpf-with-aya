@@ -109,10 +109,28 @@ equivalent of `vmlinux.h` — portable bindings for specific kernel types:
 The docs are explicit that these bindings "are portable across different Linux
 kernel versions thanks to CO-RE" — they are *not* simply scraped from your
 kernel's headers; reading their fields emits relocations. (`aya-tool` needs
-`bpftool` and `bindgen` installed.) The pacing payoff Aya advertises:
-**BTF support plus a musl-linked static binary gives a single self-contained
-artifact you deploy across distributions and kernel versions** — the operating
-goal of this whole part, in one sentence.
+`bpftool` and `bindgen` installed.)
+
+It's worth being precise about *which* portability comes from *what*, because
+two orthogonal axes get conflated:
+
+- **CO-RE handles kernel-version portability**, and it is **independent of the
+  C library**. The relocations resolve against the target kernel's BTF whether
+  the userspace loader links glibc or anything else. This is the portability
+  this lab actually depends on: the one object relocates across our Fedora 44
+  boxes' kernels, and the loader is an ordinary **glibc** Fedora binary `scp`'d
+  to the target.
+- **A musl-linked *static* loader handles userspace *distro* portability** — a
+  separate concern. Aya advertises that with BTF support and a musl static link
+  you get a single self-contained binary deployable across distributions,
+  because a static musl build carries no dynamic glibc dependency, so the *same
+  loader binary* runs on Alpine, Debian, Fedora, and so on without a rebuild.
+  But musl is a **build target you opt into** (Rust's
+  `x86_64-unknown-linux-musl`), not a distro default: Fedora and the UBI images
+  this book uses ship **glibc**, and the distro that defaults to musl is
+  **Alpine**. Reach for the musl static build only when one loader artifact must
+  span unlike distros; a homogeneous Fedora fleet doesn't need it — CO-RE alone
+  gives the cross-kernel portability that is the point of this chapter.
 
 ## Build, deploy, observe
 
@@ -152,10 +170,12 @@ them from BTF.
   (offset, **existence** via `bpf_core_field_exists`, size, enum/type), and the
   loader resolves them against `/sys/kernel/btf/vmlinux`; `vmlinux.h` removes the
   kernel-header dependency.
-- **Aya does CO-RE transparently**, `aya-tool generate` produces portable Rust
-  bindings (needs `bpftool` + `bindgen`), and Aya + musl yields a single static
-  binary for a heterogeneous fleet — the foundation everything else in Part 9
-  builds on.
+- **Aya does CO-RE transparently**, and `aya-tool generate` produces portable
+  Rust bindings (needs `bpftool` + `bindgen`). CO-RE gives **kernel-version**
+  portability and is **libc-independent** — our glibc Fedora loader is fine; a
+  **musl static** loader is a *separate, optional* step for **distro**
+  portability (one binary across unlike distros), and musl is Alpine's default,
+  not Fedora/UBI's glibc.
 
 Next, Chapter 59 looks at running BPF as a managed service — **lifecycle,
 pinning, and zero-downtime upgrades** — now that one artifact can target the

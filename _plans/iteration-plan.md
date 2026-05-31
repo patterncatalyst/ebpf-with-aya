@@ -100,6 +100,7 @@ one may merge with its neighbour.
 | r36 | 56 | `dynptr` & `bpf arena` — flexible/shared memory | **shipped (unverified)** |
 | r37 | 57 | `bpf iterators` — walk a kernel set, emit like a file | **shipped (unverified)** — Part 8 complete |
 | r38 | 58 | CO-RE deep-dive — compile once, run everywhere | **shipped (unverified)** — opens Part 9 |
+| r38.1 | 58 | correction: CO-RE (kernel, libc-independent) vs musl static (distro, optional) | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 
