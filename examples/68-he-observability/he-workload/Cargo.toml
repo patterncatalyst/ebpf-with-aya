@@ -1,0 +1,13 @@
+[package]
+name = "he-workload"
+version = "0.1.0"
+license = "Apache-2.0"
+edition = "2021"
+[[bin]]
+name = "he-workload"
+path = "src/main.rs"
+[dependencies]
+# Zama's pure-Rust FHE library. The "integer" feature provides FheUint* types.
+# Free for development/research/prototyping under Zama's BSD-3-Clause-Clear
+# license; commercial use requires Zama's patent license.
+tfhe = { version = "1.0", features = ["integer"] }

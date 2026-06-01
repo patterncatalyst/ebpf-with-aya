@@ -116,6 +116,7 @@ in [`_plans/iteration-plan.md`](./_plans/iteration-plan.md).
 | Operating eBPF | 58–63 | CO-RE deep dive, L3AF zero-downtime upgrades, AI/GPU offloading, power management (RAPL + eBPF attribution), signal correlation (Tempo/Mimir/spans), end-to-end capstone (one request, every layer) |
 | Field guide *(optional)* | 64–66 | bpftrace from Python (NDJSON), bpftool from Python (JSON inventory/audit), BCC tools tour from Python |
 | Retrospective | 67 | the whole arc from kprobe to fleet; what held constant; where eBPF & Aya go next |
+| Addenda *(optional)* | 68 | capstone addendum: observing a homomorphic-encryption (TFHE-rs) workload with eBPF — data-blind, per-operation latency metrics |
 
 ---
 

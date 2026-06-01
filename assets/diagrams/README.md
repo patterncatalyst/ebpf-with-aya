@@ -93,6 +93,7 @@ Embed a diagram in a chapter with the include:
 | `bpftrace-tools-map` | 64 | bpftrace tools mapped to the kernel layer each observes |
 | `bcc-tools-map` | 66 | bcc tools mapped to the kernel layer each observes |
 | `book-arc` | 67 | the arc of the book (Parts 0–10) + the frontier ahead |
+| `he-observability` | 68 | timing a TFHE-rs workload’s ops by symbol, without reading operands |
 
 ## Regenerating
 

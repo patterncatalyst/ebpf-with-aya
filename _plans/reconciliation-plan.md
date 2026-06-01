@@ -1617,3 +1617,26 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
    query (or state "no Grafana panel by design"); added as depth-standard item 5.
    Shipped as ebpf-aya-tutorial-skill-updated.zip.
 - Book COMPLETE (Ch 0–67, Parts 0–11) + all backlog cleared.
+
+### r50.0 — ADDENDUM: HE observability (Ch 68, new Part 12 "Addenda")
+- Capstone addendum requested by the reader. New Part 12 "Addenda" (order 12);
+  Ch 68 "Capstone addendum: observing a homomorphic-encryption workload".
+- Placement: kept as a standalone Addenda part rather than inserting after Ch 63,
+  which would renumber 64–67 and break every cross-reference + figure number; the
+  chapter is *written* as a direct extension of the Ch 63 capstone instead.
+- Content covers (per the reader's asks): what HE is (compute on ciphertext;
+  partial/somewhat/FHE; bootstrapping; LWE/RLWE; TFHE-rs = Zama pure-Rust) and
+  WHY you want metrics without observing data (operands are ciphertext = impossible
+  to read; operator is the threat = forbidden to read; so measure behavior/latency,
+  never values — eBPF times symbols + samples stacks, not operands). Ties explicitly
+  to the capstone (same uprobe/OTel machinery, inverted goal).
+- Example examples/68-he-observability/: he-workload (TFHE-rs; he_keygen/encrypt/
+  compute/decrypt as #[no_mangle][inline(never)] extern \"C\" boundaries),
+  he-observer-ebpf (1 uprobe he_enter on all 4 symbols + 1 uretprobe per symbol;
+  START HashMap keyed by pid_tgid + EVENTS RingBuf), he-observer loader (attach
+  pairs, drain ring, f64_histogram ebpf_he_op_latency_seconds{op}, OTLP), he-common
+  (Sample{op,dur_ns}, no operands), demo.sh (workload starts 4s late so the probe
+  attaches first and catches one-shot keygen). New diagram he-observability.
+- Observe section names BOTH the terminal live-view AND the Grafana metric
+  (ebpf_he_op_latency_seconds) per the r49 skill rule. License note for TFHE-rs.
+  All unverified. Book now: Ch 0–68, Parts 0–12.
