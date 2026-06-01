@@ -3,6 +3,8 @@ render_with_liquid: false
 ---
 # Backlog / TODO
 
+> **Status (r49.0):** all three items below are DONE — kept for the audit trail.
+
 ## Tooling-coverage pass (requested r42) — ensure setup installs everything the book uses
 Audit every CLI/tool referenced across all chapters and confirm each is (a) installed
 on the correct host by the Chapter 2 cloud-init / setup scripts (laptop vs ebpf-target

@@ -42,7 +42,9 @@ own once the lab exists.
 | **Schedulers (`sched_ext`)** | writing BPF schedulers | 43–44 |
 | **Application targets** | real workloads | 45–47 |
 | **Advanced kernel surface** | the 2024–2026 BPF feature set | 48–57 |
-| **Operating eBPF** | CO-RE, zero-downtime, frontiers | 58–62 |
+| **Operating eBPF** | CO-RE, zero-downtime, offload, power, signal correlation, capstone | 58–63 |
+| **Field guide** *(optional)* | `bpftrace`, `bpftool`, and the BCC tools, driven from Python | 64–66 |
+| **Retrospective** | the whole arc, and where eBPF &amp; Aya go next | 67 |
 
 ## The Foundations chapters (do these first, in order)
 

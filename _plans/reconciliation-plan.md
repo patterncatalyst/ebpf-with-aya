@@ -1600,3 +1600,20 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   reflect Parts 10–11 + chapters 64–67. (2) tooling-coverage setup pass
   (_plans/todo.md; incl. turbostat, clang+kernel-devel for classic bcc). (3) skill
   chapter-template: require naming terminal-view + Grafana metric in observe.
+
+### r49.0 — post-finale cleanups (the three logged TODOs) — DONE
+1. Outline re-sync: Ch0 grouping table + PRD §5 table now reflect Operating eBPF
+   58–63 (added signal correlation + capstone), the optional Field guide 64–66,
+   and the Retrospective 67.
+2. Tooling-coverage pass: audited every CLI referenced across chapters vs the Ch2
+   cloud-init. Missing-and-referenced added to the VM seed: kernel-tools (turbostat,
+   Ch61 — confirmed Fedora package), libbpf-tools (Ch66), jq (Ch62/65/66), openssl
+   (Ch14/62/63). Added a "What the lab's tooling is for" TABLE to Ch2 (tool →
+   package/source → where (VM vs laptop) → value), covering kernel-side tools
+   (cloud-init) and host Rust chain (rustup, Ch4). Tools referenced=0 (ethtool,
+   xdp-tools, powerstat, cpupower) intentionally NOT added.
+3. Skill chapter-template: ebpf-aya-tutorial skill updated so "Build, deploy,
+   observe" MUST name BOTH the terminal live-view AND the specific Grafana ebpf_*
+   query (or state "no Grafana panel by design"); added as depth-standard item 5.
+   Shipped as ebpf-aya-tutorial-skill-updated.zip.
+- Book COMPLETE (Ch 0–67, Parts 0–11) + all backlog cleared.

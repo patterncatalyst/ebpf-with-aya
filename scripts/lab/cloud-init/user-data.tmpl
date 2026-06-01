@@ -23,7 +23,8 @@ package_update: true
 # Everything an eBPF target needs, all from Fedora repositories.
 # kernel-devel + the matching BTF give CO-RE programs their type info;
 # clang/llvm + bpftool/bpftrace/bcc are the kernel-side toolchain we
-# cross-check Aya against.
+# cross-check Aya against; kernel-tools brings turbostat for the power
+# chapter; jq/openssl are used by demos and cross-checks throughout.
 packages:
   - kernel-devel
   - kernel-headers
@@ -32,9 +33,13 @@ packages:
   - bpftool
   - bpftrace
   - bcc-tools
+  - libbpf-tools          # precompiled CO-RE versions of the bcc tools (Ch 66)
   - perf
+  - kernel-tools          # turbostat / cpupower / x86_energy_perf_policy (Ch 61)
   - elfutils-libelf-devel
   - zlib-devel
+  - jq                    # parse bpftool -j / Tempo JSON (Ch 62, 65, 66)
+  - openssl               # traceparent ids + TLS targets (Ch 14, 62, 63)
   - git
   - tar
   # Containers ON the target VM: observed app targets (Quarkus/FastAPI) run

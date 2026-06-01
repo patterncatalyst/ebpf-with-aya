@@ -91,6 +91,35 @@ the target needs — all from Fedora repositories — including
 `kernel-devel`, `clang`/`llvm`, `bpftool`, `bpftrace`, `bcc-tools`,
 and `perf`, and it writes a readiness marker once BTF is confirmed.
 
+### What the lab's tooling is for
+
+You won't touch most of these by hand for a while, but it's worth knowing what's
+on the box and why — and which side of the lab each lives on. The **guest VM**
+gets the kernel-side toolchain (installed by cloud-init above); the **laptop**
+gets the Rust build chain (Chapter 4, via `rustup` — *not* `dnf`). All of it
+comes from Fedora repositories or `rustup`, never third-party binaries.
+
+| Tool | Package / source | Where | What it's for |
+|---|---|---|---|
+| `bpftool` | `bpftool` | VM | inspect/manage loaded programs, maps, links — the ground-truth cross-check (Ch 5, 65) |
+| `bpftrace` | `bpftrace` | VM | quick one-liner tracing to confirm an event fires before writing Aya (Ch 5, 64) |
+| `bcc-tools` | `bcc-tools` | VM | the ready-made `*snoop`/`*latency` tracers used as cross-checks (Ch 66) |
+| `libbpf-tools` | `libbpf-tools` | VM | precompiled CO-RE builds of the bcc tools — no runtime clang/headers (Ch 66) |
+| `perf` | `perf` | VM | sampling, PMU counters, `perf stat` energy/cycles cross-checks (Ch 23, 61) |
+| `turbostat` | `kernel-tools` | VM | per-package power/frequency/idle stats — the RAPL cross-check (Ch 61) |
+| `clang` / `llvm` | `clang`, `llvm` | VM | compile reference `.bpf.c`, generate `vmlinux.h`, run classic bcc (Ch 4, 55–58, 66) |
+| `dwarves` (`pahole`) | `dwarves` | VM | inspect BTF / struct layout from DWARF (Ch 5, 15) |
+| `kernel-devel` + BTF | `kernel-devel`, in-kernel | VM | kernel headers + `/sys/kernel/btf/vmlinux` for CO-RE relocation (Ch 5, 58) |
+| `jq` | `jq` | VM | parse `bpftool -j` and Tempo JSON in demos/cross-checks (Ch 62, 65, 66) |
+| `openssl` | `openssl` | VM | generate `traceparent` ids; a TLS target for `sslsniff` (Ch 14, 62, 63) |
+| `podman` / `podman-compose` / `crun` | same | VM | run the observed Quarkus/FastAPI targets so the VM kernel sees them (Ch 16, 45–47, 63) |
+| `iproute` (`ss`/`ip`), `tcpdump`, `nmap-ncat`, `socat` | same | VM | traffic generation + inspection for the networking part (Ch 27–36) |
+| `rustup` → Rust 1.96.0, BPF target | `rustup` | laptop | compile your Aya programs (Chapter 4) — never installed via `dnf` |
+| `bpf-linker`, `cargo-generate`, `aya-tool` | `cargo install` | laptop | link BPF objects, scaffold projects, generate `vmlinux` bindings (Ch 4) |
+
+If a later chapter reaches for a tool that isn't here, it says so and how to
+install it; but the set above covers everything through the capstone.
+
 Find the guest's leased IP and connect:
 
 ```bash
