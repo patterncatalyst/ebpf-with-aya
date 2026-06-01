@@ -1447,3 +1447,14 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - DEFERRED: re-sync Ch0 outline + PRD outline tables once Part 10 complete (new
   part + chapters). TODO (_plans/todo.md) tooling-coverage pass still open.
 - Next: Ch 65 bpftool from Python; Ch 66 BCC tools tour; then retrospective.
+
+### r44.1 — Ch 64 expanded with working bpftrace programs (reader request)
+- Reader: add several working examples (explanations already good). Added 7 more
+  runnable .bt programs mirroring earlier chapters: opensnoop(Ch9), execsnoop(Ch11),
+  killsnoop(Ch38), runqlat(Ch21), profile(Ch23), vfsstat, tcpconnect(Ch27) — plus
+  existing syscount + readsize(Ch24). Three output shapes: streams(printf),
+  tables(map), histograms(lhist). Upgraded bpftrace_tool.py: --list (with per-file
+  descriptions), -e/--oneliner inline programs, handles printf streams + map/hist.
+  Demo now lists + runs three (syscount/execsnoop/runqlat). Chapter gained a
+  "bundled programs" table (program → shows → output → mirrors). Same
+  several-working-examples standard to carry into Ch65 (bpftool) + Ch66 (bcc).

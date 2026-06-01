@@ -1,0 +1,5 @@
+// execsnoop — stream every execve() with pid, command, and the new binary.
+// Mirrors Chapter 11 (execsnoop).
+tracepoint:syscalls:sys_enter_execve {
+    printf("%-6d %-16s %s\n", pid, comm, str(args.filename));
+}

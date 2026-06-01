@@ -1,0 +1,4 @@
+// tcpconnect — count active TCP connects by command (who is dialling out).
+// Mirrors Chapter 27 (tcpconnlat), as a per-command counter.
+kprobe:tcp_connect { @[comm] = count(); }
+interval:s:1 { print(@); clear(@); }

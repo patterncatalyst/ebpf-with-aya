@@ -96,6 +96,32 @@ threshold, write a CSV, or export an `ebpf_*` metric over OTLP to the same
 Grafana you've used all book. The wrapper marks the boundary clearly: bpftrace
 gathers, Python decides what the data is *for*.
 
+## The bundled programs
+
+The example ships a set of small, runnable bpftrace programs in `programs/`,
+each mirroring a validation task from earlier in the book. List them with
+`bpftrace_tool.py --list`, run any with `--program`, or paste your own with
+`-e`. They split into the two output shapes the wrapper handles — **streams**
+(`printf`) and **aggregations** (`map`/`hist`):
+
+| Program | What it shows | Output | Mirrors |
+|---|---|---|---|
+| `syscount.bt` | syscalls per command, per second | table | — |
+| `readsize.bt` | `read()` size distribution | histogram | Ch 24 (biopattern) |
+| `opensnoop.bt` | every `openat()` (pid, comm, file) | stream | Ch 9 |
+| `execsnoop.bt` | every `execve()` (new processes) | stream | Ch 11 |
+| `killsnoop.bt` | `kill()` signals (who→whom, signal) | stream | Ch 38 |
+| `runqlat.bt` | run-queue (scheduler) latency µs | histogram | Ch 21 |
+| `profile.bt` | on-CPU command sampled at 99 Hz | table | Ch 23 |
+| `vfsstat.bt` | core VFS ops per second | table | — |
+| `tcpconnect.bt` | active TCP connects by command | table | Ch 27 |
+
+Each is a few lines, and running one beside the Aya program it mirrors is a
+genuine cross-check: `runqlat.bt`'s histogram should track the one your Aya
+runqlat built, `execsnoop.bt`'s stream should match your execsnoop's events. The
+point of the set is to *explore* — change a predicate, swap the probe, add a key
+to the map, and re-run instantly, with no build step between you and the answer.
+
 ## When to reach for this (and when for Aya)
 
 bpftrace driven from Python is the **exploration and validation** instrument:
@@ -115,11 +141,12 @@ cd examples/64-bpftrace-python && ./demo.sh
 ```
 
 The demo copies the Python wrapper and its bpftrace programs to the lab VM
-(where `bpftrace` lives, from Chapter 2) and runs the syscall-top tool for a few
-seconds, printing a refreshing table of the busiest commands by syscall count —
-the kind of instant, no-build insight bpftrace is for. There's no Grafana panel:
-this is a terminal tool by design (though the wrapper notes where an OTLP export
-would slot in).
+(where `bpftrace` lives, from Chapter 2), lists the bundled programs, then runs
+three of them: the syscall-top table, the `execsnoop` stream, and the `runqlat`
+histogram — counts, a live stream, and a distribution, the three shapes you'll
+meet. Run any other with `--program`, or an inline one with `-e`. There's no
+Grafana panel: these are terminal tools by design (the wrapper notes where an
+OTLP export would slot in).
 
 ## Cross-check
 

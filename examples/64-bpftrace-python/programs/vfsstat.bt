@@ -1,0 +1,7 @@
+// vfsstat — counts of core VFS operations per second (read/write/open/fsync).
+// A quick filesystem-activity pulse.
+kprobe:vfs_read  { @[probe] = count(); }
+kprobe:vfs_write { @[probe] = count(); }
+kprobe:vfs_open  { @[probe] = count(); }
+kprobe:vfs_fsync { @[probe] = count(); }
+interval:s:1 { print(@); clear(@); }

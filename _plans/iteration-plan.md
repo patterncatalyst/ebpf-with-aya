@@ -109,6 +109,7 @@ one may merge with its neighbour.
 | r42 | 62 | correlating signals — Tempo/Mimir/spans, trace_id across stores | **shipped (unverified)** |
 | r43 | 63 | CAPSTONE — one request, every layer, one trace_id | **shipped (unverified)** — closes Part 9 |
 | r44 | 64 | Part 10 field guide — bpftrace from Python (NDJSON) | **shipped (unverified)** |
+| r44.1 | 64 | + 7 working bpftrace programs (snoop/runqlat/profile/...) + tool --list/-e | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

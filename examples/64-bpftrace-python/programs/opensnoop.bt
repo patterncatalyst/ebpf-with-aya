@@ -1,0 +1,5 @@
+// opensnoop — stream every openat() with pid, command, and filename.
+// Mirrors Chapter 9 (opensnoop), as a printf stream.
+tracepoint:syscalls:sys_enter_openat {
+    printf("%-6d %-16s %s\n", pid, comm, str(args.filename));
+}

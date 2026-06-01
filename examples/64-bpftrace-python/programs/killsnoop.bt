@@ -1,0 +1,5 @@
+// killsnoop — stream kill() signals: who signalled whom, with which signal.
+// Mirrors Chapter 38 (signal-kill).
+tracepoint:syscalls:sys_enter_kill {
+    printf("%-16s pid %-6d -> pid %-6d sig %d\n", comm, pid, args.pid, args.sig);
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# examples/64-bpftrace-python/demo.sh — drive a bpftrace program from Python on
-# the lab VM (where bpftrace lives), rendering a live syscall-top table.
+# examples/64-bpftrace-python/demo.sh — drive several bpftrace programs from
+# Python on the lab VM (where bpftrace lives), covering counts, streams, and a
+# latency histogram.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
@@ -12,6 +13,14 @@ c_step "copy the wrapper + programs to $VM"
 $SSH "fedora@$TIP" 'rm -rf /tmp/bptool && mkdir -p /tmp/bptool/programs'
 scp -q -o StrictHostKeyChecking=accept-new bpftrace_tool.py "fedora@$TIP:/tmp/bptool/"
 scp -q -o StrictHostKeyChecking=accept-new programs/*.bt "fedora@$TIP:/tmp/bptool/programs/"
-c_step "syscall top (counts per command, 8s)"
-$SSH "fedora@$TIP" 'sudo python3 /tmp/bptool/bpftrace_tool.py --program /tmp/bptool/programs/syscount.bt --duration 8 || echo "needs bpftrace + python3 on the VM"'
-c_info "try the read-size histogram: sudo python3 /tmp/bptool/bpftrace_tool.py --program /tmp/bptool/programs/readsize.bt"
+R="sudo python3 /tmp/bptool/bpftrace_tool.py"
+c_step "the bundled programs"
+$SSH "fedora@$TIP" "$R --list"
+c_step "1) syscall top (counts per command, 6s)"
+$SSH "fedora@$TIP" "$R --program /tmp/bptool/programs/syscount.bt --duration 6 || true"
+c_step "2) execsnoop (stream new processes, 6s — run something on the VM to see rows)"
+$SSH "fedora@$TIP" "$R --program /tmp/bptool/programs/execsnoop.bt --duration 6 || true"
+c_step "3) runqlat (scheduler-latency histogram, ~6s)"
+$SSH "fedora@$TIP" "$R --program /tmp/bptool/programs/runqlat.bt --duration 6 || true"
+c_info "more: opensnoop.bt killsnoop.bt profile.bt vfsstat.bt tcpconnect.bt readsize.bt"
+c_info "inline: $R -e 'tracepoint:syscalls:sys_enter_openat { @[comm]=count(); } interval:s:1 { print(@); clear(@); }'"

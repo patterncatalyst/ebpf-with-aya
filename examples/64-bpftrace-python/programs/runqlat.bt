@@ -1,0 +1,12 @@
+// runqlat — run-queue (scheduler) latency histogram in microseconds: time from
+// wakeup to actually running. Mirrors Chapter 21 (runqlat).
+tracepoint:sched:sched_wakeup     { @qt[args.pid] = nsecs; }
+tracepoint:sched:sched_wakeup_new { @qt[args.pid] = nsecs; }
+tracepoint:sched:sched_switch {
+    $next = args.next_pid;
+    if (@qt[$next]) {
+        @usecs = lhist((nsecs - @qt[$next]) / 1000, 0, 10000, 1000);
+        delete(@qt[$next]);
+    }
+}
+interval:s:3 { print(@usecs); clear(@usecs); }

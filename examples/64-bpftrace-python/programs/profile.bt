@@ -1,0 +1,4 @@
+// profile — sample the on-CPU command at 99 Hz across all CPUs. A cheap "who is
+// burning CPU" view. Mirrors Chapter 23 (profile), counting by command.
+profile:hz:99 { @[comm] = count(); }
+interval:s:3 { print(@); clear(@); }
