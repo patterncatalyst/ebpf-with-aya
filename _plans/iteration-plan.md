@@ -115,6 +115,7 @@ one may merge with its neighbour.
 | r47 | 5,64,65,66 | reader polish: 4 new diagrams (bpf-arch/events/tool-maps), explicit paths, Ch65 table, +bcc examples, README diagram | **shipped (unverified)** |
 | r47.1 | 5,64,66 | diagram readability (dark labels), Fig5.4 arrows fixed, 5.3 divider+steps, Ch5 stepwise pipeline + bpftool/bpftrace table | **shipped (unverified)** |
 | r47.2 | css | table cells + inline code wrap (fixes overflowing tables) | **shipped (unverified)** |
+| r47.3 | css | correct table fix — wrap inline code (break-word), stop column collapse | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

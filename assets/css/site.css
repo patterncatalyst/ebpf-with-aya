@@ -145,11 +145,12 @@ th {
   border-bottom-color: var(--border-strong);
 }
 
-/* Long cell content — including inline code — wraps instead of forcing the
-   table wider than the page. Inline code defaults to nowrap (below), which is
-   right in prose but overflows in narrow table columns. */
-th, td { vertical-align: top; overflow-wrap: anywhere; }
-:is(th, td) code { white-space: normal; }
+/* Long inline code in a narrow table column can wrap (and break a very long
+   token only if it would otherwise overflow) — without collapsing the other
+   columns. NOTE: overflow-wrap:anywhere on the cell shrinks min-content to one
+   character and squeezes prose columns, so keep the wrapping on code only. */
+th, td { vertical-align: top; }
+:is(th, td) code { white-space: normal; overflow-wrap: break-word; }
 
 /* ---- 3. Code ----------------------------------------------- */
 

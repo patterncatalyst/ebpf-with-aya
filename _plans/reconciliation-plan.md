@@ -1554,3 +1554,11 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   top; overflow-wrap: anywhere } and :is(th,td) code { white-space: normal } so
   cell content + inline code wrap; applies to every table site-wide. Also trimmed
   the long bpftrace one-liner in that table cell.
+
+### r47.3 — table fix correction (reader feedback: r47.2 made it worse)
+- r47.2 used overflow-wrap:anywhere on th,td, which shrinks each column min-content
+  to one character; with width:100% + a code-heavy column, the prose columns
+  collapsed to 1 char/line. Corrected: keep cell sizing default; allow wrapping on
+  INLINE CODE only via :is(th,td) code { white-space: normal; overflow-wrap:
+  break-word }. break-word preserves min-content (longest token) so columns size
+  normally and only a too-long token breaks when it would overflow.
