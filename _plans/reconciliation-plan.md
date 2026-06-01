@@ -1546,3 +1546,11 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Python by the Part 10 tools. Landscape section now states Fedora 44 runs the 6.x
   kernel with all listed capabilities. "Where bpftool and bpftrace fit" bullets ->
   TABLE (tool | what it is | what for | try). Ch5 word count grew accordingly.
+
+### r47.2 — table cell wrapping fix (reader feedback)
+- Inline code rule (:not(pre) > code { white-space: nowrap }) made long code in
+  table cells unbreakable, pushing the whole table past page width so NO column
+  wrapped (Ch5 bpftool/bpftrace table). Fix in site.css: th,td { vertical-align:
+  top; overflow-wrap: anywhere } and :is(th,td) code { white-space: normal } so
+  cell content + inline code wrap; applies to every table site-wide. Also trimmed
+  the long bpftrace one-liner in that table cell.

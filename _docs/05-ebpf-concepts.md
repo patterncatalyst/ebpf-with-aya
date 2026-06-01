@@ -206,7 +206,7 @@ misbehaves. You run these **inside the target VM**:
 | Tool | What it is | What it's for | Try |
 |---|---|---|---|
 | `bpftool` | inspects the live BPF subsystem | what's loaded, what maps hold, and what's attached where — when user space reads zeros from a map, it tells you whether the *kernel* side is writing anything at all, isolating the bug to one half | `bpftool prog list` · `bpftool map dump` |
-| `bpftrace` | a high-level tracing language (not Aya) | the fastest way to confirm an event even fires before you invest in a full program | `bpftrace -e 'tracepoint:syscalls:sys_enter_openat { @[comm]=count(); }'` |
+| `bpftrace` | a high-level tracing language (not Aya) | the fastest way to confirm an event even fires before you invest in a full program | `bpftrace -e 'tracepoint:syscalls:sys_enter_openat { @[comm]=count() }'` |
 
 Treat them as the multimeter you check against, not as competitors to
 Aya. The tutorial uses them throughout to verify that what your Rust
