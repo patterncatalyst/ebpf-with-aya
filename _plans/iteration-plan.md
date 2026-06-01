@@ -110,6 +110,8 @@ one may merge with its neighbour.
 | r43 | 63 | CAPSTONE — one request, every layer, one trace_id | **shipped (unverified)** — closes Part 9 |
 | r44 | 64 | Part 10 field guide — bpftrace from Python (NDJSON) | **shipped (unverified)** |
 | r44.1 | 64 | + 7 working bpftrace programs (snoop/runqlat/profile/...) + tool --list/-e | **shipped (unverified)** |
+| r45 | 65 | bpftool from Python — inventory/top/maps/dump/links/net/features/audit | **shipped (unverified)** |
+| r46 | 66 | BCC tools tour from Python (resolve/run/parse + hello_bcc) | **shipped (unverified)** — closes Part 10 |
 
 ## Phase 10 — Operating eBPF
 

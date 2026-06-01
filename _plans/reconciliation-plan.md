@@ -1458,3 +1458,43 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Demo now lists + runs three (syscount/execsnoop/runqlat). Chapter gained a
   "bundled programs" table (program → shows → output → mirrors). Same
   several-working-examples standard to carry into Ch65 (bpftool) + Ch66 (bcc).
+
+### r45.0 — Field guide: bpftool from Python (Ch 65) — UNVERIFIED (full depth, 8 examples)
+- **Ch 65 (bpftool-python)** — bpftool inspects/manages LOADED objects (our
+  cross-check all book: prog/map/link show, map dump, struct_ops register, iter
+  pin). `-j` → JSON arrays. prog object: id/type/name/tag/run_time_ns/run_cnt/
+  bytes_memlock/map_ids/pids(5.8+). run_time/run_cnt need sysctl
+  kernel.bpf_stats_enabled=1 (5.1+, slight perf cost). Wrapper bpftool_tool.py
+  (stdlib) = 8 working commands: progs (inventory), top (avg ns/run, --enable-stats),
+  maps, dump <name|id>, links, net (xdp/tc), features (from feature probe), audit
+  (join prog+link → holders+attachments). 4-line bpftool() helper; audit shows
+  cross-object correlation. Ops value: read-mostly ground truth (what's loaded,
+  what it costs, who owns it), repeatable across a fleet. Demo loads a throwaway
+  bpftrace probe then runs progs/maps/links/audit/top/features. New diagram
+  bpftool-python. Terminal tool → no Grafana. FULL DEPTH + several examples.
+- Next: Ch 66 BCC tools tour (closes field guide); then retrospective + Ch0/PRD
+  outline re-sync + tooling-coverage pass (_plans/todo.md).
+
+### r46.0 — Field guide: BCC tools tour (Ch 66) — UNVERIFIED (full depth, several examples) — CLOSES PART 10
+- **Ch 66 (bcc-tools)** — BCC = ~100 ready-made tracers (execsnoop/opensnoop/
+  biolatency/runqlat/tcpconnect/profile — the cross-check names all book). TWO
+  GENERATIONS: classic BCC (Python + inline C, RUNTIME-compiled via Clang/LLVM →
+  needs clang+llvm+kernel headers matching uname -r; /usr/share/bcc/tools on
+  Fedora, -bpfcc suffix on Debian; "Failed to compile BPF text" gotcha) vs
+  libbpf-tools (precompiled CO-RE binaries, no runtime deps, BTF relocation — Ch58
+  story; Fedora `libbpf-tools` pkg). Suite table grouped (process/sched/block/net/
+  mem), several mirror our chapters. BCC emits COLUMNAR TEXT (not JSON) → Python
+  pattern = resolve/run/parse. Example bcc_runner.py: resolver (/usr/share/bcc/
+  tools→PATH→-bpfcc), run for duration + SIGINT to flush, parsers for execsnoop/
+  opensnoop/tcpconnect (top-N), capture+print for histogram tools (biolatency/
+  runqlat/profile). hello_bcc.py = minimal BCC-library inline-C kprobe (BPF(text=)
+  compiled at runtime) — contrast w/ Aya AOT Rust binary = book in miniature.
+  Positioning: BCC depth + quick custom (trace/argdist); bpftrace quick DSL;
+  bpftool inspect loaded; Aya production. New diagram bcc-tools. Terminal → no
+  Grafana. FULL DEPTH + several examples.
+- **PART 10 (Field guide, Ch 64–66) COMPLETE. Technical body COMPLETE (Ch 0–66).**
+- REMAINING: (1) retrospective final chapter (detailed, across the whole arc;
+  user wants it as the finale). (2) Ch0 outline + PRD outline-table RE-SYNC (Part
+  10 + chapters 64–66 + retrospective). (3) tooling-coverage pass (_plans/todo.md;
+  note bcc-tools needs clang+kernel-devel — add to that audit). (4) skill
+  chapter-template terminal-view+Grafana-metric requirement still pending.

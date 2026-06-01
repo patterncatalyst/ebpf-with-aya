@@ -86,6 +86,8 @@ Embed a diagram in a chapter with the include:
 | `signal-correlation` | 62 | four backends, one trace_id (Tempo/Prometheus/Loki) |
 | `capstone` | 63 | one request across both apps + the eBPF view, one trace_id |
 | `bpftrace-python` | 64 | drive bpftrace from Python (NDJSON → live tool) |
+| `bpftool-python` | 65 | drive bpftool from Python (JSON inventory/audit) |
+| `bcc-tools` | 66 | drive the BCC tools suite from Python (resolve/run/parse) |
 
 ## Regenerating
 
