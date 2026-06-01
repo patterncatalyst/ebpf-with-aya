@@ -1581,3 +1581,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   table-cell code-wrap override (white-space:normal; overflow-wrap:anywhere) the
   long command now wraps inside its fixed column. Applies to all tables (equal
   columns); acceptable for the book's reference tables (<=4 cols).
+
+### r48.0 — RETROSPECTIVE (Ch 67) — book narrative COMPLETE
+- New Part 11 "Retrospective" (_parts/retrospective.md, order 11). Ch 67 = the
+  detailed finale the reader asked for, "across the whole thing": how the parts
+  built on each other (Part 0 foundations → observe → network/secure → frontier →
+  operate → field guide); what held constant (the four-move loop; Rust earns its
+  place at the verifier; maps the only channel; lab model; observability-by-default
+  three-signal spine; explore-with-tools/ship-with-Aya); how your mental model of
+  the kernel changed (spectator → participant); the honest unverified state (reader
+  promotes by running on Fedora 44 — by design); and where eBPF/Aya go next
+  (all-Rust kernel side maturing; observe→control via sched_ext/cpufreq_ext/LSM;
+  OBI zero-code; bpfman/L3AF operating layers; DPU/offload). New diagram book-arc.
+  Reflection chapter → no Aya example/Grafana panel by design; avoids "honest" in
+  prose per convention. ~ closing word + thanks.
+- **BOOK NARRATIVE COMPLETE: Chapters 0–67, Parts 0–11.**
+- REMAINING CLEANUPS (post-finale): (1) Ch0 outline + PRD outline-table re-sync to
+  reflect Parts 10–11 + chapters 64–67. (2) tooling-coverage setup pass
+  (_plans/todo.md; incl. turbostat, clang+kernel-devel for classic bcc). (3) skill
+  chapter-template: require naming terminal-view + Grafana metric in observe.

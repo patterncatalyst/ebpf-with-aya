@@ -92,6 +92,7 @@ Embed a diagram in a chapter with the include:
 | `linux-events-bpf` | 5 | the event landscape: kprobes/uprobes/tracepoints/PMCs/sw events |
 | `bpftrace-tools-map` | 64 | bpftrace tools mapped to the kernel layer each observes |
 | `bcc-tools-map` | 66 | bcc tools mapped to the kernel layer each observes |
+| `book-arc` | 67 | the arc of the book (Parts 0–10) + the frontier ahead |
 
 ## Regenerating
 
