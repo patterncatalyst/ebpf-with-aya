@@ -1562,3 +1562,13 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   INLINE CODE only via :is(th,td) code { white-space: normal; overflow-wrap:
   break-word }. break-word preserves min-content (longest token) so columns size
   normally and only a too-long token breaks when it would overflow.
+
+### r47.4 — table code-wrap: fix CSS source-order/specificity (r47.3 still squeezed)
+- Root cause finally pinned: the cell code-wrap rule sat BEFORE :not(pre) > code
+  { white-space: nowrap }; equal specificity -> later (nowrap) won, so cell code
+  stayed nowrap, forced the Try column wide, squeezed the prose column. Fix: moved
+  the override to AFTER the Code section and raised specificity with a leading
+   => .
+  anywhere keeps code min-content small (only the code column yields), so the long
+  command wraps and prose keeps its width. (No overflow-wrap on th,td, so prose
+  columns never collapse.)

@@ -145,12 +145,9 @@ th {
   border-bottom-color: var(--border-strong);
 }
 
-/* Long inline code in a narrow table column can wrap (and break a very long
-   token only if it would otherwise overflow) — without collapsing the other
-   columns. NOTE: overflow-wrap:anywhere on the cell shrinks min-content to one
-   character and squeezes prose columns, so keep the wrapping on code only. */
+/* Long inline code in a narrow table column must be allowed to wrap (see the
+   override at the end of the Code section) so it can't force a column wide. */
 th, td { vertical-align: top; }
-:is(th, td) code { white-space: normal; overflow-wrap: break-word; }
 
 /* ---- 3. Code ----------------------------------------------- */
 
@@ -183,6 +180,16 @@ pre code {
   color: inherit;
   white-space: pre;
   font-size: inherit;
+}
+
+/* Inline code inside a table cell may wrap — overrides the `:not(pre) > code`
+   nowrap default above. Placed after it (and with the extra `table` for higher
+   specificity) so it actually wins; `anywhere` keeps the code's min-content
+   small so a long command wraps instead of forcing its column wide and
+   squeezing the neighbouring prose column. */
+table :is(th, td) code {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* Rouge syntax highlighting on dark — minimal palette */

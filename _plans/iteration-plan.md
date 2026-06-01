@@ -116,6 +116,7 @@ one may merge with its neighbour.
 | r47.1 | 5,64,66 | diagram readability (dark labels), Fig5.4 arrows fixed, 5.3 divider+steps, Ch5 stepwise pipeline + bpftool/bpftrace table | **shipped (unverified)** |
 | r47.2 | css | table cells + inline code wrap (fixes overflowing tables) | **shipped (unverified)** |
 | r47.3 | css | correct table fix — wrap inline code (break-word), stop column collapse | **shipped (unverified)** |
+| r47.4 | css | table code-wrap: correct source order + specificity so cell code wraps | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 
