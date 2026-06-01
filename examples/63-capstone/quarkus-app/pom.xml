@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>inventory</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <maven.compiler.release>25</maven.compiler.release>
+    <quarkus.platform.version>3.33.0</quarkus.platform.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencyManagement><dependencies><dependency>
+    <groupId>io.quarkus.platform</groupId><artifactId>quarkus-bom</artifactId>
+    <version>${quarkus.platform.version}</version><type>pom</type><scope>import</scope>
+  </dependency></dependencies></dependencyManagement>
+  <dependencies>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-rest-jackson</artifactId></dependency>
+    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-opentelemetry</artifactId></dependency>
+  </dependencies>
+  <build><plugins><plugin>
+    <groupId>io.quarkus.platform</groupId><artifactId>quarkus-maven-plugin</artifactId>
+    <version>${quarkus.platform.version}</version>
+    <executions><execution><goals><goal>build</goal></goals></execution></executions>
+  </plugin></plugins></build>
+</project>

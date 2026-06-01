@@ -1,0 +1,15 @@
+# Two instrumented services for the capstone. OTLP → the Chapter 3 otel-lgtm
+# stack on the host. Run with: podman-compose up --build
+services:
+  quarkus:
+    build: ./quarkus-app
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://host.containers.internal:4317"
+    ports: ["8080:8080"]
+  fastapi:
+    build: ./fastapi-app
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://host.containers.internal:4318"
+      INVENTORY_URL: "http://quarkus:8080/inventory"
+    ports: ["8000:8000"]
+    depends_on: ["quarkus"]

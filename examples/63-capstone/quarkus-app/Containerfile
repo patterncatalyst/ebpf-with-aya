@@ -1,0 +1,13 @@
+# Multi-stage: build the Quarkus app, then a UBI JDK 25 runtime. UNVERIFIED —
+# confirm the UBI openjdk-25 image tag and Quarkus 3.33 build on your host.
+FROM registry.access.redhat.com/ubi9/openjdk-25 AS build
+USER root
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN ./mvnw -q -B package 2>/dev/null || mvn -q -B package
+FROM registry.access.redhat.com/ubi9/openjdk-25-runtime
+WORKDIR /app
+COPY --from=build /app/target/quarkus-app/ ./
+EXPOSE 8080
+CMD ["java", "-jar", "quarkus-run.jar"]

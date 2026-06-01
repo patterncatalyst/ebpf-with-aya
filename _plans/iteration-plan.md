@@ -107,6 +107,7 @@ one may merge with its neighbour.
 | r40 | 60 | offload — eBPF off the host CPU (SmartNIC/DPU/FPGA/GPU) | **shipped (unverified)** |
 | r41 | 61 | power & efficiency — RAPL + eBPF attribution, cpufreq_ext frontier | **shipped (unverified)** |
 | r42 | 62 | correlating signals — Tempo/Mimir/spans, trace_id across stores | **shipped (unverified)** |
+| r43 | 63 | CAPSTONE — one request, every layer, one trace_id | **shipped (unverified)** — closes Part 9 |
 
 ## Phase 10 — Operating eBPF
 

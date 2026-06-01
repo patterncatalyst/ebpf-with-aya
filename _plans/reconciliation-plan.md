@@ -1406,3 +1406,25 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   metric of its own by design (eBPF correlation = capstone). FULL DEPTH.
 - Next: Ch 63 CAPSTONE — one curl → Quarkus + FastAPI (Podman) → spans(Tempo) +
   metrics(Prometheus) + logs(Loki) + eBPF/Aya kernel view, all on one trace_id.
+
+### r43.0 — CAPSTONE: one request, every layer (Ch 63) — UNVERIFIED (full depth)
+- **Ch 63 (capstone)** — the grand integration, closing Part 9. Scenario: curl/
+  Postman + traceparent → FastAPI /checkout → calls Quarkus /inventory (context
+  propagated) → ONE distributed trace, both services' spans. Three app signals
+  on one trace_id: spans→Tempo, app_requests_total+latency(exemplars)→Prometheus,
+  trace-stamped logs→Loki. FOURTH VIEW: Aya socket observer (sys_enter_read per-
+  comm counts → ebpf_capstone_syscalls_total{comm}) = kernel-side truth. Joining
+  eBPF to the trace: (a) L7 traceparent extraction (OBI/uprobe, reference/
+  l7_traceparent.bpf.c canonical-illustrative), or (b) correlate by time+pid+
+  service (runnable path; demo captures trace_id from response). Read end-to-end
+  in Grafana: Tempo trace (both services) → span→Loki logs → metric exemplar→
+  trace → ebpf_capstone_* for the window = app intent + app state + kernel reality
+  in one investigation. Example: fastapi-app (Podman/UBI py3.14, calls Quarkus),
+  quarkus-app (Podman/UBI openjdk-25 + Quarkus 3.33, auto-instrumented), capstone
+  Aya observer + loader, reference L7 .bpf.c, compose.yaml, demo orchestrates +
+  Grafana walkthrough. New diagram capstone. Completes Ch46's three-signals story
+  with full LGTM correlation + eBPF. FULL DEPTH. UBI openjdk-25 tag + Quarkus
+  build flagged unverified.
+- **PART 9 (Operating eBPF, Ch 58–63) COMPLETE.** Next: Part 10 (optional field
+  guide) — bpftrace+python, bpftool+python, BCC tools tour (w/ diagrams); then a
+  closing retrospective. TODO logged (_plans/todo.md): tooling-coverage setup pass.
