@@ -85,6 +85,7 @@ Embed a diagram in a chapter with the include:
 | `power` | 61 | attribute socket energy to workloads via sched_switch shares |
 | `signal-correlation` | 62 | four backends, one trace_id (Tempo/Prometheus/Loki) |
 | `capstone` | 63 | one request across both apps + the eBPF view, one trace_id |
+| `bpftrace-python` | 64 | drive bpftrace from Python (NDJSON → live tool) |
 
 ## Regenerating
 

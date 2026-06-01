@@ -1428,3 +1428,22 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - **PART 9 (Operating eBPF, Ch 58–63) COMPLETE.** Next: Part 10 (optional field
   guide) — bpftrace+python, bpftool+python, BCC tools tour (w/ diagrams); then a
   closing retrospective. TODO logged (_plans/todo.md): tooling-coverage setup pass.
+
+### r44.0 — Part 10 OPENS: bpftrace from Python (Ch 64) — UNVERIFIED (full depth)
+- New PART 10 "Field guide" (_parts/field-guide.md, order 10, part_name "Field
+  guide") — OPTIONAL tool-focused chapters on the validation CLIs used all book,
+  each driven from Python.
+- **Ch 64 (bpftrace-python)** — bpftrace = awk-for-the-kernel DSL (probes/
+  predicates/builtins/maps: count/hist/lhist), compiles via LLVM (Ch4). KEY:
+  `-f json` → NDJSON, one {"type","data"} per line (attached_probes/printf/map/
+  hist buckets/value/stats). Python subprocess wrapper reads stdout, json.loads,
+  dispatch by type → live top-N table / histogram. Boundary: bpftrace gathers,
+  Python decides use (table/alert/OTel). bpftrace = exploration/validation (no
+  build/deploy); Aya = production (typed/embeddable/one binary) — find signal w/
+  bpftrace, ship w/ Aya. Example: stdlib-only bpftrace_tool.py + programs/
+  {syscount,readsize}.bt + demo (runs on VM where bpftrace lives). New diagram
+  bpftrace-python. Terminal tool → no Grafana panel by design (OTLP hook noted).
+  FULL DEPTH.
+- DEFERRED: re-sync Ch0 outline + PRD outline tables once Part 10 complete (new
+  part + chapters). TODO (_plans/todo.md) tooling-coverage pass still open.
+- Next: Ch 65 bpftool from Python; Ch 66 BCC tools tour; then retrospective.

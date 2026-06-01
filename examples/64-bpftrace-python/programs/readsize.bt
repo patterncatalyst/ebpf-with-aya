@@ -1,0 +1,4 @@
+// Histogram of read() return sizes. Arrives as a JSON "map" whose value is a
+// list of {min,max,count} buckets — the wrapper renders it as a bar chart.
+tracepoint:syscalls:sys_exit_read /args.ret > 0/ { @bytes = lhist(args.ret, 0, 4096, 256); }
+interval:s:2 { print(@bytes); clear(@bytes); }

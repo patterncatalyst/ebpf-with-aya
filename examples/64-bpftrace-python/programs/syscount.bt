@@ -1,0 +1,4 @@
+// Count syscalls per command, printed once a second. The Python wrapper turns
+// each `print(@)` (a JSON "map" event) into a live top-N table.
+tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }
+interval:s:1 { print(@); clear(@); }

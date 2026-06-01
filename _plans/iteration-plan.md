@@ -108,6 +108,7 @@ one may merge with its neighbour.
 | r41 | 61 | power & efficiency — RAPL + eBPF attribution, cpufreq_ext frontier | **shipped (unverified)** |
 | r42 | 62 | correlating signals — Tempo/Mimir/spans, trace_id across stores | **shipped (unverified)** |
 | r43 | 63 | CAPSTONE — one request, every layer, one trace_id | **shipped (unverified)** — closes Part 9 |
+| r44 | 64 | Part 10 field guide — bpftrace from Python (NDJSON) | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 
