@@ -106,6 +106,7 @@ one may merge with its neighbour.
 | r39 | 59 | operating eBPF — lifecycle, pinning, zero-downtime (L3AF/bpfman) | **shipped (unverified)** |
 | r40 | 60 | offload — eBPF off the host CPU (SmartNIC/DPU/FPGA/GPU) | **shipped (unverified)** |
 | r41 | 61 | power & efficiency — RAPL + eBPF attribution, cpufreq_ext frontier | **shipped (unverified)** |
+| r42 | 62 | correlating signals — Tempo/Mimir/spans, trace_id across stores | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

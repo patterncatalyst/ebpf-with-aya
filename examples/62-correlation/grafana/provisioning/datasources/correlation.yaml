@@ -1,0 +1,35 @@
+# Grafana data-source correlation wiring. Apply alongside the Chapter 3 otel-lgtm
+# stack to link the four backends by trace_id. (otel-lgtm uses Prometheus for
+# metrics; for Mimir in production, keep type: prometheus and point url at Mimir.)
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    url: http://127.0.0.1:9090           # Mimir in prod: http://mimir:9009/prometheus
+    jsonData:
+      exemplarTraceIdDestinations:        # metric exemplar → trace
+        - name: trace_id
+          datasourceUid: tempo
+
+  - name: Tempo
+    type: tempo
+    uid: tempo
+    url: http://127.0.0.1:3200
+    jsonData:
+      tracesToLogsV2:                      # span → its logs
+        datasourceUid: loki
+        tags: ['service.name']
+      tracesToMetrics:                     # span → related metrics
+        datasourceUid: prometheus
+
+  - name: Loki
+    type: loki
+    uid: loki
+    url: http://127.0.0.1:3100
+    jsonData:
+      derivedFields:                       # log line → trace
+        - name: TraceID
+          matcherRegex: 'otelTraceID=(\w+)'
+          url: '$${__value.raw}'
+          datasourceUid: tempo

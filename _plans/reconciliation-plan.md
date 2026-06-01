@@ -1386,3 +1386,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   FULL DEPTH + honest re VM/accuracy.
 - Next: Ch 62 — book close-out (retrospective + where eBPF/Aya go next). CLOSES
   Part 9 and the book.
+
+### r42.0 — Operating eBPF: signal correlation (Ch 62) — UNVERIFIED (full depth)
+- **Ch 62 (correlation)** — sets up the capstone. We used only METRICS for 60
+  chapters; otel-lgtm also runs Tempo(traces)+Loki(logs)+Pyroscope(profiles) +
+  OTel Collector + Grafana. ACCURACY: otel-lgtm uses PROMETHEUS (not Mimir);
+  MIMIR = production Prometheus-compatible swap (remote-write, PromQL, 1B series,
+  multi-tenant) — Grafana points at it via Prometheus datasource type, queries
+  unchanged. Trace = request as parent/child SPANS sharing trace_id; W3C
+  traceparent header propagates it across services. Grafana CORRELATION wiring:
+  exemplars (metric→trace, exemplarTraceIdDestinations), Tempo tracesToLogs/
+  tracesToMetrics, Loki derivedFields (log→trace), Tempo→Pyroscope. eBPF joins
+  the trace by CAPTURING the id (L7/uprobe — Ch14/29/45) or via OBI (Ch46), or
+  correlating by time+pid+service (kernel doesn't natively know trace_id) — the
+  capstone's bridge. Example: instrumented FastAPI (Podman/UBI py3.14) emitting
+  span+metric(app_requests_total)+trace-stamped log on /work; curl with
+  traceparent; Grafana datasource correlation.yaml (exemplars/tracesToLogs/
+  derivedFields). New diagram signal-correlation. Backend/app chapter → no ebpf_
+  metric of its own by design (eBPF correlation = capstone). FULL DEPTH.
+- Next: Ch 63 CAPSTONE — one curl → Quarkus + FastAPI (Podman) → spans(Tempo) +
+  metrics(Prometheus) + logs(Loki) + eBPF/Aya kernel view, all on one trace_id.
