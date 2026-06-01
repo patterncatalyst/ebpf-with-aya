@@ -46,28 +46,25 @@ on (Linux 5.1+).
 
 ## The wrapper: eight working commands
 
-`bpftool_tool.py` is dependency-free and wraps `bpftool -j` behind one helper,
-then exposes eight commands — each a useful tool in its own right:
+`examples/65-bpftool-python/bpftool_tool.py` is dependency-free and wraps
+`bpftool -j` behind one helper, then exposes eight commands — each a useful tool
+in its own right:
 
-- **`progs`** — every loaded program: id, type, name, JIT, memlock, its maps, and
-  the **processes holding it**. Your host's BPF inventory in one table.
-- **`top`** — programs sorted by **average ns per run** (`run_time_ns/run_cnt`):
-  *which BPF is costing the most CPU.* It detects when stats are off and tells
-  you to enable them (or does it with `--enable-stats`). This is the BPF
-  equivalent of `top`, and it's how you'd find an expensive probe in production.
-- **`maps`** — every map: id, type, name, key/value sizes, max entries, memlock.
-- **`dump <name|id>`** — a map's contents as JSON, for verifying state (the
-  `map dump` cross-check, scripted).
-- **`links`** — the links (attachments) and the program each drives — the modern
-  attachment view from Chapter 59.
-- **`net`** — XDP/tc attachments per interface (the Chapter 60 cross-check).
-- **`features`** — which program and map types this kernel supports, summarized
-  from `feature probe` — useful before deploying something exotic.
-- **`audit`** — a composite: every program with its **holders** and its
-  **attachments**, joined across `prog show` and `link show`. "What BPF is
-  running on this box, and who owns it" — a real security/ops question.
+| Command | What it does | Built on |
+|---|---|---|
+| `progs` | host BPF inventory: id, type, name, JIT, memlock, maps, and the **processes holding** each program | `prog show` |
+| `top` | programs by **avg ns/run** (`run_time_ns/run_cnt`) — which BPF costs the most CPU; warns if stats are off (`--enable-stats`) | `prog show` |
+| `maps` | every map: id, type, name, key/value sizes, max entries, memlock | `map show` |
+| `dump <name\|id>` | a map's contents as JSON — the `map dump` cross-check, scripted | `map dump` |
+| `links` | links (attachments) and the program each drives (the Chapter 59 view) | `link show` |
+| `net` | XDP/tc attachments per interface (the Chapter 60 cross-check) | `net show` |
+| `features` | which program and map types this kernel supports | `feature probe` |
+| `audit` | every loaded program with its **holders** and **attachments**, joined | `prog show` + `link show` |
 
-The helper at the centre is four lines:
+The `top` and `audit` rows are the ones worth dwelling on: `top` answers "is our
+probe expensive?" with the kernel's own numbers, and `audit` answers "what's
+running and who put it there?" — the questions that matter in production. The
+helper at the centre is four lines:
 
 ```python
 def bpftool(*args):

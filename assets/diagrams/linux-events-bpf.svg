@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 600" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="430" y="130" width="410" height="40" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="635.0" y="155.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Applications</text>
+<rect x="570" y="170" width="270" height="36" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="705.0" y="193.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">System Libraries</text>
+<rect x="430" y="206" width="410" height="40" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="635.0" y="231.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">System Call Interface</text>
+<rect x="430" y="246" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="500.0" y="272.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">VFS</text>
+<rect x="570" y="246" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="640.0" y="272.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Sockets</text>
+<rect x="710" y="246" width="130" height="82" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="775.0" y="292.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Scheduler</text>
+<rect x="430" y="287" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="500.0" y="313.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">File Systems</text>
+<rect x="570" y="287" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="640.0" y="313.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">TCP/UDP</text>
+<rect x="430" y="328" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="500.0" y="354.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Volume Manager</text>
+<rect x="570" y="328" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="640.0" y="354.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">IP</text>
+<rect x="710" y="328" width="130" height="82" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="775.0" y="374.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Virtual Memory</text>
+<rect x="430" y="369" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="500.0" y="395.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Block Device</text>
+<rect x="570" y="369" width="140" height="41" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="640.0" y="395.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Net Device</text>
+<rect x="430" y="410" width="410" height="36" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="635.0" y="433.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">Device Drivers</text>
+<rect x="1004" y="250" width="92" height="66" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="1050.0" y="288.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">CPU</text>
+<rect x="1004" y="352" width="92" height="48" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="1050.0" y="381.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">DRAM</text>
+<path d="M415,180 L415,444" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<path d="M540,104 L540,206" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="538.0" y="195.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">syscalls:</text>
+<text x="538.0" y="195.0" font-size="11" fill="#555" text-anchor="middle">syscalls:</text>
+<path d="M470,104 L500,287" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="477.0" y="225.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">ext4:</text>
+<text x="477.0" y="225.5" font-size="11" fill="#555" text-anchor="middle">ext4:</text>
+<path d="M690,104 L775.0,246" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="736.5" y="195.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">sched:</text>
+<text x="736.5" y="195.0" font-size="11" fill="#555" text-anchor="middle">sched:</text>
+<path d="M360,470 L500.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="420.0" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">block: scsi:</text>
+<text x="420.0" y="458.0" font-size="11" fill="#555" text-anchor="middle">block: scsi:</text>
+<path d="M600,470 L640.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="624.0" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">net: skb:</text>
+<text x="624.0" y="458.0" font-size="11" fill="#555" text-anchor="middle">net: skb:</text>
+<path d="M760,470 L775.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="777.5" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">page-faults</text>
+<text x="777.5" y="458.0" font-size="11" fill="#555" text-anchor="middle">page-faults</text>
+<path d="M840,287 L1004,283" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="916.0" y="277.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">CPU interconnect</text>
+<text x="916.0" y="277.0" font-size="11" fill="#555" text-anchor="middle">CPU interconnect</text>
+<path d="M1050,316 L1050,352" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<text x="1060.0" y="336.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">memory bus</text>
+<text x="1060.0" y="336.0" font-size="11" fill="#555" text-anchor="middle">memory bus</text>
+<path d="M890,250 L840,273.0" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<text x="40" y="150" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">Dynamic tracing</text>
+<text x="40" y="250" font-size="11" fill="#888" text-anchor="start">uprobes — user-level</text>
+<text x="40" y="272" font-size="11" fill="#888" text-anchor="start">(Linux 4.3+)</text>
+<text x="40" y="360" font-size="11" fill="#888" text-anchor="start">kprobes — kernel</text>
+<text x="40" y="382" font-size="11" fill="#888" text-anchor="start">(Linux 4.1+)</text>
+<text x="456" y="34" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">Tracepoints (stable kernel trace events, 4.7+):</text>
+<text x="456" y="74" font-size="12" fill="#888" text-anchor="start">syscalls:  sched:  signal:  timer:  block:  net:  skb:  irq:  ext4:  sock:  kmem:  vmscan:  writeback:  workqueue:</text>
+<text x="880" y="150" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">PMCs (hardware counters, 4.9+):</text>
+<text x="880" y="174" font-size="12" fill="#888" text-anchor="start">cycles · instructions · branch-* · L1-* · LLC-*</text>
+<text x="430" y="498" font-size="12" fill="#888" text-anchor="start">Software events (4.9+): cpu-clock · cs · migrations · page-faults · minor/major-faults</text>
+<text x="40" y="470" font-size="11" fill="#888" text-anchor="start">BPF output 4.4 · BPF stacks 4.9</text>
+</svg>

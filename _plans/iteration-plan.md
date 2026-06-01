@@ -112,6 +112,7 @@ one may merge with its neighbour.
 | r44.1 | 64 | + 7 working bpftrace programs (snoop/runqlat/profile/...) + tool --list/-e | **shipped (unverified)** |
 | r45 | 65 | bpftool from Python — inventory/top/maps/dump/links/net/features/audit | **shipped (unverified)** |
 | r46 | 66 | BCC tools tour from Python (resolve/run/parse + hello_bcc) | **shipped (unverified)** — closes Part 10 |
+| r47 | 5,64,65,66 | reader polish: 4 new diagrams (bpf-arch/events/tool-maps), explicit paths, Ch65 table, +bcc examples, README diagram | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

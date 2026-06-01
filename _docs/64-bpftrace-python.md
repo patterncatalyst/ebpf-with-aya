@@ -54,6 +54,14 @@ This is why it's the perfect cross-check: the runqlat histogram you built over a
 whole chapter in Aya is a single `lhist` line in bpftrace, so running both and
 comparing is a real test.
 
+bpftrace ships its own collection of ready-made tools, and like the BCC suite
+(Chapter 66) they map onto the kernel stack by the layer each observes:
+
+{% include excalidraw.html
+   file="bpftrace-tools-map"
+   alt="bpftrace tools mapped to the kernel layer each observes. Around the stack — applications, system libraries, system call interface, VFS/sockets/scheduler, file systems/TCP-UDP/virtual memory, block/net devices, device drivers — sit bpftrace tools: vfscount and vfsstat and opensnoop and statsnoop and syncsnoop at VFS; writeback and xfsdist at file systems; mdflush at the volume manager; biosnoop and biolatency and bitesize at the block device; bashreadline at applications; gethostlatency at system libraries; syscount and killsnoop and execsnoop and pidpersec at the syscall interface; cpuwalk and runqlat and runqlen and offcputime at the scheduler; oomkill at virtual memory; tcpconnect and tcpaccept and tcpretrans and tcpdrop at TCP/UDP; and capable as a general security tool."
+   caption="Figure 64.2 — bpftrace's own tools, mapped to where each attaches (bpftrace project)" %}
+
 ## The key to scripting it: JSON output
 
 Parsing bpftrace's human text is fragile. The `-f json` flag makes it emit
@@ -72,7 +80,7 @@ line by line, `json.loads` each, and dispatches on `type`.
 
 ## A Python wrapper
 
-The example's `bpftrace_tool.py` is small and dependency-free (standard library
+The wrapper, `examples/64-bpftrace-python/bpftrace_tool.py`, is small and dependency-free (standard library
 only). It launches bpftrace, reads the NDJSON stream, and for each `map` event
 renders a top-N table — turning the classic "count syscalls per command" probe
 into a live `top`-style view:
@@ -98,7 +106,7 @@ gathers, Python decides what the data is *for*.
 
 ## The bundled programs
 
-The example ships a set of small, runnable bpftrace programs in `programs/`,
+The example ships a set of small, runnable bpftrace programs in `examples/64-bpftrace-python/programs/`,
 each mirroring a validation task from earlier in the book. List them with
 `bpftrace_tool.py --list`, run any with `--program`, or paste your own with
 `-e`. They split into the two output shapes the wrapper handles — **streams**

@@ -88,6 +88,10 @@ Embed a diagram in a chapter with the include:
 | `bpftrace-python` | 64 | drive bpftrace from Python (NDJSON → live tool) |
 | `bpftool-python` | 65 | drive bpftool from Python (JSON inventory/audit) |
 | `bcc-tools` | 66 | drive the BCC tools suite from Python (resolve/run/parse) |
+| `bpf-architecture` | 5 | bytecode → load → verifier → BPF ↔ maps/events (workflow) |
+| `linux-events-bpf` | 5 | the event landscape: kprobes/uprobes/tracepoints/PMCs/sw events |
+| `bpftrace-tools-map` | 64 | bpftrace tools mapped to the kernel layer each observes |
+| `bcc-tools-map` | 66 | bcc tools mapped to the kernel layer each observes |
 
 ## Regenerating
 

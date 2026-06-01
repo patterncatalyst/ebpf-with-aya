@@ -3,8 +3,8 @@
 A hands-on, chapter-based tutorial for writing **eBPF programs in Rust
 with [Aya](https://aya-rs.dev/)**, deploying them safely to a **Fedora 44
 KVM virtual machine**, driving load from **Python 3.14** clients in
-Podman, and visualizing the output in **Grafana** (Tempo + Mimir + Loki)
-via **OpenTelemetry**.
+Podman, and visualizing the output in **Grafana** (Tempo, Prometheus, Loki —
+Mimir in production) via **OpenTelemetry**.
 
 The published tutorial lives at:
 **<https://patterncatalyst.github.io/ebpf-with-aya/>**
@@ -22,7 +22,8 @@ By the end of the **Foundations** part (Chapters 0–6) you will:
 - Provision a disposable Fedora 44 eBPF **target VM** under KVM/libvirt
   from a single script (plus an optional second VM and the network
   between them for two-host tests).
-- Stand up the **Grafana / Tempo / Mimir / Loki** observability stack
+- Stand up the **Grafana / Tempo / Prometheus / Loki** observability
+  stack (the `otel-lgtm` image; Mimir is the production swap for Prometheus)
   in one Podman container and report into it via OpenTelemetry.
 - Install the **Rust 1.96.0 + Aya** toolchain (rustup, the BPF target,
   `bpf-linker`, `cargo-generate` + `aya-template`, RustRover).
@@ -36,16 +37,14 @@ and the rest), built on the same loop. See the
 
 ## The lab model
 
-```
-┌─ Host: Fedora 44 laptop ──────────────┐        ┌─ Guest: KVM ──────────┐
-│  RustRover · cargo build               │  scp   │  ebpf-target          │
-│  Python 3.14 clients (Podman)          │ ─────► │  loads + attaches     │
-│  grafana/otel-lgtm (Podman Compose)    │ ◄───── │  eBPF here (never the │
-│  Grafana :3000  OTLP :4318             │  OTLP  │  laptop kernel)       │
-└────────────────────────────────────────┘        └───────────────────────┘
-                                                   (optional ebpf-peer VM
-                                                    for two-host networking)
-```
+![The lab: a Fedora 44 laptop builds the Aya binaries and drives load; eBPF runs only in the guest VM; both report into the observability stack over OTLP.](assets/diagrams/lab-topology.svg)
+
+A Fedora 44 **laptop** builds the Aya binaries, runs the Python 3.14 load
+drivers and the `grafana/otel-lgtm` stack (all in Podman), and `scp`s each
+binary to the **`ebpf-target`** guest VM, where it loads and attaches — eBPF
+runs in the guest kernel, never the laptop's. The guest reports back over
+**OTLP** to Grafana (`:3000`). An optional **`ebpf-peer`** VM provides a second
+host for the two-host networking chapters.
 
 ## Quick start
 
@@ -105,11 +104,16 @@ cd examples/06-hello-world && ./demo.sh
 
 ## Status
 
-Iteration **r1.0**: site scaffold, Foundations chapters (0–6), the
-observability and hello-world examples, the lab scripts, and the full
-roadmap. **All claims are unverified** — the lab this verifies against
-is part of what r1.0 delivers. Start with
-[`onboarding/`](./onboarding/README.md).
+The technical body is **complete: Chapters 0–66**, across eleven parts —
+Foundations, kernel tracing, user-space & language probing, performance,
+networking, security/LSM, schedulers, application targets, advanced kernel
+surface, operating eBPF (CO-RE, lifecycle, offload, power, signal correlation,
+and an end-to-end capstone), and an optional **field guide** to driving
+`bpftrace`, `bpftool`, and the BCC tools from Python. A closing retrospective is
+the last piece. **All claims are `unverified`** until run on real Fedora 44
+hardware — promoting them is what the lab is for. Start with
+[`onboarding/`](./onboarding/README.md) and the
+[roadmap](./_plans/iteration-plan.md).
 
 ## License
 

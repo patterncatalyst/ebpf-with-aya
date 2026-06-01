@@ -7,10 +7,9 @@ binaries). They print columnar text, so a Python wrapper resolves/runs/parses th
 
 ## Pieces
 
-- `bcc_runner.py` — resolve a tool (Fedora `/usr/share/bcc/tools`, `$PATH`, or
+- `bcc_runner.py` — `--list` shows what it knows; resolve a tool (Fedora `/usr/share/bcc/tools`, `$PATH`, or
   `-bpfcc`), run it for a duration, parse columns into a top-N summary
-  (`execsnoop`/`opensnoop`/`tcpconnect`), or capture+print a tool's own histogram
-  (`biolatency`/`runqlat`/`profile`).
+  (`execsnoop`/`opensnoop`/`statsnoop`/`tcpconnect`/`tcpaccept`/`tcplife`/`killsnoop`/`syscount`), or capture+print a tool's own histogram (`biolatency`/`runqlat`/`profile`/`biotop`/`cachestat`).
 - `hello_bcc.py` — a minimal BCC-library program: inline C compiled at runtime
   (`BPF(text=...)`), the contrast with Aya's ahead-of-time Rust binary.
 

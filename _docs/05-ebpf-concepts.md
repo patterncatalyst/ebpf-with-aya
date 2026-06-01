@@ -87,6 +87,29 @@ Two things to know now:
    pointers — the same guarantees that make Rust Rust also keep the
    verifier happy. That's a large part of *why* write eBPF in Rust.
 
+## Anatomy: how bytecode becomes a running probe
+
+It's worth seeing the whole subsystem at once, because every later chapter is a
+variation on this one picture. Your Rust compiles (via `bpf-linker`, Chapter 4)
+to **BPF bytecode**; the loader hands that bytecode to the kernel with the
+`bpf()` syscall; the **verifier** proves it safe; the kernel **JIT-compiles** it
+to native instructions and attaches it to an **event source** — a kprobe, a
+uprobe, a tracepoint, a perf event. From then on the program runs on every event
+and shares data with user space through exactly two channels: **maps** (lookup
+tables both sides hold by file descriptor) and **perf/ring-buffer output**
+(streamed records). There is no other way in or out — which is precisely what
+makes eBPF safe to run in the kernel.
+
+{% include excalidraw.html
+   file="bpf-architecture"
+   alt="The BPF subsystem. In user space you generate BPF bytecode and (2) load it into the kernel, where the verifier checks it and hands it to the BPF runtime; the BPF program attaches to event sources — kprobes, uprobes, tracepoints, perf_events — and reads and writes maps. Data returns to user space two ways: perf_output streams per-event data, and the loader does async reads of map contents for statistics. Maps and perf/ring output are the only channels between kernel and user space."
+   caption="Figure 5.3 — generate, load, verify, attach; talk to user space only via maps + perf/ring output" %}
+
+This is the same arc as Figures 5.1 and 5.2, drawn as a system rather than a
+timeline. Aya gives every piece a typed Rust name — `Ebpf::load` for the load,
+`program.attach` for the event source, a typed map handle for each map — so the
+code you write maps one-to-one onto this diagram.
+
 ## BTF and CO-RE: compile once, run everywhere
 
 Kernel data structures (`struct task_struct`, `struct file`, …) change
@@ -125,6 +148,28 @@ You don't need to memorize this. The point is that "write an eBPF
 program" always means "pick a program type, write the handler, attach
 it to the right event" — and Aya gives you a typed Rust macro for each
 type (`#[kprobe]`, `#[xdp]`, `#[tracepoint]`, …).
+
+### The wider event landscape
+
+Those families fit into a larger map of *everything* eBPF can hook, and it's
+worth seeing once so the scope is clear. eBPF attaches across the entire stack:
+**dynamic tracing** of any function (kprobes in the kernel, uprobes in user
+space), **static tracepoints** the kernel exposes at stable points
+(`syscalls:`, `sched:`, `block:`, `net:`, …), hardware **PMCs** (cycles,
+instructions, cache misses) and **software events** (page faults, context
+switches) sampled through the perf subsystem. Each capability arrived in a
+specific kernel (kprobes in 4.1, uprobes in 4.3, the syscall tracepoints in 4.7,
+PMC/software-event access in 4.9) — all comfortably present in Fedora 44's
+kernel, which is why this tutorial can reach any of them.
+
+{% include excalidraw.html
+   file="linux-events-bpf"
+   alt="Linux events and BPF support. Around the kernel stack — applications, system libraries, the system call interface, VFS/sockets/scheduler, file systems/TCP-UDP/virtual memory, block/net devices, device drivers — eBPF can attach via dynamic tracing (uprobes for user space, kprobes for the kernel, spanning the whole stack), static tracepoints (syscalls, sched, signal, timer, block, net, skb, irq, ext4, sock, kmem, vmscan, writeback, workqueue), hardware PMCs on the CPU (cycles, instructions, branch and cache counters, with a memory bus to DRAM), and software events (cpu-clock, context switches, migrations, page faults). Each became available in a specific kernel version."
+   caption="Figure 5.4 — what eBPF can observe: dynamic tracing, tracepoints, PMCs, and software events across the stack" %}
+
+The practical takeaway is reach: if the kernel or a user program *does*
+something, there is almost certainly an eBPF attach point for it — and the rest
+of the book is a guided tour of the most useful ones.
 
 ## Where bpftool and bpftrace fit
 

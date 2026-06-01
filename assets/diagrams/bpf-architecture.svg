@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 360" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="120" y="112" width="160" height="46" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="200.0" y="140.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">BPF bytecode</text>
+<rect x="54" y="232" width="126" height="62" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="117.0" y="261.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">per-event</text>
+<text x="117.0" y="278.0" font-size="11.5" fill="#555555" text-anchor="middle">data</text>
+<rect x="210" y="250" width="126" height="40" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="273.0" y="275.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">statistics</text>
+<rect x="474" y="98" width="126" height="40" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="537.0" y="123.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">verifier</text>
+<rect x="520" y="168" width="116" height="72" rx="9" fill="#f4f4f4" stroke="#888888" stroke-width="1.5"/>
+<text x="578.0" y="209.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">BPF</text>
+<rect x="520" y="268" width="116" height="40" rx="9" fill="#ffffff" stroke="#999999" stroke-width="1.5"/>
+<text x="578.0" y="293.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">maps</text>
+<rect x="706" y="110" width="156" height="34" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="784.0" y="132.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">kprobes</text>
+<rect x="706" y="150" width="156" height="34" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="784.0" y="172.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">uprobes</text>
+<rect x="706" y="190" width="156" height="34" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="784.0" y="212.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">tracepoints</text>
+<rect x="706" y="230" width="156" height="34" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="784.0" y="252.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">perf_events</text>
+<path d="M200,92 L200,112" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="202.0" y="96.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">1. generate</text>
+<text x="202.0" y="96.0" font-size="11" fill="#555" text-anchor="middle">1. generate</text>
+<path d="M280,130 L474,116" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="371.0" y="115.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">2. load</text>
+<text x="371.0" y="115.0" font-size="11" fill="#555" text-anchor="middle">2. load</text>
+<path d="M600,118 L560,168" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M636,188 L706,127" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M636,198 L706,167" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M636,208 L706,207" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M636,218 L706,247" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M520,214 L180,252" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
+<text x="370.0" y="227.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">3. perf_output</text>
+<text x="370.0" y="227.0" font-size="11" fill="#b8650a" text-anchor="middle">3. perf_output</text>
+<path d="M578,240 L578,268" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<path d="M520,288 L336,270" fill="none" stroke="#b8650a" stroke-width="2" marker-start="url(#am)" marker-end="url(#am)"/>
+<text x="432.0" y="271.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">async read</text>
+<text x="432.0" y="271.0" font-size="11" fill="#b8650a" text-anchor="middle">async read</text>
+<text x="200" y="56" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">User space</text>
+<text x="690" y="56" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">Kernel</text>
+<text x="460" y="330" font-size="11" fill="#888" text-anchor="middle">you generate bytecode and load it; the verifier checks it; it attaches to events and talks to user space only through maps + perf/ring output</text>
+</svg>

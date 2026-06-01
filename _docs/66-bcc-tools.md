@@ -64,11 +64,35 @@ The generic four — `funccount`, `funclatency`, `stackcount`, `trace`,
 command line, so they're a quick way to ask almost any "how often / how slow /
 with what arguments" question without writing a program at all.
 
+The full, current list lives upstream at the project's tools index,
+[github.com/iovisor/bcc](https://github.com/iovisor/bcc) (`README.md` and the
+`tools/` directory). Mapped onto the kernel stack, the suite looks like this —
+each tool drawn at the layer it observes:
+
+{% include excalidraw.html
+   file="bcc-tools-map"
+   alt="A curated subset of the bcc tools mapped to the kernel layer each observes. Around the stack — applications, system libraries, system call interface, VFS/sockets/scheduler, file systems/TCP-UDP/virtual memory, block/net devices, device drivers — sit tools: filetop and vfsstat and cachestat and opensnoop and statsnoop at VFS; ext4slower and xfsslower at file systems; btrfsslower and nfsslower at the volume manager; biolatency and biosnoop and biotop and bitesize at the block device; bashreadline at applications; mysqld_qslower and dbstat at applications; execsnoop and opensnoop and syscount at the syscall interface; gethostlatency and sslsniff and memleak at system libraries; syscount and killsnoop and statsnoop at the syscall interface; runqlat and cpudist and runqlen and profile and offcputime at the scheduler; oomkill and memleak and slabratetop at virtual memory; tcpconnect and tcpaccept and tcplife and tcpretrans at TCP/UDP; and capable, funccount, funclatency, trace, argdist, and stackcount as general tools."
+   caption="Figure 66.2 — a curated subset of the bcc tools, mapped to where each attaches (iovisor/bcc)" %}
+
 ## Driving them from Python
 
 Unlike bpftrace and bpftool, BCC tools emit **columnar text**, not JSON — so the
-Python pattern is *resolve, run, parse columns*. The example's `bcc_runner.py`
-does exactly that, and it's several working examples in one:
+Python pattern is *resolve, run, parse columns*. The example's
+`examples/66-bcc-tools/bcc_runner.py` does exactly that, and it's several working
+examples in one — run `--list` to see what it knows:
+
+| Wrapper mode | Tools | Summarized as |
+|---|---|---|
+| parsed → top-N | `execsnoop` | execs per command |
+| | `opensnoop`, `statsnoop` | most-opened paths |
+| | `tcpconnect`, `tcpaccept`, `tcplife` | busiest remote `host:port` |
+| | `killsnoop` | signals per sender |
+| | `syscount` | calls per syscall |
+| captured as-is | `biolatency`, `runqlat`, `profile`, `biotop`, `cachestat`, … | the tool's own histogram/table |
+| run (output captured) | any other, e.g. `funccount 'vfs_*'`, `argdist`, `trace` | raw output |
+
+Behind that table the wrapper does three small things — **resolve**, **run**,
+**parse**:
 
 - It **resolves** a tool across the layouts above: an explicit path, then
   `/usr/share/bcc/tools/`, then `$PATH`, then the `-bpfcc` suffix — so the same
@@ -97,7 +121,7 @@ Aya program's own numbers — `tcpconnect`'s destination tally beside your
 
 ## What a BCC tool is underneath
 
-To demystify the suite, the example includes `hello_bcc.py` — a complete BCC
+To demystify the suite, the example includes `examples/66-bcc-tools/hello_bcc.py` — a complete BCC
 program in a dozen lines, using the `bcc` Python library directly:
 
 ```python

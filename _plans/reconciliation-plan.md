@@ -1498,3 +1498,31 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   10 + chapters 64–66 + retrospective). (3) tooling-coverage pass (_plans/todo.md;
   note bcc-tools needs clang+kernel-devel — add to that audit). (4) skill
   chapter-template terminal-view+Grafana-metric requirement still pending.
+
+### r47.0 — Reader polish: diagrams, explicit paths, tables, more bcc examples
+- Reader nits addressed: (1) field-guide docs now use EXPLICIT example paths
+  (examples/NN-name/file) matching READMEs — Ch64/65/66. (2) Top-level README:
+  replaced ASCII lab-model with assets/diagrams/lab-topology.svg image + refreshed
+  prose; fixed Mimir->Prometheus (otel-lgtm uses Prometheus; Mimir = prod swap);
+  Status updated to "technical body complete Ch0-66, field guide + capstone,
+  retrospective pending, all unverified". (3) Ch65 "eight working commands"
+  converted from bullets to a TABLE (command|what|built-on); scanned all chapters
+  — no other >=6-consecutive-bold-bullet sections remain. (4) Ch66 bcc_runner.py
+  expanded: 8 parsers now (execsnoop/opensnoop/statsnoop/tcpconnect/tcpaccept/
+  tcplife/killsnoop/syscount) + capture list (biolatency/runqlat/profile/biotop/
+  cachestat/...) + --list; chapter gained a mode table. (6) Ch66 links upstream
+  github.com/iovisor/bcc.
+- NEW DIAGRAMS (4, our house-style versions of the classic Brendan Gregg layouts;
+  curated subsets, .excalidraw source shipped so they are editable; credited to
+  bcc/bpftrace projects):
+  * bpf-architecture (Ch5) — user-space bytecode->load->verifier->BPF<->maps/events
+    (item 8, like the iovisor user/kernel workflow figure).
+  * linux-events-bpf (Ch5) — event landscape: kprobes/uprobes/tracepoints/PMCs/
+    software events across the stack + kernel-version availability (item 9).
+  * bpftrace-tools-map (Ch64) — bpftrace tools mapped to the layer each observes
+    (item 7).
+  * bcc-tools-map (Ch66) — bcc tools mapped to the layer each observes (item 5).
+- Ch5 (foundations) expanded 1449->2000 words: new "Anatomy: how bytecode becomes
+  a running probe" (bpf-architecture) + "The wider event landscape"
+  (linux-events-bpf) sections (item 8 "a bit more on eBPF").
+- Note: layered maps are CURATED subsets (teaching), not full ~100-tool reproductions.
