@@ -130,6 +130,8 @@ blockquote > :last-child { margin-bottom: 0; }
 
 table {
   width: 100%;
+  table-layout: fixed;   /* columns share the width; content wraps, no single
+                            column can balloon and squeeze its neighbours */
   border-collapse: collapse;
   font-size: .95rem;
 }

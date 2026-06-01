@@ -1572,3 +1572,12 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   anywhere keeps code min-content small (only the code column yields), so the long
   command wraps and prose keeps its width. (No overflow-wrap on th,td, so prose
   columns never collapse.)
+
+### r47.5 — table layout fixed (auto layout kept squeezing prose)
+- r47.2-47.4 fixed code WRAPPABILITY but the auto table-layout algorithm still
+  preferred showing the Try code on one line and shrank the flexible prose column.
+  Deterministic fix: table { table-layout: fixed } (with width:100%) so columns
+  share width equally and content wraps within its share; combined with the
+  table-cell code-wrap override (white-space:normal; overflow-wrap:anywhere) the
+  long command now wraps inside its fixed column. Applies to all tables (equal
+  columns); acceptable for the book's reference tables (<=4 cols).
