@@ -1,0 +1,9 @@
+# examples/69-pcp-ebpf/openmetrics-ebpf.url.example
+# Copy to /var/lib/pcp/pmdas/openmetrics/config.d/ebpf-aya.url on the VM, then
+# (re)install the OpenMetrics PMDA: cd /var/lib/pcp/pmdas/openmetrics && sudo ./Install
+#
+# One URL per line. Point at a Prometheus/OpenMetrics endpoint that carries the
+# book's ebpf_* metrics — e.g. the otel-lgtm bundled Prometheus on the host
+# gateway, or a loader extended to expose /metrics. The metrics then appear in
+# PCP under the openmetrics.* tree, archived by pmlogger and alertable by pmie.
+http://host.containers.internal:9090/metrics

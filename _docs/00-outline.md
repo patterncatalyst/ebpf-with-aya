@@ -45,7 +45,7 @@ own once the lab exists.
 | **Operating eBPF** | CO-RE, zero-downtime, offload, power, signal correlation, capstone | 58–63 |
 | **Field guide** *(optional)* | `bpftrace`, `bpftool`, and the BCC tools, driven from Python | 64–66 |
 | **Retrospective** | the whole arc, and where eBPF &amp; Aya go next | 67 |
-| **Addenda** *(optional)* | observing a homomorphic-encryption workload | 68 |
+| **Addenda** *(optional)* | HE workload observability; eBPF metrics with Performance Co-Pilot | 68–69 |
 
 ## The Foundations chapters (do these first, in order)
 

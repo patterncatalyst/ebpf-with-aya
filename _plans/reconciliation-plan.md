@@ -1654,3 +1654,20 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   Added examples/68-he-observability/profile.sh (bcc profile -f folded stacks +
   flamegraph/Pyroscope guidance). Cross-check adds he_add funclatency contrast.
   All unverified.
+
+### r51.0 — APPENDIX: PCP + eBPF (Ch 69, Part 12 Addenda)
+- Reader-requested appendix on Performance Co-Pilot × eBPF. Ch 69 covers: what PCP
+  is (pmcd + PMDAs; self-describing metrics — PMNS/PMID/units/semantics/instance
+  domains; live + pmlogger archives); how it's used (pminfo/pmrep/pmstat/pmchart,
+  pmlogger replay, pmie alerts, pmproxy/pmseries); what it's useful for (always-on
+  low-overhead recording = flight recorder, retrospective root-cause, fleet);
+  how it's extended (PMDAs in C/Python/Perl; pmdaopenmetrics scrapes Prom/OpenMetrics);
+  and the eBPF intersection — pmdabpf (BPF CO-RE ELF modules → bpf.* metrics; bpf.conf,
+  modules dir, ./Install), pmdabpftrace (bpftrace scripts as metrics + histograms),
+  legacy pmdabcc, bridging the book's Aya ebpf_* via pmdaopenmetrics, and grafana-pcp
+  in the same Grafana. Plus a when-to-use-which vs the book's push/OTLP model.
+- Example examples/69-pcp-ebpf/: demo.sh (install pcp+pcp-pmda-bpf+bpftrace+grafana-pcp,
+  enable runqlat/biolatency, ./Install, pminfo/pmrep, pmlogger record+replay, optional
+  PROM_URL openmetrics bridge), openmetrics-ebpf.url.example, README. New diagram pcp-ebpf.
+- Facts grounded via search (pmdabpf manpage + Fedora pcp-pmda-bpf pkg + RHEL eBPF/PCP
+  blog + bpftrace PMDA README). All unverified. Book now: Ch 0–69, Parts 0–12.
