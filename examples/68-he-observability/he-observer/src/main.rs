@@ -13,12 +13,13 @@ use log::{info, warn};
 use opentelemetry::{global, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
 
-const SYMBOLS: [&str; 4] = ["he_keygen", "he_encrypt", "he_compute", "he_decrypt"];
-const RET_PROGRAMS: [(&str, &str); 4] = [
+const SYMBOLS: [&str; 5] = ["he_keygen", "he_encrypt", "he_compute", "he_decrypt", "he_add"];
+const RET_PROGRAMS: [(&str, &str); 5] = [
     ("he_keygen_ret", "he_keygen"),
     ("he_encrypt_ret", "he_encrypt"),
     ("he_compute_ret", "he_compute"),
     ("he_decrypt_ret", "he_decrypt"),
+    ("he_add_ret", "he_add"),
 ];
 
 fn op_name(op: u32) -> &'static str {
@@ -27,6 +28,7 @@ fn op_name(op: u32) -> &'static str {
         1 => "encrypt",
         2 => "compute",
         3 => "decrypt",
+        4 => "add",
         _ => "other",
     }
 }

@@ -121,6 +121,7 @@ one may merge with its neighbour.
 | r48 | 67 | RETROSPECTIVE — the whole arc + the road ahead (book finale) | **shipped (unverified)** |
 | r49 | 0,2,PRD | cleanups: Ch0/PRD outline re-sync, tooling-coverage pass + Ch2 tooling table, skill chapter-template | **shipped (unverified)** |
 | r50 | 68 | ADDENDUM — observing a homomorphic-encryption (TFHE-rs) workload, data-blind (Part 12) | **shipped (unverified)** |
+| r50.1 | 68 | HE addendum: second op (homomorphic add) + profiling he_compute→NTT (profile.sh, Pyroscope panel) | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

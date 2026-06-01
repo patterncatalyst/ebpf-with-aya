@@ -48,15 +48,28 @@ pub extern "C" fn he_encrypt() {
     s.b = FheUint8::encrypt(5u8, &s.client_key);
 }
 
-/// The homomorphic operation: multiply two ciphertexts WITHOUT decrypting.
-/// This is where the time goes (programmable bootstrapping, NTT-heavy
-/// polynomial multiplication).
+/// The headline homomorphic operation: MULTIPLY two ciphertexts without
+/// decrypting. Multiplication triggers programmable bootstrapping and is where
+/// the time goes (NTT-heavy polynomial multiplication) — far costlier than the
+/// addition below, which is the contrast worth graphing.
 #[no_mangle]
 #[inline(never)]
 pub extern "C" fn he_compute() {
     let mut guard = STATE.lock().unwrap();
     let s = guard.as_mut().expect("keygen first");
     s.c = &s.a * &s.b;
+}
+
+/// A cheaper homomorphic operation: ADD two ciphertexts. Addition is roughly
+/// linear and skips bootstrapping, so on the histogram `add` sits well below
+/// `compute` (the multiply above) — the same eBPF timing makes the cost gap
+/// between FHE operations visible at a glance.
+#[no_mangle]
+#[inline(never)]
+pub extern "C" fn he_add() {
+    let mut guard = STATE.lock().unwrap();
+    let s = guard.as_mut().expect("keygen first");
+    s.c = &s.a + &s.b;
 }
 
 /// Decrypt the result locally. The only plaintext in the program — and the
@@ -75,6 +88,7 @@ fn main() {
     let mut i: u64 = 0;
     loop {
         he_encrypt();
+        he_add();
         he_compute();
         let r = he_decrypt();
         // 7 * 5 = 35; printed locally only, never crosses to the observer.

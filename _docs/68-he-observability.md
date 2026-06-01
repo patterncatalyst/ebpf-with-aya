@@ -23,7 +23,7 @@ and shows a per-operation latency histogram; the
 
 {% include excalidraw.html
    file="he-observability"
-   alt="Observe a privacy-preserving workload: time the operations, never the data. On the left, an HE workload built on TFHE-rs in Rust exposes boundary functions — he_keygen, he_encrypt which produces ciphertext, he_compute which does homomorphic add and multiply on ciphertext, and he_decrypt — and its operands stay encrypted. An eBPF/Aya observer attaches a uprobe and uretprobe to each he_* boundary by symbol, measuring entry-to-return duration. That feeds a metric, ebpf_he_op_latency_seconds tagged by op (keygen, encrypt, compute, decrypt), exported to Grafana. It extends the Chapter 63 capstone with the same uprobe and OTel machinery, on a workload you deliberately cannot read: eBPF measures duration and stacks, not values."
+   alt="Observe a privacy-preserving workload: time the operations, never the data. On the left, an HE workload built on TFHE-rs in Rust exposes boundary functions — he_keygen, he_encrypt which produces ciphertext, he_add and he_compute which perform homomorphic addition and multiplication on ciphertext, and he_decrypt — and its operands stay encrypted. An eBPF/Aya observer attaches a uprobe and uretprobe to each he_* boundary by symbol, measuring entry-to-return duration. That feeds a metric, ebpf_he_op_latency_seconds tagged by op (keygen, encrypt, add, compute, decrypt), exported to Grafana. It extends the Chapter 63 capstone with the same uprobe and OTel machinery, on a workload you deliberately cannot read: eBPF measures duration and stacks, not values."
    caption="Figure 68.1 — timing each homomorphic operation by symbol, without ever reading its (encrypted) operands" %}
 
 ## What homomorphic encryption is
@@ -91,12 +91,12 @@ than content.
 
 The workload (`he-workload`, using the `tfhe` crate) wraps each homomorphic
 operation in a named, non-inlined boundary function — `he_keygen`, `he_encrypt`,
-`he_compute`, `he_decrypt` — each marked `#[no_mangle] #[inline(never)] pub
+`he_add`, `he_compute`, `he_decrypt` — each marked `#[no_mangle] #[inline(never)] pub
 extern "C"`. That is deliberate and is the same technique as the uprobe-on-Rust
 chapter (Chapter 14): an optimized release build inlines and monomorphizes the
 library's internals away, so you give the profiler stable symbols to attach to by
 defining the boundaries yourself. Inside, the functions do real TFHE-rs work —
-generate keys, encrypt a `FheUint8`, multiply two ciphertexts, decrypt — holding
+generate keys, encrypt a `FheUint8`, add and multiply two ciphertexts, decrypt — holding
 state in a `static` so the signatures stay simple to probe.
 
 The observer (`he-observer`) is a `funclatency`-style timer (Chapter 18) built
@@ -147,26 +147,52 @@ cd examples/68-he-observability && ./demo.sh
 
 The demo builds the TFHE-rs workload and the Aya observer, copies both to the
 VM, starts the observer attached to the workload binary's `he_*` symbols, then
-runs the workload (keygen once, then a loop of encrypt → compute → decrypt). The
+runs the workload (keygen once, then a loop of encrypt → add → compute → decrypt). The
 **terminal live-view** is the observer printing each operation and its duration —
 you'll see `keygen` and `compute` dwarf `encrypt`/`decrypt`, the signature shape
 of an FHE workload. **In Grafana**, graph `ebpf_he_op_latency_seconds` as a
 heatmap and break it down by the `op` label to see the per-operation latency
 distribution; `compute` (and bootstrapping inside it) is where the milliseconds
-live. The dashboard tells you everything about cost and nothing about content.
+live, while `add` sits far below it — the same timing makes the cost gap between
+a cheap homomorphic addition and an expensive multiply obvious at a glance. The
+dashboard tells you everything about cost and nothing about content.
+
+### Where the time goes: profiling `he_compute` to the NTT
+
+The histogram tells you *which* operation is slow; it doesn't tell you *why*.
+`compute` is expensive because, underneath, a homomorphic multiply runs
+programmable bootstrapping whose inner loop is dominated by the number-theoretic
+transform (NTT) used for fast polynomial multiplication. To *see* that, sample
+stacks instead of timing boundaries — the on-CPU profiling from Chapter 23
+applies unchanged: a perf-event program samples the workload's user stack at, say,
+99 Hz and aggregates by stack, and the frames that pile up under `he_compute` are
+the library's NTT and polynomial routines. `examples/68-he-observability/profile.sh`
+captures this on the VM.
+
+Because the lab's `otel-lgtm` stack bundles **Pyroscope**, this becomes a real
+**flamegraph panel** in Grafana: point an eBPF profiler (Grafana Alloy's profiling
+component, or the Pyroscope eBPF profiler) at the workload and the flamegraph shows
+the NTT subtree dominating the `he_compute` branch — the visual companion to the
+latency heatmap. And it stays data-blind: a stack sample is a list of instruction
+addresses, never an operand. One caveat, the same one as every uprobe chapter: the
+stacks only symbolize if the workload keeps frame pointers and the library's
+symbols are present, so build with frame pointers (or line tables) or the
+flamegraph shows raw addresses.
 
 ## Cross-check
 
 ```bash
-[vm]$ sudo /usr/share/bcc/tools/funclatency -p "$(pgrep he-workload)" 'he_compute'   # same op, bcc's view
-[vm]$ sudo bpftrace -e 'uprobe:/path/to/he-workload:he_compute { @=hist(nsecs); }'   # bpftrace's view
+[vm]$ sudo /usr/share/bcc/tools/funclatency -p "$(pgrep he-workload)" 'he_compute'   # the multiply, bcc's view
+[vm]$ sudo /usr/share/bcc/tools/funclatency -p "$(pgrep he-workload)" 'he_add'       # the add, for contrast
+[vm]$ sudo bpftrace -e 'uprobe:/home/fedora/he-workload:he_compute { @=hist(nsecs); }' # bpftrace's view
 [vm]$ sudo /usr/share/bcc/tools/profile -p "$(pgrep he-workload)" 5                   # where the time goes (NTT)
 ```
 
 `funclatency` on `he_compute` should track your `ebpf_he_op_latency_seconds`
-histogram for that op, and `profile` should show the time pooling in the
-library's polynomial-multiplication routines — independent confirmation that the
-observer is timing the right thing, again without reading a byte of data.
+histogram for that op (and on `he_add` should sit well below it), and `profile`
+should show the time pooling in the library's polynomial-multiplication routines
+— independent confirmation that the observer is timing the right thing, again
+without reading a byte of data.
 
 ## What you learned
 
@@ -184,6 +210,11 @@ observer is timing the right thing, again without reading a byte of data.
   histogram (Chapter 18), and OTLP to Grafana — now proving that the same tools
   which can see *everything* about a request can, by design, see *nothing* about
   a secret.
+- Timing **two operations** — a cheap homomorphic `add` and an expensive
+  `compute` (multiply) — puts the FHE cost gap on one histogram, and **stack
+  profiling** (Chapter 23) attributes the multiply's milliseconds to the NTT
+  routines underneath, viewable as a Pyroscope flamegraph panel. Both stay
+  data-blind: a duration and a stack of addresses, never an operand.
 
 ---
 

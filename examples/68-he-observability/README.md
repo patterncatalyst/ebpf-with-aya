@@ -20,8 +20,9 @@ name and two timestamps per call, and nothing else.
 he-common/         Sample { op, dur_ns } — shared, #[repr(C)], no operands
 he-observer-ebpf/  one uprobe (he_enter) + one uretprobe per he_* boundary
 he-observer/       loader: attach the probes, drain the ring, record a histogram
-he-workload/       TFHE-rs workload; he_keygen/he_encrypt/he_compute/he_decrypt
+he-workload/       TFHE-rs workload; he_keygen/he_encrypt/he_add/he_compute/he_decrypt
                    are #[no_mangle] #[inline(never)] pub extern "C" boundaries
+profile.sh         on-CPU profile he_compute -> NTT (folded stacks / flamegraph)
 ```
 
 ## Run it
@@ -39,7 +40,18 @@ symbols.
   `keygen` and `compute` dominate `encrypt`/`decrypt` — the signature of an FHE
   workload.
 - **Grafana:** graph `ebpf_he_op_latency_seconds` as a heatmap and split by the
-  `op` label (`keygen` / `encrypt` / `compute` / `decrypt`).
+  `op` label (`keygen` / `encrypt` / `add` / `compute` / `decrypt`). The cheap
+  `add` sits far below the expensive `compute` (multiply) — the FHE cost gap.
+
+## Profile he_compute to the NTT
+
+```bash
+./profile.sh 10   # folded on-CPU stacks; NTT/polynomial routines dominate he_compute
+```
+
+The latency heatmap says *which* op is slow; this says *why*. With the bundled
+Pyroscope you can view it as a flamegraph panel in Grafana. Stack samples are
+addresses, never operands — still data-blind.
 
 ## Cross-check
 

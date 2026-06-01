@@ -1640,3 +1640,17 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
 - Observe section names BOTH the terminal live-view AND the Grafana metric
   (ebpf_he_op_latency_seconds) per the r49 skill rule. License note for TFHE-rs.
   All unverified. Book now: Ch 0–68, Parts 0–12.
+
+### r50.1 — HE addendum enhancements (reader-requested)
+- Second op: added he_add (homomorphic addition, op id 4) alongside he_compute
+  (multiply). Wired through workload (boundary fn + main loop encrypt→add→compute→
+  decrypt), ebpf (he_add_ret uretprobe), loader (SYMBOLS/RET_PROGRAMS 4→5, op_name
+  4=>"add"). Diagram re-emitted with he_add chip + {op} set incl add. Chapter notes
+  the add-vs-compute cost gap on one histogram.
+- Profiling: new subsection "Where the time goes: profiling he_compute to the NTT"
+  — eBPF on-CPU stack sampling (Ch23) attributes compute's time to NTT/polynomial
+  routines; viewable as a Pyroscope flamegraph panel (otel-lgtm bundles Pyroscope);
+  stays data-blind (addresses, not operands); symbol/frame-pointer caveat noted.
+  Added examples/68-he-observability/profile.sh (bcc profile -f folded stacks +
+  flamegraph/Pyroscope guidance). Cross-check adds he_add funclatency contrast.
+  All unverified.

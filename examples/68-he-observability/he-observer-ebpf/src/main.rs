@@ -54,6 +54,8 @@ pub fn he_encrypt_ret(_ctx: RetProbeContext) -> u32 { on_return(1); 0 }
 pub fn he_compute_ret(_ctx: RetProbeContext) -> u32 { on_return(2); 0 }
 #[uretprobe]
 pub fn he_decrypt_ret(_ctx: RetProbeContext) -> u32 { on_return(3); 0 }
+#[uretprobe]
+pub fn he_add_ret(_ctx: RetProbeContext) -> u32 { on_return(4); 0 }
 
 #[link_section = "license"]
 #[no_mangle]
