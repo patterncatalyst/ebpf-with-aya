@@ -105,10 +105,37 @@ makes eBPF safe to run in the kernel.
    alt="The BPF subsystem. In user space you generate BPF bytecode and (2) load it into the kernel, where the verifier checks it and hands it to the BPF runtime; the BPF program attaches to event sources — kprobes, uprobes, tracepoints, perf_events — and reads and writes maps. Data returns to user space two ways: perf_output streams per-event data, and the loader does async reads of map contents for statistics. Maps and perf/ring output are the only channels between kernel and user space."
    caption="Figure 5.3 — generate, load, verify, attach; talk to user space only via maps + perf/ring output" %}
 
+The dashed line down the middle of the figure is the boundary that matters:
+**user space** on the left, the **kernel** on the right. Crossing it safely is
+the entire point of eBPF. Read the pipeline as seven steps — the first three are
+the ①②③ marked on the diagram:
+
+1. **Compile (①).** `cargo build` runs your eBPF crate through `rustc` and
+   `bpf-linker` (Chapter 4) into **BPF bytecode**, embedded into the loader
+   binary with `include_bytes_aligned!`.
+2. **Load (②).** The loader calls `Ebpf::load(...)`, handing that bytecode to
+   the kernel through the `bpf()` syscall — the first crossing into kernel space.
+3. **Verify.** The kernel **verifier** walks every path and proves the program
+   safe; if it can't, the load returns an error and nothing runs.
+4. **JIT-compile.** Accepted bytecode is translated to native machine code, so
+   it runs at full speed rather than being interpreted.
+5. **Attach.** `program.attach(...)` wires the program to an **event source** —
+   a kprobe, uprobe, tracepoint, or perf event (and later XDP, tc, LSM).
+6. **Run.** On every event the program executes in kernel context and writes
+   results into a **map**, or streams a record out a **ring/perf buffer**.
+7. **Consume (③).** Back in user space, your loader reads the map (an *async
+   read*) or drains the ring buffer (*perf_output*) and does something with the
+   data — in this book, exports it over OTLP to Grafana.
+
+That final step is where "user space" earns its name, and it needn't be Rust:
+the Part 10 field-guide tools (`bpftrace`, `bcc`) follow the *exact same* kernel
+path — compile, load, verify, attach, run — but are driven and read from
+**Python** instead of an Aya loader. Same pipeline, different front end.
+
 This is the same arc as Figures 5.1 and 5.2, drawn as a system rather than a
-timeline. Aya gives every piece a typed Rust name — `Ebpf::load` for the load,
-`program.attach` for the event source, a typed map handle for each map — so the
-code you write maps one-to-one onto this diagram.
+timeline. Aya gives each kernel-side piece a typed Rust name — `Ebpf::load` for
+step 2, `program.attach` for step 5, a typed map handle for step 7 — so the code
+you write maps one-to-one onto this diagram.
 
 ## BTF and CO-RE: compile once, run everywhere
 
@@ -159,8 +186,8 @@ space), **static tracepoints** the kernel exposes at stable points
 instructions, cache misses) and **software events** (page faults, context
 switches) sampled through the perf subsystem. Each capability arrived in a
 specific kernel (kprobes in 4.1, uprobes in 4.3, the syscall tracepoints in 4.7,
-PMC/software-event access in 4.9) — all comfortably present in Fedora 44's
-kernel, which is why this tutorial can reach any of them.
+PMC/software-event access in 4.9) — all comfortably present in Fedora 44's modern 6.x kernel — the one this
+workshop runs on — which is why the tutorial can reach any of them.
 
 {% include excalidraw.html
    file="linux-events-bpf"
@@ -176,20 +203,15 @@ of the book is a guided tour of the most useful ones.
 Two Fedora-packaged tools are your ground truth when an Aya program
 misbehaves. You run these **inside the target VM**:
 
-- **`bpftool`** — inspects the live BPF subsystem: what programs are
-  loaded (`bpftool prog list`), what maps exist and their contents
-  (`bpftool map dump`), and what's attached where. When your user
-  space reads zeros from a map, `bpftool map dump` tells you whether
-  the *kernel* side is writing anything at all — isolating the bug to
-  one half.
-- **`bpftrace`** — a high-level tracing language. It's not Aya, but
-  it's the fastest way to confirm an event even fires before you
-  invest in a full program. `bpftrace -e 'tracepoint:syscalls:sys_enter_openat { @[comm] = count(); }'`
-  proves `openat` traffic exists before you write `opensnoop` in Aya.
+| Tool | What it is | What it's for | Try |
+|---|---|---|---|
+| `bpftool` | inspects the live BPF subsystem | what's loaded, what maps hold, and what's attached where — when user space reads zeros from a map, it tells you whether the *kernel* side is writing anything at all, isolating the bug to one half | `bpftool prog list` · `bpftool map dump` |
+| `bpftrace` | a high-level tracing language (not Aya) | the fastest way to confirm an event even fires before you invest in a full program | `bpftrace -e 'tracepoint:syscalls:sys_enter_openat { @[comm]=count(); }'` |
 
 Treat them as the multimeter you check against, not as competitors to
 Aya. The tutorial uses them throughout to verify that what your Rust
-program reports matches what the kernel actually did.
+program reports matches what the kernel actually did — and **Part 10**
+returns to both, plus the BCC tools, to show how to drive them from Python.
 
 ## The shape of every chapter from here
 

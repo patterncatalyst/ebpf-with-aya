@@ -113,6 +113,7 @@ one may merge with its neighbour.
 | r45 | 65 | bpftool from Python — inventory/top/maps/dump/links/net/features/audit | **shipped (unverified)** |
 | r46 | 66 | BCC tools tour from Python (resolve/run/parse + hello_bcc) | **shipped (unverified)** — closes Part 10 |
 | r47 | 5,64,65,66 | reader polish: 4 new diagrams (bpf-arch/events/tool-maps), explicit paths, Ch65 table, +bcc examples, README diagram | **shipped (unverified)** |
+| r47.1 | 5,64,66 | diagram readability (dark labels), Fig5.4 arrows fixed, 5.3 divider+steps, Ch5 stepwise pipeline + bpftool/bpftrace table | **shipped (unverified)** |
 
 ## Phase 10 — Operating eBPF
 

@@ -32,41 +32,35 @@
 <text x="1050.0" y="288.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">CPU</text>
 <rect x="1004" y="352" width="92" height="48" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
 <text x="1050.0" y="381.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">DRAM</text>
-<path d="M415,180 L415,444" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
-<path d="M540,104 L540,206" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="538.0" y="195.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">syscalls:</text>
-<text x="538.0" y="195.0" font-size="11" fill="#555" text-anchor="middle">syscalls:</text>
-<path d="M470,104 L500,287" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="477.0" y="225.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">ext4:</text>
-<text x="477.0" y="225.5" font-size="11" fill="#555" text-anchor="middle">ext4:</text>
-<path d="M690,104 L775.0,246" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="736.5" y="195.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">sched:</text>
-<text x="736.5" y="195.0" font-size="11" fill="#555" text-anchor="middle">sched:</text>
-<path d="M360,470 L500.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="420.0" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">block: scsi:</text>
-<text x="420.0" y="458.0" font-size="11" fill="#555" text-anchor="middle">block: scsi:</text>
-<path d="M600,470 L640.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="624.0" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">net: skb:</text>
-<text x="624.0" y="458.0" font-size="11" fill="#555" text-anchor="middle">net: skb:</text>
-<path d="M760,470 L775.0,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="777.5" y="458.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">page-faults</text>
-<text x="777.5" y="458.0" font-size="11" fill="#555" text-anchor="middle">page-faults</text>
-<path d="M840,287 L1004,283" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="916.0" y="277.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">CPU interconnect</text>
-<text x="916.0" y="277.0" font-size="11" fill="#555" text-anchor="middle">CPU interconnect</text>
+<path d="M635,128 L635,206" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M745,150 L665,246" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M854,258 L840,285" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M854,360 L840,372" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M404,303 L430,307" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M404,390 L430,389" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M575,478 L628,410" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M800,478 L772,446" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<path d="M410,186 L410,440" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<path d="M840,300 L1004,283" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="922.0" y="283.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">CPU</text>
+<text x="922.0" y="283.5" font-size="11" fill="#555" text-anchor="middle">CPU</text>
 <path d="M1050,316 L1050,352" fill="none" stroke="#555" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
-<text x="1060.0" y="336.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">memory bus</text>
-<text x="1060.0" y="336.0" font-size="11" fill="#555" text-anchor="middle">memory bus</text>
-<path d="M890,250 L840,273.0" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
-<text x="40" y="150" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">Dynamic tracing</text>
-<text x="40" y="250" font-size="11" fill="#888" text-anchor="start">uprobes — user-level</text>
-<text x="40" y="272" font-size="11" fill="#888" text-anchor="start">(Linux 4.3+)</text>
-<text x="40" y="360" font-size="11" fill="#888" text-anchor="start">kprobes — kernel</text>
-<text x="40" y="382" font-size="11" fill="#888" text-anchor="start">(Linux 4.1+)</text>
-<text x="456" y="34" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">Tracepoints (stable kernel trace events, 4.7+):</text>
-<text x="456" y="74" font-size="12" fill="#888" text-anchor="start">syscalls:  sched:  signal:  timer:  block:  net:  skb:  irq:  ext4:  sock:  kmem:  vmscan:  writeback:  workqueue:</text>
-<text x="880" y="150" font-size="11" fill="#b8650a" text-anchor="start" font-weight="700">PMCs (hardware counters, 4.9+):</text>
-<text x="880" y="174" font-size="12" fill="#888" text-anchor="start">cycles · instructions · branch-* · L1-* · LLC-*</text>
-<text x="430" y="498" font-size="12" fill="#888" text-anchor="start">Software events (4.9+): cpu-clock · cs · migrations · page-faults · minor/major-faults</text>
-<text x="40" y="470" font-size="11" fill="#888" text-anchor="start">BPF output 4.4 · BPF stacks 4.9</text>
+<text x="1064.0" y="336.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">bus</text>
+<text x="1064.0" y="336.0" font-size="11" fill="#555" text-anchor="middle">bus</text>
+<text x="610" y="36" font-size="14" fill="#b8650a" text-anchor="middle" font-weight="700">Tracepoints — stable kernel trace events (Linux 4.7+)</text>
+<text x="635" y="116" font-size="13" fill="#1d1d1d" text-anchor="middle">syscalls:</text>
+<text x="760" y="138" font-size="13" fill="#1d1d1d" text-anchor="middle">sock:</text>
+<text x="862" y="250" font-size="13" fill="#1d1d1d" text-anchor="start">sched: signal: timer: workqueue:</text>
+<text x="862" y="356" font-size="13" fill="#1d1d1d" text-anchor="start">kmem: vmscan: writeback:</text>
+<text x="250" y="300" font-size="13" fill="#1d1d1d" text-anchor="start">ext4: jbd2:</text>
+<text x="250" y="392" font-size="13" fill="#1d1d1d" text-anchor="start">block: scsi:</text>
+<text x="560" y="500" font-size="13" fill="#1d1d1d" text-anchor="middle">net: skb:</text>
+<text x="800" y="500" font-size="13" fill="#1d1d1d" text-anchor="middle">irq:</text>
+<text x="40" y="150" font-size="14" fill="#b8650a" text-anchor="start" font-weight="700">Dynamic tracing</text>
+<text x="40" y="250" font-size="12" fill="#1d1d1d" text-anchor="start">uprobes — user funcs (Linux 4.3)</text>
+<text x="40" y="360" font-size="12" fill="#1d1d1d" text-anchor="start">kprobes — kernel funcs (Linux 4.1)</text>
+<text x="878" y="160" font-size="14" fill="#b8650a" text-anchor="start" font-weight="700">PMCs / perf events</text>
+<text x="878" y="184" font-size="12" fill="#1d1d1d" text-anchor="start">cycles · instructions · cache · branches (Linux 4.9)</text>
+<text x="430" y="534" font-size="12" fill="#1d1d1d" text-anchor="start">Software events (Linux 4.9): cpu-clock · context-switches · migrations · page-faults</text>
+<text x="430" y="562" font-size="13" fill="#b8650a" text-anchor="start" font-weight="700">This workshop runs Fedora 44&#x27;s modern 6.x kernel — every capability above is present.</text>
 </svg>

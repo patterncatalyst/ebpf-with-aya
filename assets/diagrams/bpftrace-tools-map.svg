@@ -40,18 +40,18 @@
 <path d="M860,300 L840,301.0" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <path d="M860,348 L840,369.0" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <path d="M620,472 L640.0,328" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
-<text x="60" y="152" font-size="11" fill="#888" text-anchor="start">vfscount vfsstat</text>
-<text x="60" y="256" font-size="11" fill="#888" text-anchor="start">opensnoop statsnoop syncsnoop</text>
-<text x="60" y="300" font-size="11" fill="#888" text-anchor="start">writeback xfsdist</text>
-<text x="60" y="345" font-size="11" fill="#888" text-anchor="start">mdflush</text>
-<text x="60" y="392" font-size="11" fill="#888" text-anchor="start">biosnoop biolatency bitesize</text>
-<text x="420" y="104" font-size="11" fill="#888" text-anchor="start">bashreadline</text>
-<text x="700" y="104" font-size="11" fill="#888" text-anchor="start">gethostlatency</text>
-<text x="862" y="205" font-size="11" fill="#888" text-anchor="start">syscount killsnoop execsnoop pidpersec</text>
-<text x="862" y="255" font-size="11" fill="#888" text-anchor="start">cpuwalk runqlat runqlen</text>
-<text x="862" y="300" font-size="11" fill="#888" text-anchor="start">offcputime</text>
-<text x="862" y="348" font-size="11" fill="#888" text-anchor="start">oomkill</text>
-<text x="540" y="490" font-size="11" fill="#888" text-anchor="start">tcpconnect tcpaccept tcpretrans tcpdrop</text>
-<text x="60" y="520" font-size="12" fill="#888" text-anchor="start">Other: capable</text>
-<text x="590" y="42" font-size="12" fill="#b8650a" text-anchor="middle">bpftrace one-liners &amp; tools, mapped to the layer each observes (bpftrace project)</text>
+<text x="60" y="152" font-size="13" fill="#1d1d1d" text-anchor="start">vfscount vfsstat</text>
+<text x="60" y="256" font-size="13" fill="#1d1d1d" text-anchor="start">opensnoop statsnoop syncsnoop</text>
+<text x="60" y="300" font-size="13" fill="#1d1d1d" text-anchor="start">writeback xfsdist</text>
+<text x="60" y="345" font-size="13" fill="#1d1d1d" text-anchor="start">mdflush</text>
+<text x="60" y="392" font-size="13" fill="#1d1d1d" text-anchor="start">biosnoop biolatency bitesize</text>
+<text x="420" y="104" font-size="13" fill="#1d1d1d" text-anchor="start">bashreadline</text>
+<text x="700" y="104" font-size="13" fill="#1d1d1d" text-anchor="start">gethostlatency</text>
+<text x="862" y="205" font-size="13" fill="#1d1d1d" text-anchor="start">syscount killsnoop execsnoop pidpersec</text>
+<text x="862" y="255" font-size="13" fill="#1d1d1d" text-anchor="start">cpuwalk runqlat runqlen</text>
+<text x="862" y="300" font-size="13" fill="#1d1d1d" text-anchor="start">offcputime</text>
+<text x="862" y="348" font-size="13" fill="#1d1d1d" text-anchor="start">oomkill</text>
+<text x="540" y="490" font-size="13" fill="#1d1d1d" text-anchor="start">tcpconnect tcpaccept tcpretrans tcpdrop</text>
+<text x="60" y="520" font-size="12" fill="#1d1d1d" text-anchor="start">Other: capable</text>
+<text x="590" y="42" font-size="12" fill="#b8650a" text-anchor="middle" font-weight="700">bpftrace one-liners &amp; tools, mapped to the layer each observes (bpftrace project)</text>
 </svg>

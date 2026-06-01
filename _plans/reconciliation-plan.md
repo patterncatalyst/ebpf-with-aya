@@ -1526,3 +1526,23 @@ New chapters and examples (all unverified — not yet run on Fedora 44):
   a running probe" (bpf-architecture) + "The wider event landscape"
   (linux-events-bpf) sections (item 8 "a bit more on eBPF").
 - Note: layered maps are CURATED subsets (teaching), not full ~100-tool reproductions.
+
+### r47.1 — diagram + Ch5 readability fixes (reader feedback)
+- Peripheral note text was #888 (light/unreadable). Re-emitted all 4 diagrams with
+  DARK labels (#1d1d1d, size 13) + amber bold titles. Fixes light text on
+  bpftrace-tools-map (Fig 64.2), bcc-tools-map (Fig 66.2), linux-events-bpf (5.4).
+- Fig 5.4 (linux-events-bpf): arrows were scattered/random-looking. Redesigned so
+  each tracepoint subsystem label sits next to its target layer with a clean short
+  arrow that lands on the right box: syscalls:->syscall, sock:->sockets,
+  sched/signal/timer/workqueue:->scheduler, kmem/vmscan/writeback:->VM, ext4/jbd2:->FS,
+  block/scsi:->block, net/skb:->net, irq:->drivers. Dynamic-tracing span arrow +
+  kprobes(4.1)/uprobes(4.3)/tracepoints(4.7)/PMCs+sw-events(4.9) version callouts +
+  explicit "Fedora 44 modern 6.x kernel" banner.
+- Fig 5.3 (bpf-architecture): added dashed vertical USER|KERNEL divider; kept the
+  numbered steps; caption now spells out the circled steps.
+- Ch5 prose: "Anatomy" section now walks the full pipeline as 7 numbered steps
+  (compile->load->verify->JIT->attach->run->consume), tied to the diagram's circled
+  numbers and the divider, ending with how the SAME kernel path is driven from
+  Python by the Part 10 tools. Landscape section now states Fedora 44 runs the 6.x
+  kernel with all listed capabilities. "Where bpftool and bpftrace fit" bullets ->
+  TABLE (tool | what it is | what for | try). Ch5 word count grew accordingly.
