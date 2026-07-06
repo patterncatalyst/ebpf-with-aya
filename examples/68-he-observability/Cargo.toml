@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["he-observer", "he-common", "he-workload"]
-exclude = ["he-observer-ebpf"]
+members = ["he-observer", "he-common", "he-workload", "he-observer-ebpf"]
+default-members = ["he-observer", "he-common", "he-workload"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

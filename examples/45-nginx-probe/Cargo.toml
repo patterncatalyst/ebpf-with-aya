@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["nginx-probe"]
-exclude = ["nginx-probe-ebpf"]
+members = ["nginx-probe", "nginx-probe-ebpf"]
+default-members = ["nginx-probe"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

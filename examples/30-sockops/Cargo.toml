@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["sockops", "sockops-common"]
-exclude = ["sockops-ebpf"]
+members = ["sockops", "sockops-common", "sockops-ebpf"]
+default-members = ["sockops", "sockops-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

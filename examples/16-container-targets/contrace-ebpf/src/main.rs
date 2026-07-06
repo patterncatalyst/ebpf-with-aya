@@ -38,7 +38,7 @@ pub fn sys_enter_openat(ctx: TracePointContext) -> u32 {
 }
 
 fn try_open(ctx: &TracePointContext) -> Result<(), i64> {
-    let cgroup = bpf_get_current_cgroup_id();
+    let cgroup = unsafe { bpf_get_current_cgroup_id() };
     let target = TARGET_CGROUP.get(0).copied().unwrap_or(0);
     // Scope: if a target is set, drop everything not in that cgroup.
     if target != 0 && cgroup != target {

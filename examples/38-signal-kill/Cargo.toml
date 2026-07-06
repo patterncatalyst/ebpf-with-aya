@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["signal-kill", "signal-kill-common"]
-exclude = ["signal-kill-ebpf"]
+members = ["signal-kill", "signal-kill-common", "signal-kill-ebpf"]
+default-members = ["signal-kill", "signal-kill-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

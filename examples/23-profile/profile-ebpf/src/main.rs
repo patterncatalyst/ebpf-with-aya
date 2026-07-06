@@ -32,8 +32,8 @@ pub fn profile_cpu(ctx: PerfEventContext) -> u32 {
     }
 
     // Capture kernel and user stacks. Negative => unavailable for this sample.
-    let kstack = STACKS.get_stackid(&ctx, 0).unwrap_or(-1) as i32;
-    let ustack = STACKS.get_stackid(&ctx, BPF_F_USER_STACK as u64).unwrap_or(-1) as i32;
+    let kstack = unsafe { STACKS.get_stackid(&ctx, 0) }.unwrap_or(-1) as i32;
+    let ustack = unsafe { STACKS.get_stackid(&ctx, BPF_F_USER_STACK as u64) }.unwrap_or(-1) as i32;
 
     let key = StackKey {
         pid,

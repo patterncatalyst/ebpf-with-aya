@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["core"]
-exclude = ["core-ebpf"]
+members = ["core", "core-ebpf"]
+default-members = ["core"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

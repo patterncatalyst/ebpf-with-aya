@@ -1,10 +1,12 @@
 [workspace]
 resolver = "2"
-members = ["runqlat", "runqlat-common", "runqlat-ebpf"]
-default-members = ["runqlat", "runqlat-common"]
+members = ["javagc", "javagc-common", "javagc-ebpf"]
+default-members = ["javagc", "javagc-common"]
+
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"
+
 [profile.release]
 lto = true
 codegen-units = 1

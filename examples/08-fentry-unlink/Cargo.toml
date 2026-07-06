@@ -2,9 +2,8 @@
 # each unlink succeeded. Same workspace shape as Chapters 6 and 7.
 [workspace]
 resolver = "2"
-members = ["fentrysnoop", "fentrysnoop-common"]
-exclude = ["fentrysnoop-ebpf"]
-
+members = ["fentrysnoop", "fentrysnoop-common", "fentrysnoop-ebpf"]
+default-members = ["fentrysnoop", "fentrysnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

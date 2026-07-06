@@ -36,17 +36,19 @@ pub fn tc_classify(ctx: TcContext) -> i32 {
 
 fn try_classify(ctx: &TcContext) -> Result<i32, ()> {
     let eth: EthHdr = ctx.load(0).map_err(|_| ())?;
-    if eth.ether_type != EtherType::Ipv4 {
+    let ether_type = eth.ether_type;
+    if ether_type != EtherType::Ipv4 {
         return Ok(TC_ACT_OK);
     }
     let ip: Ipv4Hdr = ctx.load(EthHdr::LEN).map_err(|_| ())?;
-    let proto = ip.proto as u32;
+    let ip_proto = ip.proto;
+    let proto = ip_proto as u32;
 
     bump(&PKTS, proto, 1);
     bump(&BYTES, proto, ctx.len() as u64);
 
     let l4 = EthHdr::LEN + Ipv4Hdr::LEN;
-    let dport = match ip.proto {
+    let dport = match ip_proto {
         IpProto::Tcp => u16::from_be(ctx.load::<TcpHdr>(l4).map_err(|_| ())?.dest),
         IpProto::Udp => u16::from_be(ctx.load::<UdpHdr>(l4).map_err(|_| ())?.dest),
         _ => 0,

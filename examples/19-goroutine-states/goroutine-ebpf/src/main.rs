@@ -36,7 +36,7 @@ pub fn casgstatus(ctx: ProbeContext) -> u32 {
 fn try_cas(ctx: &ProbeContext) -> Result<(), i64> {
     // Read RCX directly: Go ABIInternal puts the 3rd integer arg (newval) there.
     // pt_regs field names follow the kernel/x86_64 layout (verify on your build).
-    let regs = ctx.as_ptr() as *const pt_regs;
+    let regs = ctx.regs as *const pt_regs;
     if regs.is_null() {
         return Err(0);
     }

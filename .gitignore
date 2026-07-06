@@ -22,3 +22,7 @@ Cargo.lock
 *.qcow2
 *.iso
 seed.img
+
+# Python bytecode cache
+__pycache__/
+*.pyc

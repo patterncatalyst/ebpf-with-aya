@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["lsm-fileprotect"]
-exclude = ["lsm-fileprotect-ebpf"]
+members = ["lsm-fileprotect", "lsm-fileprotect-ebpf"]
+default-members = ["lsm-fileprotect"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

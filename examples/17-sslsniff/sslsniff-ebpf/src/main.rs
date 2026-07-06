@@ -42,8 +42,12 @@ fn emit(dir: u8, buf_ptr: *const u8, len: i64) {
             (*ev).captured = captured;
             (*ev).comm = bpf_get_current_comm().unwrap_or([0u8; 16]);
             (*ev).data = [0u8; DATA_CAP];
-            // Copy the captured prefix of the plaintext buffer.
-            let _ = bpf_probe_read_user_buf(buf_ptr, &mut (*ev).data[..captured as usize]);
+            // Copy the captured prefix of the plaintext buffer. Build the
+            // destination slice from a raw pointer to the array field to avoid
+            // an implicit reference to a dereferenced raw pointer.
+            let data_ptr = &raw mut (*ev).data;
+            let dst = core::slice::from_raw_parts_mut(data_ptr as *mut u8, captured as usize);
+            let _ = bpf_probe_read_user_buf(buf_ptr, dst);
         }
         slot.submit(0);
     }

@@ -70,6 +70,7 @@ async fn main() -> anyhow::Result<()> {
             PERF_COUNT_SW_CPU_CLOCK,
             PerfEventScope::AllProcessesOneCpu { cpu },
             SamplePolicy::Frequency(99),
+            true,
         )?;
     }
     info!("profiling at 99 Hz on all CPUs for {secs}s...");

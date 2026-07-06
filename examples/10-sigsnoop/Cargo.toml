@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["sigsnoop", "sigsnoop-common"]
-exclude = ["sigsnoop-ebpf"]
+members = ["sigsnoop", "sigsnoop-common", "sigsnoop-ebpf"]
+default-members = ["sigsnoop", "sigsnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

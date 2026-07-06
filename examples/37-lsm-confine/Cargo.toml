@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["lsm-confine"]
-exclude = ["lsm-confine-ebpf"]
+members = ["lsm-confine", "lsm-confine-ebpf"]
+default-members = ["lsm-confine"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

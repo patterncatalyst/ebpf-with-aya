@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["tcpstates", "tcpstates-common"]
-exclude = ["tcpstates-ebpf"]
+members = ["tcpstates", "tcpstates-common", "tcpstates-ebpf"]
+default-members = ["tcpstates", "tcpstates-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

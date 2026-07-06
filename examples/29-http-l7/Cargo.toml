@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["httpl7", "httpl7-common"]
-exclude = ["httpl7-ebpf"]
+members = ["httpl7", "httpl7-common", "httpl7-ebpf"]
+default-members = ["httpl7", "httpl7-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

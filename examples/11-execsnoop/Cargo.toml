@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["execsnoop", "execsnoop-common"]
-exclude = ["execsnoop-ebpf"]
+members = ["execsnoop", "execsnoop-common", "execsnoop-ebpf"]
+default-members = ["execsnoop", "execsnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

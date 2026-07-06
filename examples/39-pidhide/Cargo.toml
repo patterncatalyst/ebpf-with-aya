@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["pidhide", "pidhide-common"]
-exclude = ["pidhide-ebpf"]
+members = ["pidhide", "pidhide-common", "pidhide-ebpf"]
+default-members = ["pidhide", "pidhide-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

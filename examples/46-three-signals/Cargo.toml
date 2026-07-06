@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["httpwatch", "httpwatch-common"]
-exclude = ["httpwatch-ebpf"]
+members = ["httpwatch", "httpwatch-common", "httpwatch-ebpf"]
+default-members = ["httpwatch", "httpwatch-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

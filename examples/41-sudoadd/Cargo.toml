@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["sudoadd", "sudoadd-common"]
-exclude = ["sudoadd-ebpf"]
+members = ["sudoadd", "sudoadd-common", "sudoadd-ebpf"]
+default-members = ["sudoadd", "sudoadd-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

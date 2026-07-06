@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["dynptr", "dynptr-common"]
-exclude = ["dynptr-ebpf"]
+members = ["dynptr", "dynptr-common", "dynptr-ebpf"]
+default-members = ["dynptr", "dynptr-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

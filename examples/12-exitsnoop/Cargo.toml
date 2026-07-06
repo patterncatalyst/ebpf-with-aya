@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["exitsnoop", "exitsnoop-common"]
-exclude = ["exitsnoop-ebpf"]
+members = ["exitsnoop", "exitsnoop-common", "exitsnoop-ebpf"]
+default-members = ["exitsnoop", "exitsnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

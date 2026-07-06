@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 aya = "0.13"
-aya-log = "0.13"
+aya-log = "0.2"
 fentrysnoop-common = { path = "../fentrysnoop-common", features = ["user"] }
 
 anyhow = "1"

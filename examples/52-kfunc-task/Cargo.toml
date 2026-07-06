@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["kfunc-task"]
-exclude = ["kfunc-task-ebpf"]
+members = ["kfunc-task", "kfunc-task-ebpf"]
+default-members = ["kfunc-task"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

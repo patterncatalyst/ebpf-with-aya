@@ -69,7 +69,7 @@ async fn main() -> anyhow::Result<()> {
     let captured: Counter<u64> = meter.u64_counter("ebpf_xdp_captured_total").build();
     let seen_total: Counter<u64> = meter.u64_counter("ebpf_xdp_seen_total").build();
 
-    let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
+    let mut ring = RingBuf::try_from(ebpf.take_map("EVENTS").unwrap())?;
     let seen: HashMap<_, u32, u64> = HashMap::try_from(ebpf.take_map("SEEN").unwrap())?;
     let mut last: Std<u32, u64> = Std::new();
 

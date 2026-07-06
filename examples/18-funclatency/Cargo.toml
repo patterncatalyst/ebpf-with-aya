@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["funclatency", "funclatency-common", "target-app"]
-exclude = ["funclatency-ebpf"]
+members = ["funclatency", "funclatency-common", "target-app", "funclatency-ebpf"]
+default-members = ["funclatency", "funclatency-common", "target-app"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

@@ -31,11 +31,13 @@ pub fn tcx_count(ctx: TcContext) -> i32 {
 
 fn count(ctx: &TcContext) -> Result<(), ()> {
     let eth: EthHdr = ctx.load(0).map_err(|_| ())?;
-    if eth.ether_type != EtherType::Ipv4 {
+    let ether_type = eth.ether_type;
+    if ether_type != EtherType::Ipv4 {
         return Ok(());
     }
     let ip: Ipv4Hdr = ctx.load(EthHdr::LEN).map_err(|_| ())?;
-    bump(&PKTS, ip.proto as u32, 1);
+    let ip_proto = ip.proto;
+    bump(&PKTS, ip_proto as u32, 1);
     Ok(())
 }
 

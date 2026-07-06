@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["sslsniff", "sslsniff-common"]
-exclude = ["sslsniff-ebpf"]
+members = ["sslsniff", "sslsniff-common", "sslsniff-ebpf"]
+default-members = ["sslsniff", "sslsniff-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

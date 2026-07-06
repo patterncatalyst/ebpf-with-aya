@@ -4,7 +4,7 @@
 use std::net::Ipv4Addr;
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::SockOps, Ebpf};
+use aya::{maps::RingBuf, programs::{CgroupAttachMode, SockOps}, Ebpf};
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
@@ -37,7 +37,7 @@ async fn main() -> anyhow::Result<()> {
     let cgroup = std::fs::File::open(&cgroup_path)?;
     let prog: &mut SockOps = ebpf.program_mut("track").unwrap().try_into()?;
     prog.load()?;
-    prog.attach(cgroup)?;
+    prog.attach(cgroup, CgroupAttachMode::Single)?;
     info!("sock_ops attached to cgroup {cgroup_path}");
 
     let provider = init_otel()?;

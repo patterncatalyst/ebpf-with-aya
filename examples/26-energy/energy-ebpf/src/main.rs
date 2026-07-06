@@ -50,7 +50,7 @@ pub fn sched_switch(ctx: TracePointContext) -> u32 {
 
     // Start the incoming task's clock on this CPU.
     let _ = ONCPU.insert(&cpu, &now, 0);
-    let _ = ctx.read_at::<i32>(NEXT_PID); // (read kept for symmetry/clarity)
+    let _ = unsafe { ctx.read_at::<i32>(NEXT_PID) }; // (read kept for symmetry/clarity)
     0
 }
 

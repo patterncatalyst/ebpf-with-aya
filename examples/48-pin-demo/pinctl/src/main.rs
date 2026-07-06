@@ -12,6 +12,7 @@ use aya::{
     programs::{links::FdLink, TracePoint},
     EbpfLoader,
 };
+use opentelemetry_otlp::WithExportConfig;
 
 const DIR: &str = "/sys/fs/bpf/ebpf-aya";
 const MAP_PIN: &str = "/sys/fs/bpf/ebpf-aya/EXECS";

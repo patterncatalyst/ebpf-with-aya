@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["timer", "timer-common"]
-exclude = ["timer-ebpf"]
+members = ["timer", "timer-common", "timer-ebpf"]
+default-members = ["timer", "timer-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

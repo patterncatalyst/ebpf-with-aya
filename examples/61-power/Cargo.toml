@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["power", "power-common"]
-exclude = ["power-ebpf"]
+members = ["power", "power-common", "power-ebpf"]
+default-members = ["power", "power-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

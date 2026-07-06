@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["btf-uprobe", "btf-uprobe-common", "target-app"]
-exclude = ["btf-uprobe-ebpf"]
+members = ["btf-uprobe", "btf-uprobe-common", "target-app", "btf-uprobe-ebpf"]
+default-members = ["btf-uprobe", "btf-uprobe-common", "target-app"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

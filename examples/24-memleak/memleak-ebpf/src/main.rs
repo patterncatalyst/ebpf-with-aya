@@ -43,7 +43,7 @@ fn on_alloc_return(ctx: &RetProbeContext) {
     let _ = SIZES.remove(&id);
     let ptr: u64 = ctx.ret().unwrap_or(0);
     if ptr == 0 { return; }
-    let stackid = STACKS.get_stackid(ctx, BPF_F_USER_STACK as u64).unwrap_or(-1) as i32;
+    let stackid = unsafe { STACKS.get_stackid(ctx, BPF_F_USER_STACK as u64) }.unwrap_or(-1) as i32;
     let _ = ALLOCS.insert(&ptr, &AllocInfo { size, stackid, pid }, 0);
 }
 
@@ -63,7 +63,10 @@ pub fn malloc_exit(ctx: RetProbeContext) -> u32 {
 pub fn calloc_enter(ctx: ProbeContext) -> u32 {
     let nmemb: u64 = ctx.arg(0).unwrap_or(0);
     let size: u64 = ctx.arg(1).unwrap_or(0);
-    on_alloc_enter(nmemb.saturating_mul(size));
+    // Saturating n*sz without a 128-bit widening multiply (unsupported on BPF).
+    let limit = core::hint::black_box(if size != 0 { u64::MAX / size } else { u64::MAX });
+    let total = if nmemb > limit { u64::MAX } else { nmemb.wrapping_mul(size) };
+    on_alloc_enter(total);
     0
 }
 

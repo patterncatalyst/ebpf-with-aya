@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["secsensor", "secsensor-common"]
-exclude = ["secsensor-ebpf"]
+members = ["secsensor", "secsensor-common", "secsensor-ebpf"]
+default-members = ["secsensor", "secsensor-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

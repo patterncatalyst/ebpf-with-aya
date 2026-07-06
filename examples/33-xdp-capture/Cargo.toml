@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["xdp-capture", "xdp-capture-common"]
-exclude = ["xdp-capture-ebpf"]
+members = ["xdp-capture", "xdp-capture-common", "xdp-capture-ebpf"]
+default-members = ["xdp-capture", "xdp-capture-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

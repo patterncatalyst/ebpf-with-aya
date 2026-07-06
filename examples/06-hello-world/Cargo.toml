@@ -12,10 +12,11 @@
 # project differs.)
 [workspace]
 resolver = "2"
-members = ["hello", "hello-common"]
-# hello-ebpf is compiled by hello/build.rs for the BPF target, not as a normal
-# workspace member, so it's intentionally excluded from the default members.
-exclude = ["hello-ebpf"]
+# hello-ebpf must be a workspace member so aya-build can `cargo build --package
+# hello-ebpf` for the BPF target, but it's kept out of default-members so a plain
+# `cargo build` builds only the host loader (whose build.rs cross-compiles it).
+members = ["hello", "hello-common", "hello-ebpf"]
+default-members = ["hello", "hello-common"]
 
 [workspace.package]
 license = "Apache-2.0"

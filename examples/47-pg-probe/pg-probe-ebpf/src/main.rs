@@ -8,7 +8,7 @@ use aya_ebpf::{
     helpers::{bpf_get_current_pid_tgid, bpf_ktime_get_ns, bpf_probe_read_user_str_bytes},
     macros::{map, uprobe, uretprobe},
     maps::{HashMap, RingBuf},
-    programs::ProbeContext,
+    programs::{ProbeContext, RetProbeContext},
 };
 use pg_probe_common::{Event, KIND_LOCK, KIND_QUERY};
 
@@ -43,7 +43,7 @@ pub fn q_start(ctx: ProbeContext) -> u32 {
 }
 
 #[uretprobe]
-pub fn q_done(_ctx: ProbeContext) -> u32 {
+pub fn q_done(_ctx: RetProbeContext) -> u32 {
     let key = bpf_get_current_pid_tgid();
     if let Some(&start) = unsafe { QSTART.get(&key) } {
         let now = unsafe { bpf_ktime_get_ns() };
@@ -65,7 +65,7 @@ pub fn l_start(_ctx: ProbeContext) -> u32 {
 }
 
 #[uretprobe]
-pub fn l_done(_ctx: ProbeContext) -> u32 {
+pub fn l_done(_ctx: RetProbeContext) -> u32 {
     let key = bpf_get_current_pid_tgid();
     if let Some(&start) = unsafe { LSTART.get(&key) } {
         let now = unsafe { bpf_ktime_get_ns() };

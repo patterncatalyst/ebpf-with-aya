@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["profile", "profile-common"]
-exclude = ["profile-ebpf"]
+members = ["profile", "profile-common", "profile-ebpf"]
+default-members = ["profile", "profile-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

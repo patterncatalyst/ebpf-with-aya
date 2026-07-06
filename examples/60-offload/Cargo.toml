@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["offload"]
-exclude = ["offload-ebpf"]
+members = ["offload", "offload-ebpf"]
+default-members = ["offload"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["cpu-busy"]
-exclude = ["cpu-busy-ebpf"]
+members = ["cpu-busy", "cpu-busy-ebpf"]
+default-members = ["cpu-busy"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

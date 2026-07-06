@@ -48,11 +48,10 @@ fn try_enter(ctx: &FEntryContext) -> Result<(), i64> {
 
     // fentry gives typed args; arg 1 is `struct filename *`. We still copy the
     // path string via probe_read, but BTF makes the arg typing trustworthy.
-    if let Some(name_ptr) = ctx.arg::<*const u8>(1) {
-        unsafe {
-            if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_ptr as *const *const u8) {
-                let _ = bpf_probe_read_kernel_str_bytes(p, &mut ev.filename);
-            }
+    let name_ptr = unsafe { ctx.arg::<*const u8>(1) };
+    unsafe {
+        if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_ptr as *const *const u8) {
+            let _ = bpf_probe_read_kernel_str_bytes(p, &mut ev.filename);
         }
     }
 
@@ -75,7 +74,7 @@ fn try_exit(ctx: &FExitContext) -> Result<(), i64> {
 
     // In an fexit program the return value follows the function's arguments.
     // do_unlinkat takes 2 args, so the return value is at index 2.
-    ev.ret = ctx.arg::<i64>(2).unwrap_or(0) as i32;
+    ev.ret = unsafe { ctx.arg::<i64>(2) } as i32;
 
     if let Some(mut slot) = EVENTS.reserve::<UnlinkEvent>(0) {
         unsafe { *slot.as_mut_ptr() = ev; }

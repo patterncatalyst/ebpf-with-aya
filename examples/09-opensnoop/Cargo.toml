@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["opensnoop", "opensnoop-common"]
-exclude = ["opensnoop-ebpf"]
+members = ["opensnoop", "opensnoop-common", "opensnoop-ebpf"]
+default-members = ["opensnoop", "opensnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

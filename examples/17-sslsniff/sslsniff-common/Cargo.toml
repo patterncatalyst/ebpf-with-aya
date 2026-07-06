@@ -5,5 +5,6 @@ license = "Apache-2.0"
 edition = "2021"
 [features]
 default = []
-user = []
+user = ["dep:aya"]
 [dependencies]
+aya = { version = "0.13", optional = true }

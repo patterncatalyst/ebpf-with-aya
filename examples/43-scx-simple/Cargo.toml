@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["scx-watch"]
-exclude = ["scx-watch-ebpf"]
+members = ["scx-watch", "scx-watch-ebpf"]
+default-members = ["scx-watch"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

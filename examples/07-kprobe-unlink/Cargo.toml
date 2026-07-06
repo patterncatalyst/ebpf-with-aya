@@ -2,9 +2,8 @@
 # what. Same shape as the hello-world workspace (Chapter 6).
 [workspace]
 resolver = "2"
-members = ["unlinksnoop", "unlinksnoop-common"]
-exclude = ["unlinksnoop-ebpf"]
-
+members = ["unlinksnoop", "unlinksnoop-common", "unlinksnoop-ebpf"]
+default-members = ["unlinksnoop", "unlinksnoop-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

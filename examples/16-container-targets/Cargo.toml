@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["contrace", "contrace-common"]
-exclude = ["contrace-ebpf"]
+members = ["contrace", "contrace-common", "contrace-ebpf"]
+default-members = ["contrace", "contrace-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

@@ -5,7 +5,7 @@ license = "Apache-2.0"
 edition = "2021"
 [dependencies]
 aya = "0.13"
-aya-log = "0.13"
+aya-log = "0.2"
 btf-uprobe-common = { path = "../btf-uprobe-common", features = ["user"] }
 anyhow = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }

@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 aya = "0.13"
-aya-log = "0.13"
+aya-log = "0.2"
 hello-common = { path = "../hello-common", features = ["user"] }
 
 anyhow = "1"

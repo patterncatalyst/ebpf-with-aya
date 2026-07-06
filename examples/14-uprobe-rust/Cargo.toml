@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["uprobe-rust", "uprobe-rust-common", "target-app"]
-exclude = ["uprobe-rust-ebpf"]
+members = ["uprobe-rust", "uprobe-rust-common", "target-app", "uprobe-rust-ebpf"]
+default-members = ["uprobe-rust", "uprobe-rust-common", "target-app"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

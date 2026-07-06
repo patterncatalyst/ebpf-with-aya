@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["tc-classify", "tc-classify-common"]
-exclude = ["tc-classify-ebpf"]
+members = ["tc-classify", "tc-classify-common", "tc-classify-ebpf"]
+default-members = ["tc-classify", "tc-classify-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["capstone", "capstone-common"]
-exclude = ["capstone-ebpf"]
+members = ["capstone", "capstone-common", "capstone-ebpf"]
+default-members = ["capstone", "capstone-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

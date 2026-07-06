@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["tcpconnlat", "tcpconnlat-common"]
-exclude = ["tcpconnlat-ebpf"]
+members = ["tcpconnlat", "tcpconnlat-common", "tcpconnlat-ebpf"]
+default-members = ["tcpconnlat", "tcpconnlat-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

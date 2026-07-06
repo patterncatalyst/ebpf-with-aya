@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["biopattern", "biopattern-common"]
-exclude = ["biopattern-ebpf"]
+members = ["biopattern", "biopattern-common", "biopattern-ebpf"]
+default-members = ["biopattern", "biopattern-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["xdp-lb", "xdp-lb-common"]
-exclude = ["xdp-lb-ebpf"]
+members = ["xdp-lb", "xdp-lb-common", "xdp-lb-ebpf"]
+default-members = ["xdp-lb", "xdp-lb-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

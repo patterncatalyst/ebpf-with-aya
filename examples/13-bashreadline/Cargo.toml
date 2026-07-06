@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["bashreadline", "bashreadline-common"]
-exclude = ["bashreadline-ebpf"]
+members = ["bashreadline", "bashreadline-common", "bashreadline-ebpf"]
+default-members = ["bashreadline", "bashreadline-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

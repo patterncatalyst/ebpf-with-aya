@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["hardirqs", "hardirqs-common"]
-exclude = ["hardirqs-ebpf"]
+members = ["hardirqs", "hardirqs-common", "hardirqs-ebpf"]
+default-members = ["hardirqs", "hardirqs-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"

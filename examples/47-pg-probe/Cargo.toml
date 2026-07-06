@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["pg-probe", "pg-probe-common"]
-exclude = ["pg-probe-ebpf"]
+members = ["pg-probe", "pg-probe-common", "pg-probe-ebpf"]
+default-members = ["pg-probe", "pg-probe-common"]
 [workspace.package]
 license = "Apache-2.0"
 edition = "2021"
