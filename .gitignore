@@ -26,3 +26,6 @@ seed.img
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# compiled Go target binary (built by 19-goroutine-states demo)
+examples/*/target-go/target-go

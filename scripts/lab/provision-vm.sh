@@ -28,7 +28,7 @@ SSH_PUBKEY="${SSH_PUBKEY:-$HOME/.ssh/id_ed25519.pub}"
 # Fedora 44 Cloud Base. Pin the exact image you tested; bump deliberately.
 FEDORA_VER="44"
 BASE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/${FEDORA_VER}/Cloud/x86_64/images"
-BASE_IMG="Fedora-Cloud-Base-Generic-${FEDORA_VER}-1.5.x86_64.qcow2"  # verify exact name at the URL above
+BASE_IMG="${BASE_IMG:-Fedora-Cloud-Base-Generic-${FEDORA_VER}-1.7.x86_64.qcow2}"  # verify exact name at the URL above
 CACHE_DIR="$HOME/.cache/ebpf-with-aya"
 POOL_DIR="${POOL_DIR:-/var/lib/libvirt/images}"
 

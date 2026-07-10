@@ -21,4 +21,10 @@ echo "→ copying $(basename "$BIN") to fedora@$IP:$REMOTE"
 scp $SSH_OPTS "$BIN" "fedora@$IP:$REMOTE"
 ssh $SSH_OPTS "fedora@$IP" "chmod +x '$REMOTE'"
 echo "→ running on $VM (Ctrl-C to stop):"
-exec ssh -t $SSH_OPTS "fedora@$IP" "sudo '$REMOTE' $*"
+# Demos set OTEL_ENDPOINT to the host stack (http://<gateway>:4318). sudo strips
+# the environment, so forward it explicitly as OTEL_EXPORTER_OTLP_ENDPOINT via
+# `env` — otherwise the guest binary falls back to its own localhost and no
+# telemetry reaches the host stack.
+RENV=""
+[[ -n "${OTEL_ENDPOINT:-}" ]] && RENV="OTEL_EXPORTER_OTLP_ENDPOINT='$OTEL_ENDPOINT'"
+exec ssh -t $SSH_OPTS "fedora@$IP" "sudo env $RENV '$REMOTE' $*"
