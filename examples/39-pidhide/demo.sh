@@ -18,6 +18,6 @@ GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 HPID="$($SSH "fedora@$TIP" 'nohup sleep 99999 >/dev/null 2>&1 & echo $!')"
 c_info "target=$TIP hiding pid=$HPID OTLP=http://$GW:4318  (LAB-ONLY — taints the kernel)"
 # loop showing whether the pid is visible
-$SSH "fedora@$TIP" "nohup bash -c 'while true; do if ls /proc/$HPID >/dev/null 2>&1 && ps -p $HPID >/dev/null 2>&1; then echo VISIBLE; else echo HIDDEN (kill -0: \$(kill -0 $HPID 2>/dev/null && echo alive || echo gone)); fi; sleep 1; done' >/tmp/pidhide.log 2>&1 & echo watching pid $HPID (tail /tmp/pidhide.log)"
+$SSH "fedora@$TIP" "nohup bash -c 'while true; do if ls /proc/$HPID >/dev/null 2>&1 && ps -p $HPID >/dev/null 2>&1; then echo VISIBLE; else echo HIDDEN kill-0:\$(kill -0 $HPID 2>/dev/null && echo alive || echo gone); fi; sleep 1; done' >/tmp/pidhide.log 2>&1 & echo watching pid $HPID - tail /tmp/pidhide.log"
 c_step "deploying pidhide to $VM (Ctrl-C to stop, then the pid reappears)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$HPID"

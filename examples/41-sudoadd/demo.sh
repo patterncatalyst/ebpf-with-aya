@@ -15,7 +15,7 @@ TIP="$("$LAB/vm-ip.sh" "$VM")"
 SSH="ssh -o StrictHostKeyChecking=accept-new"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP target-user=$USER_T OTLP=http://$GW:4318  (LAB-ONLY — taints the kernel)"
-$SSH "fedora@$TIP" "id $USER_T >/dev/null 2>&1 || sudo useradd -m $USER_T; echo user $USER_T ready (no sudo on disk)"
+$SSH "fedora@$TIP" "id $USER_T >/dev/null 2>&1 || sudo useradd -m $USER_T; echo user $USER_T ready - no sudo on disk"
 c_info "before (detached): '$USER_T' should NOT be able to sudo:"
 $SSH "fedora@$TIP" "sudo -n -u $USER_T sudo -n id 2>&1 | head -1 || true"
 # generate sudo reads so the tamper counter moves while attached

@@ -22,6 +22,6 @@ GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP confined-cgroup=$CG dest=$DEST OTLP=http://$GW:4318"
 $SSH "fedora@$TIP" "sudo mkdir -p $CG"
 # background: confined curl (should be BLOCKED) vs normal curl (OK)
-$SSH "fedora@$TIP" "nohup bash -c 'while true; do sudo bash -c \"echo \\\$\\\$ > $CG/cgroup.procs; curl -m2 -s -o /dev/null http://$DEST && echo CONFINED-OK || echo CONFINED-BLOCKED\"; curl -m2 -s -o /dev/null http://$DEST && echo HOST-OK || echo HOST-FAIL; sleep 1; done' >/tmp/confine.log 2>&1 & echo driving curls (tail /tmp/confine.log)"
+$SSH "fedora@$TIP" "nohup bash -c 'while true; do sudo bash -c \"echo \\\$\\\$ > $CG/cgroup.procs; curl -m2 -s -o /dev/null http://$DEST && echo CONFINED-OK || echo CONFINED-BLOCKED\"; curl -m2 -s -o /dev/null http://$DEST && echo HOST-OK || echo HOST-FAIL; sleep 1; done' >/tmp/confine.log 2>&1 & echo driving curls - tail /tmp/confine.log"
 c_step "deploying lsm-confine to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$CG"

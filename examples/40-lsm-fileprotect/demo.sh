@@ -19,6 +19,6 @@ GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 $SSH "fedora@$TIP" "echo 'important config — do not tamper' > $FILE"
 c_info "target=$TIP protecting=$FILE OTLP=http://$GW:4318"
 # background: read (ok) + append (should be denied)
-$SSH "fedora@$TIP" "nohup bash -c 'while true; do cat $FILE >/dev/null 2>&1 && echo READ-OK; (echo tamper >> $FILE) 2>/dev/null && echo WRITE-OK || echo WRITE-DENIED; sleep 1; done' >/tmp/fileprotect.log 2>&1 & echo driving read/write (tail /tmp/fileprotect.log)"
+$SSH "fedora@$TIP" "nohup bash -c 'while true; do cat $FILE >/dev/null 2>&1 && echo READ-OK; (echo tamper >> $FILE) 2>/dev/null && echo WRITE-OK || echo WRITE-DENIED; sleep 1; done' >/tmp/fileprotect.log 2>&1 & echo driving read/write - tail /tmp/fileprotect.log"
 c_step "deploying lsm-fileprotect to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$FILE"

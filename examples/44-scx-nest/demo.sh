@@ -19,7 +19,7 @@ c_info "target=$TIP OTLP=http://$GW:4318  (scx_nest + moderate load + per-CPU bu
 $SSH "fedora@$TIP" 'command -v scx_nest >/dev/null || sudo dnf install -y scx-scheds >/dev/null 2>&1 || true; command -v scx_nest >/dev/null && echo scx_nest present || echo "scx_nest missing — install scx-scheds"'
 $SSH "fedora@$TIP" 'sudo pkill -x scx_simple 2>/dev/null; sudo pkill -x scx_nest 2>/dev/null; sudo nohup scx_nest >/tmp/scx_nest.log 2>&1 & sleep 2; echo "sched_ext: $(cat /sys/kernel/sched_ext/root/ops 2>/dev/null) state=$(cat /sys/kernel/sched_ext/state 2>/dev/null)"'
 # moderate load: 2 busy tasks (fewer than cores) — the regime where the nest shows
-$SSH "fedora@$TIP" 'nohup bash -c "for i in 1 2; do (timeout 90 yes >/dev/null &) ; done" >/dev/null 2>&1 & echo started moderate load (2 busy tasks)'
+$SSH "fedora@$TIP" 'nohup bash -c "for i in 1 2; do (timeout 90 yes >/dev/null &) ; done" >/dev/null 2>&1 & echo started moderate load - 2 busy tasks'
 c_info "compare on target: mpstat -P ALL 2 1   (a few CPUs hot, rest idle).  Stop: sudo pkill -x scx_nest"
 c_step "deploying cpu-busy probe to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" --

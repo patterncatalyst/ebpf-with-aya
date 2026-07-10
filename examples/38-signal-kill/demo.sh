@@ -15,6 +15,6 @@ TIP="$("$LAB/vm-ip.sh" "$VM")"
 SSH="ssh -o StrictHostKeyChecking=accept-new"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP OTLP=http://$GW:4318  (kills exec of /tmp/forbidden*)"
-$SSH "fedora@$TIP" "cp /usr/bin/sleep /tmp/forbidden-sleep 2>/dev/null || true; nohup bash -c 'while true; do /tmp/forbidden-sleep 30 & wait \$! ; echo \"forbidden exit=\$?\"; sleep 60 & SP=\$!; kill \$SP 2>/dev/null; sleep 2; done' >/tmp/killer.log 2>&1 & echo running forbidden + normal binaries (tail /tmp/killer.log)"
+$SSH "fedora@$TIP" "cp /usr/bin/sleep /tmp/forbidden-sleep 2>/dev/null || true; nohup bash -c 'while true; do /tmp/forbidden-sleep 30 & wait \$! ; echo \"forbidden exit=\$?\"; sleep 60 & SP=\$!; kill \$SP 2>/dev/null; sleep 2; done' >/tmp/killer.log 2>&1 & echo running forbidden + normal binaries - tail /tmp/killer.log"
 c_step "deploying signal-kill to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" --
