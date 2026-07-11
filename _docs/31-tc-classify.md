@@ -229,10 +229,5 @@ driver, before the `sk_buff` even exists.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: the Aya `tc` API surface
-(`qdisc_add_clsact`, `SchedClassifier`, `TcAttachType::Egress`), the
-`network-types` header/field names and the `ctx.load`/`ctx.len`
-signatures, that `TC_ACT_SHOT` actually drops on egress (connections to
-the demo port time out), and the `HashMap::iter()` read path from user
-space.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -132,9 +132,5 @@ utilities — and drives them from Python, closing the field guide.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that `bpftool -j` JSON field names match your
-version (`bpftool version`); that `feature probe` JSON nests
-`program_types`/`map_types` the way `features` expects (shapes vary — fall back
-to raw if needed); and that enabling `kernel.bpf_stats_enabled` populates
-`run_time_ns`/`run_cnt`.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

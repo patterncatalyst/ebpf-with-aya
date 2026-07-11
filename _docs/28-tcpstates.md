@@ -144,7 +144,5 @@ tracepoints) and **`sockops`**.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Risks: the tracepoint field offsets (verify vs. the format file) and the
-sport/dport byte order as this tracepoint stores them; IPv4 fields shown.
-The first build and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

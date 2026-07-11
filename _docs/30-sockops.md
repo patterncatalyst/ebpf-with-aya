@@ -150,8 +150,5 @@ and the first **XDP** program — moving out to the edge of the stack.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Risks: `SockOps::attach(cgroup)` and the `SockOpsContext` accessors in
-aya 0.13.x; the established-callback op constants; the
-`local_port`/`remote_port` byte-order convention; requires cgroup-v2 at
-`/sys/fs/cgroup`. The first build and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

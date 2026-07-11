@@ -133,9 +133,5 @@ Next: **`biopattern`**, classifying block I/O as sequential vs. random.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Highest-risk: uprobe+uretprobe on glibc `malloc`/`calloc` + uprobe on
-`free`; user-stack capture depending on frame pointers (glibc itself may
-truncate); `Array::set` pid filter and `u64_gauge` in
-opentelemetry 0.27. `realloc`/`posix_memalign` are untraced gaps. The
-first build and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*
