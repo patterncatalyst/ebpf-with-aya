@@ -11,6 +11,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/javagc"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
 c_info(){ echo -e "\033[1;33m  $*\033[0m"; }; c_fail(){ echo -e "\033[0;31m✗ $*\033[0m" >&2; exit 1; }
@@ -26,6 +27,7 @@ c_step "shipping + compiling Alloc.java on the VM, starting it with a small heap
 $SSH 'command -v javac >/dev/null || { echo "installing a JDK (one-time)…"; sudo dnf install -y java-latest-openjdk-devel >/dev/null 2>&1; }'
 scp -o StrictHostKeyChecking=accept-new target-java/Alloc.java "fedora@$IP:/home/fedora/Alloc.java"
 $SSH 'cd /home/fedora && javac Alloc.java && pkill -x java || true; nohup java -Xmx64m -XX:+UseG1GC Alloc </dev/null >/tmp/alloc.log 2>&1 & echo started pid $!'
+reap "fedora@$IP" java
 
 c_step "resolving libjvm.so + the G1 pause symbol on the VM"
 LIBJVM="$($SSH 'f=$(find /usr/lib/jvm -name libjvm.so 2>/dev/null | head -1); echo "$f"')"

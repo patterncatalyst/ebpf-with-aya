@@ -8,6 +8,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/pg-probe"
 PG_IMAGE="${PG_IMAGE:-docker.io/library/postgres:17}"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
@@ -33,8 +34,10 @@ $SSH "fedora@$TIP" "podman rm -f ebpf-pg 2>/dev/null; podman run -d --name ebpf-
 $SSH "fedora@$TIP" "for i in \$(seq 1 30); do podman exec ebpf-pg pg_isready -U postgres >/dev/null 2>&1 && break; sleep 1; done; $PSQL 'CREATE TABLE IF NOT EXISTS t(id int primary key, v int); INSERT INTO t VALUES (1,0) ON CONFLICT DO NOTHING;' >/dev/null && echo seeded"
 # steady query load
 $SSH "fedora@$TIP" "nohup bash -c 'while true; do $PSQL \"SELECT count(*) FROM t; SELECT pg_sleep(0.01);\" >/dev/null 2>&1; sleep 0.1; done' </dev/null >/dev/null 2>&1 & echo driving query load"
+reap "fedora@$TIP" 'SELECT count(*) FROM t; SELECT pg_sleep(0.01)'
 # lock contention: one tx holds the row, another waits on it (fires ProcSleep)
 $SSH "fedora@$TIP" "nohup bash -c 'while true; do podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"BEGIN; UPDATE t SET v=v+1 WHERE id=1; SELECT pg_sleep(2); COMMIT;\" </dev/null >/dev/null 2>&1 & sleep 0.3; podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"UPDATE t SET v=v+1 WHERE id=1;\" >/dev/null 2>&1; wait; sleep 1; done' </dev/null >/dev/null 2>&1 & echo staging lock contention"
+reap "fedora@$TIP" 'BEGIN; UPDATE t SET v=v+1 WHERE id=1; SELECT pg_sleep(2)'
 sleep 2
 # The container executes the bind-mounted, fully-symboled host copy; aya reads
 # exec_simple_query / ProcSleep straight from its .symtab. pid=None in the loader

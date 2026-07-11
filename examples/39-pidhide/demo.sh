@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/pidhide"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
 c_info(){ echo -e "\033[1;33m  $*\033[0m"; }; c_fail(){ echo -e "\033[0;31m✗ $*\033[0m" >&2; exit 1; }
@@ -16,8 +17,10 @@ SSH="ssh -o StrictHostKeyChecking=accept-new"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 # start a victim process and capture its pid
 HPID="$($SSH "fedora@$TIP" 'nohup sleep 99999 >/dev/null 2>&1 & echo $!')"
+reap "fedora@$TIP" 'sleep 99999'
 c_info "target=$TIP hiding pid=$HPID OTLP=http://$GW:4318  (LAB-ONLY — taints the kernel)"
 # loop showing whether the pid is visible
 $SSH "fedora@$TIP" "nohup bash -c 'while true; do if ls /proc/$HPID >/dev/null 2>&1 && ps -p $HPID >/dev/null 2>&1; then echo VISIBLE; else echo HIDDEN kill-0:\$(kill -0 $HPID 2>/dev/null && echo alive || echo gone); fi; sleep 1; done' >/tmp/pidhide.log 2>&1 & echo watching pid $HPID - tail /tmp/pidhide.log"
+reap "fedora@$TIP" 'while true; do if ls /proc'
 c_step "deploying pidhide to $VM (Ctrl-C to stop, then the pid reappears)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$HPID"

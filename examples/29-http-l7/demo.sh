@@ -4,6 +4,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; PEER="${PEER_VM:-ebpf-peer}"; BIN="$SCRIPT_DIR/target/release/httpl7"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
 c_info(){ echo -e "\033[1;33m  $*\033[0m"; }; c_fail(){ echo -e "\033[0;31m✗ $*\033[0m" >&2; exit 1; }
@@ -18,7 +19,9 @@ IFACE="$(ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" 'ip -o route get 
 c_info "target=$TIP iface=$IFACE  peer=$PIP  OTLP=http://$GW:4318"
 c_step "starting an HTTP server on the peer ($PEER:8000)"
 ssh -o StrictHostKeyChecking=accept-new "fedora@$PIP" 'pkill -x python3 || true; nohup python3 -m http.server 8000 </dev/null >/dev/null 2>&1 & echo serving'
+reap "fedora@$PIP" python3
 c_step "driving HTTP target→peer in the background"
 ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null http://$PIP:8000/ ; curl -s -o /dev/null -X POST http://$PIP:8000/submit ; sleep 0.3; done' </dev/null >/dev/null 2>&1 & echo driving"
+reap "fedora@$TIP" 'seq 1 600); do curl -s -o /dev/null http://'
 c_step "deploying httpl7 to $VM on iface $IFACE (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$IFACE"

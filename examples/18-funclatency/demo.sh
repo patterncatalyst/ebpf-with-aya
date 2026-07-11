@@ -4,6 +4,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"
 SNOOP="$SCRIPT_DIR/target/release/funclatency"
 APP="$SCRIPT_DIR/target/release/target-app"
@@ -20,5 +21,6 @@ c_info "OTLP -> http://$GW:4318"
 c_step "shipping target-app to $VM and starting it"
 scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
 $SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
+reap "fedora@$IP" target-app
 c_step "timing $SYM (Ctrl-C to stop; prints a histogram every 2s)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$SNOOP" -- /home/fedora/target-app "$SYM"

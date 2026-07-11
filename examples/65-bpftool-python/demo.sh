@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_info(){ echo -e "\033[1;33m  $*\033[0m"; }
 case "${1:-run}" in build) echo "nothing to build (Python + bpftool)"; exit 0;; esac
@@ -13,6 +14,7 @@ scp -q -o StrictHostKeyChecking=accept-new bpftool_tool.py "fedora@$TIP:/tmp/bpf
 T="sudo python3 /tmp/bpftool_tool.py"
 c_step "load a throwaway probe so there's something to inventory"
 $SSH "fedora@$TIP" 'sudo sysctl -w kernel.bpf_stats_enabled=1 >/dev/null; (sudo bpftrace -e "kprobe:vfs_read { @[comm]=count(); }" </dev/null >/tmp/bt.log 2>&1 &) ; sleep 2; echo started'
+reap "fedora@$TIP" bpftrace
 c_step "progs — the host BPF inventory"; $SSH "fedora@$TIP" "$T progs || true"
 c_step "maps"; $SSH "fedora@$TIP" "$T maps || true"
 c_step "links"; $SSH "fedora@$TIP" "$T links || true"

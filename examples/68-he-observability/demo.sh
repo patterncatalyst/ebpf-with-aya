@@ -8,6 +8,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"
 OBS="$SCRIPT_DIR/target/release/he-observer"
 APP="$SCRIPT_DIR/target/release/he-workload"
@@ -30,6 +31,7 @@ case "${1:-run}" in
     c_step "shipping he-workload to $VM (starts in 4s so the probe attaches first)"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/he-workload"
     $SSH 'chmod +x /home/fedora/he-workload; pkill -x he-workload || true; nohup sh -c "sleep 4; /home/fedora/he-workload" </dev/null >/tmp/he-workload.log 2>&1 & echo scheduled'
+    reap "fedora@$IP" he-workload
     c_info "workload will log to /tmp/he-workload.log on the VM"
     c_step "deploying he-observer and attaching to he_* (Ctrl-C to stop)"
     OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$OBS" -- /home/fedora/he-workload

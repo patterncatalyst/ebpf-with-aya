@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; PEER="${PEER_VM:-ebpf-peer}"; BIN="$SCRIPT_DIR/target/release/xdp-capture"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
 c_info(){ echo -e "\033[1;33m  $*\033[0m"; }; c_fail(){ echo -e "\033[0;31m✗ $*\033[0m" >&2; exit 1; }
@@ -19,8 +20,10 @@ GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP iface=$TIFACE OTLP=http://$GW:4318  (captures TCP SYN/FIN/RST)"
 # target listener for the peer to connect to (each curl = one SYN + teardown)
 $SSH "fedora@$TIP" 'pkill -x ncat || true; nohup ncat -lk 8081 </dev/null >/dev/null 2>&1 & echo target listening 8081'
+reap "fedora@$TIP" ncat
 if [ -n "$PIP" ]; then
   $SSH "fedora@$PIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$TIP:8081/ || true; sleep 0.5; done' </dev/null >/dev/null 2>&1 & echo opening connections from peer"
+  reap "fedora@$PIP" 'seq 1 600); do curl -s -o /dev/null'
 fi
 c_step "deploying xdp-capture to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$TIFACE"

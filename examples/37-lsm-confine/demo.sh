@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; PEER="${PEER_VM:-ebpf-peer}"; BIN="$SCRIPT_DIR/target/release/lsm-confine"
 CG="/sys/fs/cgroup/confined"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
@@ -23,5 +24,6 @@ c_info "target=$TIP confined-cgroup=$CG dest=$DEST OTLP=http://$GW:4318"
 $SSH "fedora@$TIP" "sudo mkdir -p $CG"
 # background: confined curl (should be BLOCKED) vs normal curl (OK)
 $SSH "fedora@$TIP" "nohup bash -c 'while true; do sudo bash -c \"echo \\\$\\\$ > $CG/cgroup.procs; curl -m2 -s -o /dev/null http://$DEST && echo CONFINED-OK || echo CONFINED-BLOCKED\"; curl -m2 -s -o /dev/null http://$DEST && echo HOST-OK || echo HOST-FAIL; sleep 1; done' >/tmp/confine.log 2>&1 & echo driving curls - tail /tmp/confine.log"
+reap "fedora@$TIP" 'while true; do sudo bash -c'
 c_step "deploying lsm-confine to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$CG"

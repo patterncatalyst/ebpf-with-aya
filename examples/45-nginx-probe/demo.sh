@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/nginx-probe"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
 c_info(){ echo -e "\033[1;33m  $*\033[0m"; }; c_fail(){ echo -e "\033[0;31m✗ $*\033[0m" >&2; exit 1; }
@@ -26,6 +27,7 @@ $SSH "fedora@$TIP" 'cd /tmp/nginx-probe && podman build -t ebpf-nginx .'
 $SSH "fedora@$TIP" 'cid=$(podman create ebpf-nginx); podman cp $cid:/usr/sbin/nginx /tmp/ebpf-nginx-bin; podman rm $cid >/dev/null; podman rm -f ebpf-nginx 2>/dev/null; podman run -d --name ebpf-nginx -v /tmp/ebpf-nginx-bin:/usr/local/nginx/sbin/nginx:ro,Z -p 8080:80 ebpf-nginx && sleep 2 && echo nginx up on :8080'
 # drive load
 $SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8080/; sleep 0.05; done" </dev/null >/dev/null 2>&1 & echo driving HTTP load'
+reap "fedora@$TIP" 'while true; do curl -s -o /dev/null http://127.0.0.1:8080/'
 sleep 1
 WPID="$($SSH "fedora@$TIP" "pgrep -f 'nginx: worker' | head -1")"
 [ -n "$WPID" ] || c_fail "could not find nginx worker pid on $VM"

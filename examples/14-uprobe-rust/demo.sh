@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"
 SNOOP="$SCRIPT_DIR/target/release/uprobe-rust"
 APP="$SCRIPT_DIR/target/release/target-app"
@@ -27,6 +28,7 @@ case "${1:-run}" in
     c_step "shipping target-app to $VM and starting it in the background"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
     $SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
+    reap "fedora@$IP" target-app
     c_info "target-app logging to /tmp/target-app.log on the VM"
     c_step "deploying uprobe-rust and attaching to compute() (Ctrl-C to stop)"
     OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$SNOOP" -- /home/fedora/target-app

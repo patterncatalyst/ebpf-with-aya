@@ -4,6 +4,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/lsm-fileprotect"
 FILE="/tmp/ebpf-protected"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
@@ -20,5 +21,6 @@ $SSH "fedora@$TIP" "echo 'important config — do not tamper' > $FILE"
 c_info "target=$TIP protecting=$FILE OTLP=http://$GW:4318"
 # background: read (ok) + append (should be denied)
 $SSH "fedora@$TIP" "nohup bash -c 'while true; do cat $FILE >/dev/null 2>&1 && echo READ-OK; (echo tamper >> $FILE) 2>/dev/null && echo WRITE-OK || echo WRITE-DENIED; sleep 1; done' >/tmp/fileprotect.log 2>&1 & echo driving read/write - tail /tmp/fileprotect.log"
+reap "fedora@$TIP" 'while true; do cat'
 c_step "deploying lsm-fileprotect to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$FILE"

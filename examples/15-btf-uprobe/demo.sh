@@ -4,6 +4,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"
 SNOOP="$SCRIPT_DIR/target/release/btf-uprobe"
 APP="$SCRIPT_DIR/target/release/target-app"
@@ -21,6 +22,7 @@ case "${1:-run}" in
     c_step "shipping target-app to $VM and starting it"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
     $SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
+    reap "fedora@$IP" target-app
     c_info "inspect the binary's type info on the VM (optional):"
     c_info "    ssh fedora@$IP 'sudo dnf install -y dwarves; pahole -J /home/fedora/target-app; bpftool btf dump file /home/fedora/target-app | grep -i order'"
     c_step "deploying btf-uprobe and attaching to process_order (Ctrl-C to stop)"

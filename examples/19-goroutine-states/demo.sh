@@ -5,6 +5,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)" && cd "$SCRIPT_DIR"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"; LAB="$REPO_ROOT/scripts/lab"
+source "$REPO_ROOT/scripts/lib/_demo-bg.sh"   # reap guest-side load-gens on exit
 VM="${VM:-ebpf-target}"; BIN="$SCRIPT_DIR/target/release/goroutine"
 GOBIN="$SCRIPT_DIR/target-go/target-go"
 c_step(){ echo -e "\033[0;36m━━ $*\033[0m"; }; c_ok(){ echo -e "\033[0;32m✓ $*\033[0m"; }
@@ -27,6 +28,7 @@ c_info "OTLP -> http://$GW:4318"
 c_step "shipping Go target to $VM and starting it"
 scp -o StrictHostKeyChecking=accept-new "$GOBIN" "fedora@$IP:/home/fedora/target-go"
 $SSH 'chmod +x /home/fedora/target-go; pkill -x target-go || true; nohup /home/fedora/target-go </dev/null >/tmp/target-go.log 2>&1 & echo started pid $!'
+reap "fedora@$IP" target-go
 c_info "confirm the symbol exists:  ssh fedora@$IP 'go version /home/fedora/target-go; nm /home/fedora/target-go | grep runtime.casgstatus'"
 c_step "attaching casgstatus uprobe (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- /home/fedora/target-go
