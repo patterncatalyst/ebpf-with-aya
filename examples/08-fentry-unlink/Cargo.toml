@@ -1,4 +1,4 @@
-# Workspace for fentrysnoop — fentry+fexit on do_unlinkat, reporting whether
+# Workspace for fentrysnoop — fentry+fexit on vfs_unlink, reporting whether
 # each unlink succeeded. Same workspace shape as Chapters 6 and 7.
 [workspace]
 resolver = "2"

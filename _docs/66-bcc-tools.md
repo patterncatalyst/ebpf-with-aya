@@ -193,10 +193,5 @@ operating a fleet, what carried through, and where eBPF and Aya go next.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that `bcc-tools` installs tools under
-`/usr/share/bcc/tools/` and they run (classic BCC needs `clang`, `llvm`, and
-kernel headers matching `uname -r`); that `python3-bcc` is present for
-`hello_bcc.py`; that the column layouts the parsers assume match your tool
-versions (they vary — the wrapper falls back to printing raw output); and
-consider `libbpf-tools` where runtime compilation isn't wanted.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

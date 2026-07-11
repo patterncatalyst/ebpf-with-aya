@@ -165,8 +165,5 @@ never free, and block-I/O access patterns.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Highest-risk: the `PerfEvent::attach` signature / `SamplePolicy` /
-`PerfEventScope` and `online_cpus()` in aya 0.13.x; `get_stackid` (ebpf)
-and `StackTraceMap::get().frames()` (user); user-stack capture depending
-on frame pointers/unwind info. The first build and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

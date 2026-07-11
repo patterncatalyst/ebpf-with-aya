@@ -1,4 +1,4 @@
-//! fentrysnoop — user space for the fentry/fexit do_unlinkat programs.
+//! fentrysnoop — user space for the fentry/fexit vfs_unlink programs.
 //!
 //! Loads + attaches both programs (they share the INFLIGHT map), drains
 //! completed UnlinkEvents from the ring buffer, prints them with success/

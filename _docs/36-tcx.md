@@ -143,10 +143,5 @@ and starts making allow/deny decisions for it.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run (kernel ≥ 6.6 for tcx): the exact Aya tcx
-attach API (whether `SchedClassifier::attach` with `TcAttachType::Ingress`
-selects tcx and returns a link, or a distinct `attach`/options call is
-needed), how the returned link's lifetime governs detach, that `bpftool net
-show` reports the program under `tcx/ingress`, and that no clsact qdisc is
-created.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

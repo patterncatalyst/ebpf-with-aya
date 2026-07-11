@@ -1,6 +1,6 @@
-//! unlinksnoop — user space for the do_unlinkat kprobe.
+//! unlinksnoop — user space for the vfs_unlink kprobe.
 //!
-//! Loads the program, attaches the kprobe to `do_unlinkat`, drains the ring
+//! Loads the program, attaches the kprobe to `vfs_unlink`, drains the ring
 //! buffer of UnlinkEvents, prints each one, and exports `ebpf_events_total`
 //! (labelled program="unlinksnoop") to the observability stack.
 //!

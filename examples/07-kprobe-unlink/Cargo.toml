@@ -1,4 +1,4 @@
-# Workspace for unlinksnoop — a kprobe on do_unlinkat that reports who deletes
+# Workspace for unlinksnoop — a kprobe on vfs_unlink that reports who deletes
 # what. Same shape as the hello-world workspace (Chapter 6).
 [workspace]
 resolver = "2"

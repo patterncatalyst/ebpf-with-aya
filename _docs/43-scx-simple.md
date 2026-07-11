@@ -198,9 +198,5 @@ queues express a real scheduling strategy.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run (kernel ≥ 6.12): that `scx-scheds` provides
-`scx_simple` and it loads (`/sys/kernel/sched_ext/state` → `enabled`), the
-exact paths under `/sys/kernel/sched_ext/`, that `bpftool struct_ops list`
-shows the scheduler, and that the Aya `sched_switch` probe counts context
-switches per CPU while it runs.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

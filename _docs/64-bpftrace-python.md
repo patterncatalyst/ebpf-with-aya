@@ -184,8 +184,5 @@ programs, maps, and links programmatically.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that `bpftrace -f json` emits NDJSON your
-wrapper parses (the `map`/`attached_probes` event shapes can vary by bpftrace
-version — check `bpftrace --version`); that the syscall-top program attaches and
-prints; and that the probes you reference exist (`bpftrace -l`).*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

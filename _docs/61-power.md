@@ -166,10 +166,5 @@ counting `unlink` to operating a fleet, and where eBPF and Aya go from here.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: the `sched_switch` field offsets for
-`prev_comm`/`prev_pid` on this kernel; that per-command on-CPU time accumulates;
-that the loader reads `/sys/class/powercap/intel-rapl:0/energy_uj` where present
-and falls back cleanly where not (expect absent in the VM — verify on bare metal
-for real watts); and compare any watt estimate against `turbostat`/`perf
-power/energy-pkg/`.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

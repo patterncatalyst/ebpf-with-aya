@@ -1,12 +1,12 @@
 # Example 07 — kprobe + unlink (`unlinksnoop`)
 
-Your first **kprobe**: attach to the kernel function `do_unlinkat()`,
+Your first **kprobe**: attach to the kernel function `vfs_unlink()`,
 which sits behind `unlink()`/`unlinkat()`, and report who deletes what.
 
 ## What this shows
 
 - A `#[kprobe]` program attached to a kernel function by name
-  (`do_unlinkat`) — the defining difference from Chapter 6's tracepoint.
+  (`vfs_unlink`) — the defining difference from Chapter 6's tracepoint.
 - Reading **stable process context** in-kernel: `pid`, `uid`, `comm`
   via always-available helpers.
 - Reading a **kprobe function argument** (`struct filename *`) and
@@ -48,7 +48,7 @@ You'll see a `PID UID COMM FILE` table fill in, and
 
 ```bash
 [vm]$ sudo bpftool prog list | grep -A3 kprobe
-[vm]$ sudo bpftrace -e 'kprobe:do_unlinkat { @[comm] = count(); }'
+[vm]$ sudo bpftrace -e 'kprobe:vfs_unlink { @[comm] = count(); }'
 ```
 
 The `bpftrace` counts per-process unlinks independently — compare
@@ -60,10 +60,10 @@ against the table `unlinksnoop` prints.
 `aya-ebpf` 0.1.x) but not compiled/run at authoring. The two parts most
 likely to need adjustment on real hardware:
 
-1. **The filename read.** `do_unlinkat`'s 2nd arg is `struct filename *`;
-   we assume the path pointer is its first field. If your kernel's
-   layout differs, the read fails gracefully (empty filename) — the
-   pid/uid/comm still report. The robust fix is CO-RE field access via
+1. **The filename read.** `vfs_unlink`'s dentry arg (index 2) carries the
+   name at `dentry->d_name.name`; we read it at a fixed struct offset. If
+   your kernel's layout differs, the read fails gracefully (empty filename)
+   — the pid/uid/comm still report. The robust fix is CO-RE field access via
    BTF, introduced properly in the `fentry` chapter (8) and the CO-RE
    deep-dive (56).
 2. **`RingBuf` draining.** The poll-on-timer approach here is simple and

@@ -151,9 +151,5 @@ it watches) cost in energy.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that the XDP program attaches and the loader
-correctly reports the engaged mode (expect `DRV`/`SKB` on virtio, not `HW`);
-that `ip -d link show` reflects it; and treat all hardware-offload, DPU, FPGA,
-and GPU claims as descriptions of external hardware/projects this lab can't
-exercise — only the mode-selection path is runnable here.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

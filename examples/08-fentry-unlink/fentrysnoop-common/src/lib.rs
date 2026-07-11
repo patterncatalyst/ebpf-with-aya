@@ -1,5 +1,5 @@
 //! Shared event for fentrysnoop. Same #[repr(C)] contract as Chapter 7, plus a
-//! `ret` field carrying do_unlinkat's return value (0 = success, negative errno
+//! `ret` field carrying vfs_unlink's return value (0 = success, negative errno
 //! = failure) — captured at fexit, which is the fentry/fexit advantage this
 //! chapter demonstrates.
 #![no_std]

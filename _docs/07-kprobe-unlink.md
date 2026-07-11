@@ -55,7 +55,7 @@ filename, submit.
 static EVENTS: RingBuf = RingBuf::with_byte_size(256 * 1024, 0);
 
 #[kprobe]
-pub fn do_unlinkat(ctx: ProbeContext) -> u32 {
+pub fn vfs_unlink(ctx: ProbeContext) -> u32 {
     // reserve -> fill -> submit
 }
 ```
@@ -78,14 +78,16 @@ kprobe is as portable as a tracepoint.
 
 ### Reading the argument (the version-sensitive part)
 
-The interesting, fragile bit is the filename. `do_unlinkat`'s second
-argument is a `struct filename *`, and the path string lives at
-`filename->name`. Aya hands you arguments via `ctx.arg::<T>(n)`:
+The interesting, fragile bit is the filename. `vfs_unlink`'s third
+argument (index 2) is a `struct dentry *`, and the unlinked name lives at
+`dentry->d_name.name`. Aya hands you arguments via `ctx.arg::<T>(n)`:
 
 ```rust
-if let Some(name_ptr) = ctx.arg::<*const u8>(1) {
-    let path_ptr = bpf_probe_read_kernel::<*const u8>(name_ptr as *const *const u8);
-    if let Ok(p) = path_ptr {
+// dentry->d_name.name — on this kernel d_name is at offset 32 (a struct
+// qstr) and qstr.name is at offset 8, so the name pointer sits at + 40.
+if let Some(dentry) = ctx.arg::<*const u8>(2) {
+    let name_pptr = dentry.add(32 + 8) as *const *const u8;
+    if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_pptr) {
         let _ = bpf_probe_read_kernel_str_bytes(p, &mut (*event).filename);
     }
 }
@@ -94,9 +96,11 @@ if let Some(name_ptr) = ctx.arg::<*const u8>(1) {
 Two things deserve emphasis. First, you **cannot** dereference a kernel
 pointer directly — the verifier forbids it. You must copy through
 `bpf_probe_read_kernel`, which safely reads kernel memory into your
-stack/map. Second, we assume `struct filename` begins with its `name`
-pointer; that's true on current kernels but is exactly the kind of
-assumption a future kernel can invalidate. If the read fails, we leave
+stack/map. Second, we read the name pointer at a **fixed offset** into
+`struct dentry` (`d_name.name`); those offsets hold on this kernel but are
+exactly the kind of assumption a future kernel can invalidate — indeed the
+helper this chapter first targeted, `do_unlinkat`, was removed outright,
+which is why we now hook `vfs_unlink`. If the read fails, we leave
 the filename empty and still emit the event — **degrade, don't crash**.
 The robust answer to this fragility is CO-RE (BTF-relocated field
 access), which `fentry` (Chapter 8) and the CO-RE deep-dive
@@ -119,9 +123,9 @@ and lock-free, which is what you want on a hot path.
 drains the ring:
 
 ```rust
-let program: &mut KProbe = ebpf.program_mut("do_unlinkat").unwrap().try_into()?;
+let program: &mut KProbe = ebpf.program_mut("vfs_unlink").unwrap().try_into()?;
 program.load()?;
-program.attach("do_unlinkat", 0)?;     // 0 = entry offset
+program.attach("vfs_unlink", 0)?;     // 0 = entry offset
 ```
 
 Note the symmetry with Chapter 6 — same load/attach arc, just a
@@ -174,7 +178,7 @@ the Grafana overview dashboard with the `unlinksnoop` label.
 On the target VM, confirm independently:
 
 ```bash
-[vm]$ sudo bpftrace -e 'kprobe:do_unlinkat { @[comm] = count(); }'
+[vm]$ sudo bpftrace -e 'kprobe:vfs_unlink { @[comm] = count(); }'
 ```
 
 `bpftrace` attaches its own kprobe to the same function and counts per
@@ -199,8 +203,5 @@ fragility you just met.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-The kprobe attach, ring-buffer plumbing, and especially the
-filename-read are unrun at authoring — see the README's verification
-notes. The first `cargo build` and `./demo.sh` on Fedora 44 are the
-test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

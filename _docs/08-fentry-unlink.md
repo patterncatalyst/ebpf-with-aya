@@ -72,9 +72,9 @@ simple.
 entry probe gathers context and stashes it:
 
 ```rust
-#[fentry(function = "do_unlinkat")]
-pub fn do_unlinkat_enter(ctx: FEntryContext) -> u32 {
-    // pid/uid/comm + filename (arg 1), then INFLIGHT.insert(&pid_tgid, &ev, 0)
+#[fentry(function = "vfs_unlink")]
+pub fn vfs_unlink_enter(ctx: FEntryContext) -> u32 {
+    // pid/uid/comm + filename (from dentry, arg 2), then INFLIGHT.insert(&pid_tgid, &ev, 0)
     0
 }
 ```
@@ -82,12 +82,12 @@ pub fn do_unlinkat_enter(ctx: FEntryContext) -> u32 {
 The exit probe reads the return value and emits the completed record:
 
 ```rust
-#[fexit(function = "do_unlinkat")]
-pub fn do_unlinkat_exit(ctx: FExitContext) -> u32 {
+#[fexit(function = "vfs_unlink")]
+pub fn vfs_unlink_exit(ctx: FExitContext) -> u32 {
     let id = bpf_get_current_pid_tgid();
     if let Some(stored) = unsafe { INFLIGHT.get(&id) } {
         let mut ev = *stored;
-        ev.ret = ctx.arg::<i64>(2).unwrap_or(0) as i32;   // return value follows the 2 args
+        ev.ret = unsafe { ctx.arg::<i64>(4) } as i32;   // return value follows the 4 args
         // reserve a RingBuf slot, write ev, submit
         INFLIGHT.remove(&id).ok();
     }
@@ -97,13 +97,13 @@ pub fn do_unlinkat_exit(ctx: FExitContext) -> u32 {
 
 The one genuinely new idea is `ctx.arg::<i64>(2)`. In an fexit program,
 the return value is exposed *after* the function's arguments —
-`do_unlinkat` takes two, so index `2` is the return. A `0` means the
+`vfs_unlink` takes four, so index `4` is the return. A `0` means the
 unlink succeeded; a negative value is a `-errno` (e.g. `-2` is
 `ENOENT`, "no such file"). This is the bit most likely to need a tweak
 on your kernel/aya version, so it's flagged in the reconciliation plan.
 
-The filename read is the same technique as Chapter 7 — and carries the
-same `struct filename` layout caveat. fentry gives you *typed
+The filename read is the same technique as Chapter 7 — reading
+`dentry->d_name.name` at a fixed offset — and carries the same version caveat. fentry gives you *typed
 arguments*, which makes the pointer's type trustworthy, but following a
 nested pointer to a string still goes through `bpf_probe_read_kernel`.
 The fully robust version uses BTF-generated kernel types (via
@@ -120,12 +120,12 @@ kernel's BTF to resolve the target function's type. `fentrysnoop/src/main.rs`:
 ```rust
 let btf = Btf::from_sys_fs()?;                 // reads /sys/kernel/btf/vmlinux
 
-let enter: &mut FEntry = ebpf.program_mut("do_unlinkat_enter").unwrap().try_into()?;
-enter.load("do_unlinkat", &btf)?;
+let enter: &mut FEntry = ebpf.program_mut("vfs_unlink_enter").unwrap().try_into()?;
+enter.load("vfs_unlink", &btf)?;
 enter.attach()?;
 
-let exit: &mut FExit = ebpf.program_mut("do_unlinkat_exit").unwrap().try_into()?;
-exit.load("do_unlinkat", &btf)?;
+let exit: &mut FExit = ebpf.program_mut("vfs_unlink_exit").unwrap().try_into()?;
+exit.load("vfs_unlink", &btf)?;
 exit.attach()?;
 ```
 
@@ -163,7 +163,7 @@ distinction the Chapter 7 kprobe couldn't make.
 ## Cross-check against the kernel
 
 ```bash
-[vm]$ sudo bpftrace -e 'fexit:do_unlinkat { @[retval == 0] = count(); }'
+[vm]$ sudo bpftrace -e 'fexit:vfs_unlink { @[retval == 0] = count(); }'
 ```
 
 `bpftrace`'s `fexit` probe exposes `retval` directly; this one-liner
@@ -184,8 +184,5 @@ and start building per-event tooling in earnest.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-The fexit return-value index, the `FEntry`/`FExit` load/attach API, and
-the filename read are unrun at authoring — see the README's
-verification notes. The first `cargo build` and `./demo.sh` on Fedora
-44 are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

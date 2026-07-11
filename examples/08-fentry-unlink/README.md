@@ -1,12 +1,12 @@
 # Example 08 — fentry + unlink (`fentrysnoop`)
 
-The same `do_unlinkat` target as Chapter 7, but with **fentry + fexit**
+The same `vfs_unlink` target as Chapter 7, but with **fentry + fexit**
 instead of a kprobe — so we can report whether each unlink *succeeded*,
 not just that it was attempted.
 
 ## What this shows
 
-- `#[fentry]` and `#[fexit]` on `do_unlinkat` — BTF-trampoline attach
+- `#[fentry]` and `#[fexit]` on `vfs_unlink` — BTF-trampoline attach
   points, lower overhead than kprobes, with typed argument access.
 - **fexit reads the return value** (0 = success, negative errno =
   failure). A single kprobe entry can't see the return; you'd need a
@@ -45,7 +45,7 @@ You'll see a `PID UID RET COMM FILE` table; the deliberate
 ## Cross-check (on the VM)
 
 ```bash
-[vm]$ sudo bpftrace -e 'fexit:do_unlinkat { @[retval == 0] = count(); }'
+[vm]$ sudo bpftrace -e 'fexit:vfs_unlink { @[retval == 0] = count(); }'
 ```
 
 ## ⚠ Verification status
@@ -56,7 +56,7 @@ authoring. Highest-risk items to confirm on real hardware:
 1. **fexit return-value access.** We read it as `ctx.arg::<i64>(2)`
    (return value follows the 2 function args). Confirm the
    `FExitContext` API and index in your aya version.
-2. **`FEntry`/`FExit` load+attach API** — `program.load("do_unlinkat",
+2. **`FEntry`/`FExit` load+attach API** — `program.load("vfs_unlink",
    &btf)` then `attach()`. Names/signatures may differ slightly by
    aya version.
 3. **The filename read** carries the same `struct filename` layout

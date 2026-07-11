@@ -177,11 +177,5 @@ process on the spot.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run (kernel ≥ 5.7, `bpf` in the LSM list): the
-Aya LSM API (`#[lsm(hook=…)]`, `Lsm::load(hook, &btf)`, `attach()`), the
-`LsmContext` argument indexing including the trailing return value at index
-3 for `socket_connect`, that returning `-1` actually fails `connect` with
-`EPERM`, and that a cgroup-v2 directory's inode equals the id from
-`bpf_get_current_cgroup_id()` (may need `name_to_handle_at` instead of
-`stat`).*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

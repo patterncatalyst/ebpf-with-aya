@@ -120,8 +120,5 @@ with eBPF.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Highest-risk: the `block_rq_issue` field offsets (verify vs. the format
-file — they've changed across kernels), `dev_t` decoding, and the
-observable-gauge API in opentelemetry 0.27. The first build and run are
-the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*
