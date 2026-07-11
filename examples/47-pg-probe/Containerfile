@@ -1,0 +1,18 @@
+# postgres:17 plus matching debug symbols, so uprobes can resolve the internal
+# functions exec_simple_query / ProcSleep. The stock image is stripped; the
+# Debian `dbgsym` package ships the split-debug (.debug) file that the server
+# binary's .gnu_debuglink points at.
+#
+# demo.sh extracts the server binary and this .debug file to host paths and
+# bind-mounts the binary back into the container — rootless podman otherwise
+# hides the container's binary from the host namespace where the (root) uprobe
+# loader runs. The .debug file, placed next to the host binary under the exact
+# .gnu_debuglink name, is what lets aya resolve the symbols.
+FROM docker.io/library/postgres:17
+RUN set -eux; \
+    . /etc/os-release; \
+    echo "deb http://deb.debian.org/debian-debug/ ${VERSION_CODENAME}-debug main" > /etc/apt/sources.list.d/debug.list; \
+    apt-get update; \
+    (apt-get install -y --no-install-recommends postgresql-17-dbgsym \
+      || apt-get install -y --no-install-recommends postgresql-17-dbg); \
+    rm -rf /var/lib/apt/lists/*
