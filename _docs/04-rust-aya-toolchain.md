@@ -18,7 +18,7 @@ all in place and prove them with a build in Chapter 6.
 
 {% include excalidraw.html
    file="workspace-build"
-   alt="The three-crate workspace: a common crate of shared types, an excluded ebpf crate compiled by build.rs (aya-build) into a BPF object, and a loader crate that embeds the object with include_bytes_aligned."
+   alt="The three-crate workspace: a common crate of shared types, an ebpf crate kept out of the default build (compiled instead by build.rs via aya-build into a BPF object), and a loader crate that embeds the object with include_bytes_aligned."
    caption="Figure 4.1 — the three-crate workspace and build flow" %}
 
 ## Why rustup, not `dnf install rust`
@@ -230,6 +230,30 @@ the two-crate workspace.
    ships the binary to the guest with the `deploy-to-target.sh` from
    Chapter 2. Use RustRover to edit and to run `cargo build`/`clippy`;
    use the terminal to deploy.
+
+### Remote development & step-debugging against the VM (RustRover)
+
+> **PLACEHOLDER — to be written.** Goal: configure RustRover (JetBrains) so
+> you can build against the toolchain and **step through the user-space loader
+> while it runs on the `ebpf-target` VM**, rather than only building locally and
+> tailing logs. Fill this section in with the concrete, verified steps.
+>
+> Points to cover when writing it up:
+> - **SSH remote target**: add the guest (`fedora@<vm-ip>`, key from Chapter 2)
+>   as a RustRover *Remote Development* / SSH configuration.
+> - **Where things run**: the loader (user space) runs on the guest under
+>   `sudo` — the debugger has to attach *there*, not on the laptop. The eBPF
+>   half runs in the kernel and is **not** step-debuggable this way (inspect it
+>   with `bpftool`/`bpftrace` instead — Chapter 5).
+> - **Debugger**: remote **gdb/lldb** attaching to the loader on the guest
+>   (`gdbserver` on the VM, or RustRover's remote debug run config); build with
+>   debug info (a `dev`/`debug` profile or `-C debuginfo=2`) so breakpoints in
+>   the loader resolve.
+> - **Deploy hook**: wire a RustRover run config to `scripts/lab/deploy-to-target.sh`
+>   so build → ship → run(-under-debugger) is one action.
+> - **Caveats**: `sudo` for the remote process; the deployed binary path on the
+>   guest; and that eBPF-side "stepping" means map/ring-buffer inspection, not
+>   source-line stepping.
 
 ## The eBPF tooling landscape
 

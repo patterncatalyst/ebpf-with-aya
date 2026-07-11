@@ -188,6 +188,42 @@ with a real Aya program — only the binary changes.
 > artifact" story that makes Aya's musl + CO-RE combination so
 > portable, and it's covered properly in Chapter 4.
 
+## Host-side gotchas that block the loop
+
+Three host-configuration issues can silently break provisioning or the
+telemetry path. They're environment, not code, so they're easy to miss:
+
+- **qemu can't read the VM disk (provisioning fails).** `provision-vm.sh`
+  stages the overlay disk under `~/.cache`, but on `qemu:///system` the
+  hypervisor runs as the `qemu` user (uid 107) and can't traverse a `0700`
+  home directory. If `virt-install` fails with
+  `Cannot access storage file … (as uid:107): Permission denied`, grant the
+  qemu user *search* on the path (not world-readable):
+  ```bash
+  sudo setfacl -m u:qemu:x "$HOME" "$HOME/.cache"
+  ```
+  (SELinux-enforcing hosts may also relabel; this lab host runs with SELinux
+  disabled.)
+
+- **Use the system libvirt, not the session one.** VMs and the `default`
+  network live on `qemu:///system`. If `virsh`/`virt-install` can't find the
+  `default` network, set `export LIBVIRT_DEFAULT_URI=qemu:///system` (and make
+  sure your user is in the `libvirt` group).
+
+- **The guest can't reach the host stack (no telemetry).** Every chapter's
+  binary exports OTLP to the host at the libvirt gateway (e.g.
+  `http://192.168.124.1:4318`). Two things must line up: the otel-lgtm stack
+  must **publish OTLP on the bridge IP**, not just `127.0.0.1` (see the
+  compose file in Chapter 3), and the host firewall must **allow the guest
+  subnet to reach those ports**. `virbr0` sits in firewalld's `libvirt` zone;
+  for a trusted disposable guest the simplest fix is:
+  ```bash
+  sudo firewall-cmd --permanent --zone=libvirt --set-target=ACCEPT && sudo firewall-cmd --reload
+  ```
+  Symptom when this is wrong: the loader runs fine on the guest but no metrics
+  appear in Grafana, and `curl http://192.168.124.1:4318/` from the guest is
+  refused.
+
 ## Add the second guest (for two-host chapters)
 
 Several networking chapters — `tcpconnlat`, `tcpstates`, the XDP load

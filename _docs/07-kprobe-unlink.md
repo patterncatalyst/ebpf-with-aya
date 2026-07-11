@@ -10,7 +10,7 @@ Chapter 6's tracepoint fired on a *stable* kernel trace event. A
 **kprobe** is more powerful and more dangerous: it attaches to (almost)
 any kernel function by name, at its entry, giving you the function's
 arguments. This chapter builds `unlinksnoop` — a kprobe on
-`do_unlinkat()`, the function behind `unlink()`/`unlinkat()` — that
+`vfs_unlink()`, the VFS-layer function behind `unlink()`/`unlinkat()` — that
 reports who deleted what. Along the way you meet ring buffers (the
 modern way to stream events to user space) and the reality that reading
 kernel struct fields is where eBPF gets version-sensitive.
@@ -29,11 +29,20 @@ kernel versions**. That trade-off — flexibility for stability — is the
 whole story of this chapter, and the reason Chapter 8 revisits the same
 target with `fentry`, which gets the best of both.
 
-We probe `do_unlinkat(int dfd, struct filename *name)`. It's a good
-first kprobe: it fires whenever anything deletes a file, the calling
-process context is easy to read, and its second argument is a pointer
-we can *try* to follow to the filename — a concrete lesson in reading
-kernel memory.
+We probe `vfs_unlink(struct mnt_idmap *, struct inode *dir, struct
+dentry *dentry, …)`. It's a good first kprobe: it fires whenever anything
+deletes a file, the calling process context is easy to read, and its
+`dentry` argument is a pointer we can *try* to follow to the filename — a
+concrete lesson in reading kernel memory.
+
+> This chapter first targeted `do_unlinkat()`, but newer kernels **inlined
+> that helper away** — it's gone from `kallsyms` and BTF, so the kprobe can
+> no longer attach to it. That's a live demonstration of the very fragility
+> described above, and exactly why we moved to `vfs_unlink`, the stable
+> VFS-layer function the standard tools (bcc, bpftrace) hook. The trade-off
+> for that stability: `vfs_unlink` hands you a `dentry`, not a `struct
+> filename *`, so the name now comes from `dentry->d_name.name` (a
+> version-specific struct offset — see the code).
 
 ## The kernel side
 

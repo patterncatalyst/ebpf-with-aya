@@ -8,7 +8,8 @@ duration: 30 minutes
 
 Chapter 7's kprobe told you an unlink was *attempted* and dredged the
 filename out of a raw pointer. This chapter attaches to the same
-function — `do_unlinkat` — with **fentry** and **fexit**, and gets two
+target — `vfs_unlink` (Chapter 7 explains why it isn't `do_unlinkat`
+anymore) — with **fentry** and **fexit**, and gets two
 things the kprobe couldn't: lower overhead with typed arguments, and
 the function's **return value**, so we can report whether each delete
 actually *succeeded*. The program, `fentrysnoop`, is the kprobe chapter
@@ -53,9 +54,9 @@ then look it up at exit and attach the return value. The bridge is a
 returns in both probes for the same call:
 
 ```text
-do_unlinkat ENTRY (fentry) ──> capture pid/uid/comm/filename
+vfs_unlink ENTRY (fentry) ──> capture pid/uid/comm/filename
                                store in INFLIGHT[pid_tgid]
-do_unlinkat RETURN (fexit) ──> look up INFLIGHT[pid_tgid]
+vfs_unlink RETURN (fexit) ──> look up INFLIGHT[pid_tgid]
                                attach return value
                                emit completed event, clear entry
 ```
