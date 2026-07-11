@@ -173,8 +173,5 @@ latency histograms with **`funclatency`**.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Highest-risk: cgroup-id resolution (varies by rootless/rootful), the
-UBI OpenJDK 25 + Quarkus 3.33 build, and `bpf_get_current_cgroup_id` /
-`Array::set` in aya 0.13.x. Re-provision the target VM for podman/crun.
-The first build and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

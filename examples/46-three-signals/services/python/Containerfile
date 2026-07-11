@@ -1,4 +1,6 @@
 FROM registry.access.redhat.com/ubi9/python-312
+# UBI python images run as uid 1001, which can't write to the system site-packages.
+USER 0
 WORKDIR /app
 COPY app.py .
 RUN pip install --no-cache-dir fastapi "uvicorn[standard]"

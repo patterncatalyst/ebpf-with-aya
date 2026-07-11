@@ -1,4 +1,6 @@
 FROM registry.access.redhat.com/ubi9/openjdk-21 AS build
+# openjdk build image runs as a non-root user that can't write to /app.
+USER 0
 WORKDIR /app
 COPY Server.java .
 RUN javac Server.java

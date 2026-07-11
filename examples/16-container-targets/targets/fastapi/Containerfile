@@ -1,6 +1,8 @@
 # Multi-stage, UBI-based FastAPI (Python 3.14) target.
 # builder: resolve deps into a venv; runtime: slim minimal image + venv.
 FROM registry.access.redhat.com/ubi9/python-314:latest AS builder
+# UBI python images run as uid 1001, which can't write to root-owned /opt.
+USER 0
 WORKDIR /build
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
