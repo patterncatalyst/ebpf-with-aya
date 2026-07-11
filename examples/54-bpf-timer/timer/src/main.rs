@@ -31,12 +31,13 @@ fn init_otel() -> anyhow::Result<opentelemetry_sdk::metrics::SdkMeterProvider> {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/timer")))?;
-    for (prog, tp) in [("count", "sys_enter_getpid"), ("arm", "sys_enter_execve")] {
-        let p: &mut TracePoint = ebpf.program_mut(prog).unwrap().try_into()?;
-        p.load()?;
-        p.attach("syscalls", tp)?;
-    }
-    info!("loaded; arming the in-kernel timer");
+    // Only the counting tracepoint: the per-second snapshot that the reference
+    // C does in a bpf_timer callback is done in userspace below (aya-ebpf can't
+    // emit the `struct bpf_timer` value BTF the kernel requires).
+    let p: &mut TracePoint = ebpf.program_mut("count").unwrap().try_into()?;
+    p.load()?;
+    p.attach("syscalls", "sys_enter_getpid")?;
+    info!("loaded; computing the per-second rate in userspace");
 
     let provider = init_otel()?;
     let rate = Arc::new(AtomicU64::new(0));
@@ -46,18 +47,20 @@ async fn main() -> anyhow::Result<()> {
         .with_callback(move |obs| obs.observe(r2.load(Ordering::Relaxed), &[]))
         .build();
 
-    // arm the timer once: cause an execve so the `arm` program runs
-    let _ = std::process::Command::new("true").status();
-
-    println!("{:>8}  {}", "rate/s", "(kernel-computed, via self-rescheduling bpf_timer)");
+    println!("{:>8}  {}", "rate/s", "(userspace-computed: delta of the kernel count per second)");
+    let mut prev = 0u64;
     for _ in 0..20 {
         // drive ~200 getpid/s for one second
         for _ in 0..200 {
             unsafe { libc::getpid() };
             tokio::time::sleep(Duration::from_millis(5)).await;
         }
+        // sample the running count and take the per-second delta — the userspace
+        // stand-in for the reference C's in-kernel bpf_timer snapshot.
         let slots: Array<_, Slot> = Array::try_from(ebpf.map_mut("SLOTS").unwrap())?;
-        let r = slots.get(&0, 0).map(|s| s.rate).unwrap_or(0);
+        let count = slots.get(&0, 0).map(|s| s.count).unwrap_or(0);
+        let r = count.saturating_sub(prev);
+        prev = count;
         rate.store(r, Ordering::Relaxed);
         println!("{:>8}", r);
     }

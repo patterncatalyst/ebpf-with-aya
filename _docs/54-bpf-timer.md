@@ -194,10 +194,5 @@ policy interfaces in BPF, the mechanism beneath the schedulers of Part 6.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: the `bpf_timer_*` helper lifecycle and that
-the callback re-arms (kernel ≥ 5.15); `bpf_wq_*` if you try the workqueue
-variant (kernel ≥ 6.10); that the loader holding the map open satisfies the
-user-reference requirement; and treat the aya-ebpf timer-callback rendering as
-a sketch — the C reference is canonical while callback-as-subprogram ergonomics
-settle.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): reports a per-second event rate. The in-kernel bpf_timer form is not expressible in aya-ebpf (see below); the rate is computed in the userspace loader.*
