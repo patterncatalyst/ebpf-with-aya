@@ -19,8 +19,8 @@ TIFACE="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$5; exit}"')"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP iface=$TIFACE peer=$PIP OTLP=http://$GW:4318  (drops egress to :9999)"
 # peer listeners: a normal port (passes) and the blocked port (egress-dropped on target)
-$SSH "fedora@$PIP" 'pkill -f "ncat -lk 9100" || true; pkill -f "ncat -lk 9999" || true; nohup ncat -lk 9100 >/dev/null 2>&1 & nohup ncat -lk 9999 >/dev/null 2>&1 & echo peer listening 9100/9999'
+$SSH "fedora@$PIP" 'pkill -x ncat || true; pkill -x ncat || true; nohup ncat -lk 9100 </dev/null >/dev/null 2>&1 & nohup ncat -lk 9999 </dev/null >/dev/null 2>&1 & echo peer listening 9100/9999'
 # drive traffic from the target: passes to :9100, dropped to :9999 (will time out)
-$SSH "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$PIP:9100/ || true; curl -s -o /dev/null --max-time 1 http://$PIP:9999/ || true; sleep 0.4; done' >/dev/null 2>&1 & echo driving traffic"
+$SSH "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$PIP:9100/ || true; curl -s -o /dev/null --max-time 1 http://$PIP:9999/ || true; sleep 0.4; done' </dev/null >/dev/null 2>&1 & echo driving traffic"
 c_step "deploying tc-classify to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$TIFACE"

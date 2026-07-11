@@ -18,9 +18,9 @@ TIFACE="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$5; exit}"')"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP iface=$TIFACE OTLP=http://$GW:4318  (captures TCP SYN/FIN/RST)"
 # target listener for the peer to connect to (each curl = one SYN + teardown)
-$SSH "fedora@$TIP" 'pkill -f "ncat -lk 8081" || true; nohup ncat -lk 8081 >/dev/null 2>&1 & echo target listening 8081'
+$SSH "fedora@$TIP" 'pkill -x ncat || true; nohup ncat -lk 8081 </dev/null >/dev/null 2>&1 & echo target listening 8081'
 if [ -n "$PIP" ]; then
-  $SSH "fedora@$PIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$TIP:8081/ || true; sleep 0.5; done' >/dev/null 2>&1 & echo opening connections from peer"
+  $SSH "fedora@$PIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$TIP:8081/ || true; sleep 0.5; done' </dev/null >/dev/null 2>&1 & echo opening connections from peer"
 fi
 c_step "deploying xdp-capture to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$TIFACE"

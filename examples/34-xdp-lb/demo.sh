@@ -19,9 +19,9 @@ TIFACE="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$5; exit}"')"
 GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP iface=$TIFACE peer=$PIP OTLP=http://$GW:4318  (VIP udp:8080 → 9001/9002/9003)"
 # three UDP backend listeners on the target, each tagged so you can see the split
-$SSH "fedora@$TIP" 'for p in 9001 9002 9003; do pkill -f "ncat -u -lk $p" || true; nohup ncat -u -lk $p >/tmp/backend-$p.log 2>&1 & done; echo backends listening'
+$SSH "fedora@$TIP" 'pkill -x ncat 2>/dev/null || true; for p in 9001 9002 9003; do nohup ncat -u -lk $p </dev/null >/tmp/backend-$p.log 2>&1 & done; echo backends listening'
 # fire UDP datagrams from the peer at the VIP
-$SSH "fedora@$PIP" "nohup bash -c 'for i in \$(seq 1 600); do echo req-\$i | ncat -u -w1 $TIP 8080; sleep 0.3; done' >/dev/null 2>&1 & echo sending UDP to VIP:8080"
+$SSH "fedora@$PIP" "nohup bash -c 'for i in \$(seq 1 600); do echo req-\$i | ncat -u -w1 $TIP 8080; sleep 0.3; done' </dev/null >/dev/null 2>&1 & echo sending UDP to VIP:8080"
 c_info "watch the split on the target: ssh fedora@$TIP 'tail -f /tmp/backend-90*.log'"
 c_step "deploying xdp-lb to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$TIFACE"

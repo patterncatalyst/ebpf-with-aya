@@ -17,8 +17,8 @@ GW="$(ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" 'ip route | awk "/de
 IFACE="$(ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" 'ip -o route get 1.1.1.1 | awk "{for(i=1;i<=NF;i++) if(\$i==\"dev\"){print \$(i+1);exit}}"')"
 c_info "target=$TIP iface=$IFACE  peer=$PIP  OTLP=http://$GW:4318"
 c_step "starting an HTTP server on the peer ($PEER:8000)"
-ssh -o StrictHostKeyChecking=accept-new "fedora@$PIP" 'pkill -f "python3 -m http.server" || true; nohup python3 -m http.server 8000 >/dev/null 2>&1 & echo serving'
+ssh -o StrictHostKeyChecking=accept-new "fedora@$PIP" 'pkill -x python3 || true; nohup python3 -m http.server 8000 </dev/null >/dev/null 2>&1 & echo serving'
 c_step "driving HTTP target→peer in the background"
-ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null http://$PIP:8000/ ; curl -s -o /dev/null -X POST http://$PIP:8000/submit ; sleep 0.3; done' >/dev/null 2>&1 & echo driving"
+ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null http://$PIP:8000/ ; curl -s -o /dev/null -X POST http://$PIP:8000/submit ; sleep 0.3; done' </dev/null >/dev/null 2>&1 & echo driving"
 c_step "deploying httpl7 to $VM on iface $IFACE (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- "$IFACE"

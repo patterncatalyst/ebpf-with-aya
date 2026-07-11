@@ -17,8 +17,8 @@ PIP="$("$LAB/vm-ip.sh" "$PEER" 2>/dev/null || true)"
 GW="$(ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" 'ip route | awk "/default/ {print \$3; exit}"')"
 c_info "target=$TIP  peer=$PIP  OTLP=http://$GW:4318"
 c_step "starting a listener on the peer ($PEER:8080)"
-ssh -o StrictHostKeyChecking=accept-new "fedora@$PIP" 'pkill -f "ncat -lk 8080" || true; nohup ncat -lk 8080 >/dev/null 2>&1 & echo listening'
+ssh -o StrictHostKeyChecking=accept-new "fedora@$PIP" 'pkill -x ncat || true; nohup ncat -lk 8080 </dev/null >/dev/null 2>&1 & echo listening'
 c_step "driving connects target→peer in the background"
-ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$PIP:8080/ || true; sleep 0.3; done' >/dev/null 2>&1 & echo driving"
+ssh -o StrictHostKeyChecking=accept-new "fedora@$TIP" "nohup bash -c 'for i in \$(seq 1 600); do curl -s -o /dev/null --max-time 1 http://$PIP:8080/ || true; sleep 0.3; done' </dev/null >/dev/null 2>&1 & echo driving"
 c_step "deploying tcpconnlat to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" --
