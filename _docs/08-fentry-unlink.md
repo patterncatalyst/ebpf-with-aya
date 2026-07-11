@@ -53,13 +53,10 @@ then look it up at exit and attach the return value. The bridge is a
 `HashMap` keyed by `pid_tgid` — the same value `bpf_get_current_pid_tgid()`
 returns in both probes for the same call:
 
-```text
-vfs_unlink ENTRY (fentry) ──> capture pid/uid/comm/filename
-                               store in INFLIGHT[pid_tgid]
-vfs_unlink RETURN (fexit) ──> look up INFLIGHT[pid_tgid]
-                               attach return value
-                               emit completed event, clear entry
-```
+{% include excalidraw.html
+   file="fentry-fexit-flow"
+   alt="Correlating two probes: an fentry program on vfs_unlink captures pid/uid/comm/filename at entry and stores it in an INFLIGHT HashMap keyed by pid_tgid; the paired fexit program looks that entry up at return, attaches the return value, emits the completed UnlinkEvent to a ring buffer, and clears the entry."
+   caption="Figure 8.1 — fentry captures arguments, fexit captures the return; a pid_tgid-keyed map bridges them" %}
 
 This correlate-two-probes pattern recurs constantly (it's exactly how
 latency tools like `runqlat` in Chapter 21 pair a start and end

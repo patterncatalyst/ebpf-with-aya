@@ -23,11 +23,6 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 ## What USDT is
 
-{% include excalidraw.html
-   file="usdt-uprobe"
-   alt="USDT probe mechanism: libjvm.so ships hotspot USDT probes described in .note.stapsdt; tools resolve a probe's offset and attach a plain uprobe there, here timing gc__begin to gc__end."
-   caption="Figure 20.1 — a USDT probe is a uprobe at a resolved offset" %}
-
 A **USDT** probe (User Statically-Defined Tracepoint) is a marker the
 *authors* of a binary placed at a specific point in their code — "a GC
 is starting here." At compile time it becomes a no-op instruction plus
@@ -68,6 +63,11 @@ There are no markers to attach to. This isn't a bug in our tool; it's the
 reality of the JDK you'll actually find on a box.
 
 ## The portable fallback: uprobe the collector itself
+
+{% include excalidraw.html
+   file="usdt-uprobe"
+   alt="Fedora's stock OpenJDK ships no hotspot USDT gc markers, so instead of a USDT probe we resolve G1CollectedHeap::do_collection_pause_at_safepoint from libjvm.so's unstripped .symtab and attach a uprobe at its entry (record start) plus a uretprobe at its return (pause = now − start)."
+   caption="Figure 20.1 — no USDT markers on a stock JDK, so uprobe the G1 collector from libjvm's symbol table" %}
 
 If the *marker* isn't there, uprobe the **function the marker would have
 sat in**. libjvm.so ships an unstripped `.symtab` (only the `.debug` is

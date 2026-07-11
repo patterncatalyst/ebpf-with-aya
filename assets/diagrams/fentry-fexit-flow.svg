@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
+<rect x="40" y="95" width="215" height="95" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="147.5" y="133.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">#[fentry] vfs_unlink</text>
+<text x="147.5" y="150.0" font-size="11.5" fill="#555555" text-anchor="middle">capture at ENTRY</text>
+<text x="147.5" y="165.0" font-size="11.5" fill="#555555" text-anchor="middle">pid / uid / comm / filename</text>
+<rect x="345" y="95" width="170" height="95" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+<text x="430.0" y="133.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">INFLIGHT</text>
+<text x="430.0" y="150.0" font-size="11.5" fill="#555555" text-anchor="middle">HashMap</text>
+<text x="430.0" y="165.0" font-size="11.5" fill="#555555" text-anchor="middle">key = pid_tgid</text>
+<rect x="605" y="95" width="230" height="95" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
+<text x="720.0" y="133.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">#[fexit] vfs_unlink</text>
+<text x="720.0" y="150.0" font-size="11.5" fill="#555555" text-anchor="middle">read return value</text>
+<text x="720.0" y="165.0" font-size="11.5" fill="#555555" text-anchor="middle">at RETURN</text>
+<rect x="605" y="235" width="230" height="75" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
+<text x="720.0" y="270.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">RingBuf → loader</text>
+<text x="720.0" y="287.5" font-size="11.5" fill="#555555" text-anchor="middle">emit completed UnlinkEvent</text>
+<path d="M255,142 L345,142" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="306.0" y="136.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">store</text>
+<text x="306.0" y="136.0" font-size="11" fill="#555" text-anchor="middle">store</text>
+<path d="M515,142 L605,142" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="566.0" y="136.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">lookup + clear</text>
+<text x="566.0" y="136.0" font-size="11" fill="#555" text-anchor="middle">lookup + clear</text>
+<path d="M720,190 L720,235" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
+<text x="760.0" y="206.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">submit</text>
+<text x="760.0" y="206.5" font-size="11" fill="#555" text-anchor="middle">submit</text>
+<text x="40" y="50" font-size="13" fill="#111111" text-anchor="start" font-weight="700">Correlate entry + return with a map keyed by pid_tgid</text>
+<text x="40" y="335" font-size="12" fill="#555" text-anchor="start">fentry sees the arguments; fexit sees the return value; INFLIGHT bridges the two halves of one call.</text>
+</svg>
