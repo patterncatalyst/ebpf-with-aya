@@ -106,24 +106,41 @@ function addBullets(slide, lines, opts = {}) {
   const w = opts.w ?? 12.09;
   const h = opts.h ?? 4.85;
   const fontSize = opts.fontSize ?? 17;
-  const indentSize = 8;
-  // pptxgenjs accepts an array of {text, options:{bullet}} objects
-  const items = lines.map((ln) => {
+  // pptxgenjs accepts an array of {text, options:{bullet}} objects. Items may be
+  // strings, {text, options}, or {text, sub, options} — where `sub` renders as a
+  // muted, indented continuation line beneath the main bullet.
+  const items = [];
+  for (const ln of lines) {
     if (typeof ln === "string") {
-      return { text: ln, options: { bullet: { code: "25CF" }, paraSpaceAfter: 6, breakLine: true } };
+      items.push({ text: ln, options: { bullet: { code: "25CF" }, paraSpaceAfter: 6, breakLine: true } });
+      continue;
     }
-    // already a structured object; pass through with reasonable defaults
-    return {
+    const callerOpts = ln.options || {};
+    const bulletOff = callerOpts.bullet === false;
+    items.push({
       text: ln.text,
       options: {
-        bullet: ln.sub ? { indent: indentSize, code: "25E6" } : { code: "25CF" },
-        paraSpaceAfter: 4,
+        bullet: bulletOff ? false : { code: "25CF" },
+        paraSpaceAfter: ln.sub ? 2 : 6,
         breakLine: true,
-        indentLevel: ln.sub ? 1 : 0,
-        ...(ln.options || {}),
+        indentLevel: 0,
+        ...callerOpts,
       },
-    };
-  });
+    });
+    if (ln.sub) {
+      items.push({
+        text: ln.sub,
+        options: {
+          bullet: false,
+          indentLevel: 1,
+          breakLine: true,
+          paraSpaceAfter: 6,
+          fontSize: Math.max(11, fontSize - 3),
+          color: COLOR.caption,
+        },
+      });
+    }
+  }
   slide.addText(items, {
     x, y, w, h,
     fontFace: FONT.body, fontSize, color: COLOR.body,

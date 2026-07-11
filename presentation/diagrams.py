@@ -118,7 +118,135 @@ def lgtm_pipeline():
     s.write()
 
 
+# ---- 201: advanced ------------------------------------------------------------
+def btf_core():
+    s = Scene("btf-core", 1260, 560,
+              title="CO-RE: compile once, run on many kernels",
+              subtitle="BTF describes each kernel's types; relocations rewrite field offsets at load.")
+    s.box(70, 170, 250, 110, "Your program", ["reads task->pid", "compiled once"], kind="rest")
+    s.box(400, 150, 240, 90, "BTF (build)", ["types you compiled", "against — vmlinux"], kind="govern")
+    s.box(400, 300, 240, 90, "BTF (target)", ["the running kernel's", "actual layout"], kind="platform")
+    s.box(760, 220, 230, 110, "Loader relocates", ["field offsets fixed", "up at load time", "no recompile"], kind="svc")
+    s.box(1050, 220, 150, 110, "Runs", ["portable", "one binary"], kind="data")
+    s.arrow(320, 225, 400, 200, kind="neutral")
+    s.arrow(640, 200, 760, 255, kind="govern")
+    s.arrow(640, 340, 760, 290, kind="platform")
+    s.arrow(990, 275, 1050, 275, kind="svc")
+    s.panel(70, 420, 1130, 60)
+    s.label(92, 455, "Without CO-RE a struct-offset change between kernels breaks the program; with it, the loader patches offsets.", size=13)
+    s.write()
+
+
+def container_uprobe():
+    s = Scene("container-uprobe", 1280, 600,
+              title="Uprobing a binary inside a rootless container",
+              subtitle="The container hides the file; the symbols are split out. Two problems, two fixes.")
+    s.box(70, 150, 250, 100, "App in container", ["rootless podman", "stripped binary"], kind="data")
+    s.box(70, 320, 250, 100, "dbgsym package", [".debug (symbols)", "split via debuglink"], kind="govern")
+    s.box(470, 150, 260, 100, "Extract + merge", ["eu-unstrip:", ".debug -> binary"], kind="svc")
+    s.box(470, 320, 260, 100, "Bind-mount copy", ["host-visible inode", "the container runs"], kind="platform")
+    s.box(880, 230, 240, 120, "uprobe attaches", ["symbol in .symtab", "with real offsets", "aya resolves it"], kind="rest")
+    s.arrow(320, 200, 470, 200, kind="neutral")
+    s.arrow(320, 370, 470, 370, kind="neutral")
+    s.arrow(730, 210, 880, 270, kind="svc")
+    s.arrow(730, 360, 880, 310, kind="platform")
+    s.panel(70, 470, 1140, 90)
+    s.label(92, 500, "Rootless podman keeps the container's binary out of the host namespace, so the (root) loader can't see it —", size=13)
+    s.label(92, 522, "bind-mount a host copy in. And a split-debug .debug has a NOBITS .text, so merge it back with eu-unstrip", size=13)
+    s.label(92, 544, "(the Postgres and nginx chapters). Then the symbol resolves with a real file offset.", size=13)
+    s.write()
+
+
+def lsm_decision():
+    s = Scene("lsm-decision", 1220, 540,
+              title="LSM programs: allow or deny, in-kernel",
+              subtitle="An eBPF program at a Linux Security Module hook returns the verdict.")
+    s.box(80, 200, 230, 100, "Operation", ["exec, open, kill,", "connect …"], kind="svc")
+    s.box(420, 190, 240, 120, "LSM hook", ["bprm_check_security", "file_open, task_kill", "your eBPF runs here"], kind="govern")
+    s.box(780, 120, 220, 90, "return 0", ["-> allow"], kind="platform")
+    s.box(780, 280, 220, 90, "return -EPERM", ["-> deny"], kind="danger")
+    s.arrow(310, 250, 420, 250, kind="svc")
+    s.arrow(660, 220, 780, 165, kind="platform")
+    s.arrow(660, 280, 780, 320, kind="danger")
+    s.panel(80, 420, 920, 60)
+    s.label(102, 455, "Unlike tracing, an LSM program's return value is a decision — this is enforcement, not just observation.", size=13)
+    s.write()
+
+
+def frontier():
+    s = Scene("frontier", 1280, 600,
+              title="The frontier: program types beyond tracing & networking",
+              subtitle="Where eBPF stops observing and starts implementing kernel behavior.")
+    s.box(70, 150, 270, 110, "struct_ops", ["implement a kernel", "vtable in BPF", "e.g. TCP congestion"], kind="rest")
+    s.box(370, 150, 270, 110, "sched_ext", ["a whole CPU", "scheduler in BPF", "swap it at runtime"], kind="svc")
+    s.box(670, 150, 270, 110, "kfuncs", ["call kernel functions", "the kernel exports", "typed, allow-listed"], kind="platform")
+    s.box(970, 150, 240, 110, "bpf_timer", ["kernel-side timers", "callbacks without", "user space"], kind="govern")
+    s.box(220, 320, 270, 110, "user_ringbuf", ["user -> kernel queue", "dynptr callbacks"], kind="data")
+    s.box(520, 320, 270, 110, "BPF iterators", ["walk kernel objects", "cat a process table"], kind="platform")
+    s.box(820, 320, 270, 110, "syscall progs", ["light skeletons,", "loader programs"], kind="svc")
+    s.panel(70, 470, 1140, 70)
+    s.label(92, 500, "Several of these are where Aya's kernel-side authoring is still emerging in 2026 — the reference", size=13)
+    s.label(92, 522, "implementations are C, loaded with bpftool, with an Aya observer alongside. We flag each honestly.", size=13)
+    s.write()
+
+
+def aya_c_boundary():
+    s = Scene("aya-c-boundary", 1240, 560,
+              title="Where Aya is all-Rust — and where C still leads",
+              subtitle="An honest map of the 2026 boundary.")
+    s.panel(70, 140, 540, 340, fill=PALETTE["panel"])
+    s.label(96, 172, "All-Rust, today", size=15, weight="bold", color=PALETTE["platform"])
+    s.box(96, 200, 490, 60, "Tracing", ["tracepoint, kprobe, fentry/fexit, uprobe"], kind="platform")
+    s.box(96, 275, 490, 60, "Networking", ["XDP, tc/tcx, socket ops"], kind="platform")
+    s.box(96, 350, 490, 60, "Security + maps + perf", ["LSM, all map types, ring buffers, perf events"], kind="platform")
+    s.panel(650, 140, 520, 340, fill=PALETTE["panel"])
+    s.label(676, 172, "C reference still leads", size=15, weight="bold", color=PALETTE["govern"])
+    s.box(676, 200, 470, 60, "struct_ops / sched_ext", ["kernel vtables + schedulers — C + bpftool/scx"], kind="govern")
+    s.box(676, 275, 470, 60, "BPF iterators / arena", ["emerging aya authoring; C is canonical"], kind="govern")
+    s.box(676, 350, 470, 60, "kfunc call relocations", ["aya-ebpf can't emit them yet — documented"], kind="govern")
+    s.write()
+
+
+def correlation():
+    s = Scene("correlation", 1280, 560,
+              title="Correlating kernel events with distributed traces",
+              subtitle="The traceparent flows through the app; eBPF ties kernel spans to it.")
+    s.box(70, 170, 220, 100, "Service A", ["starts a trace", "W3C traceparent"], kind="svc")
+    s.box(380, 170, 220, 100, "Service B", ["propagates it", "HTTP header"], kind="svc")
+    s.box(690, 170, 240, 100, "eBPF probes", ["see the syscall/query", "tag with trace id"], kind="rest")
+    s.box(1010, 170, 200, 100, "Tempo", ["one trace,", "kernel + app spans"], kind="data")
+    s.arrow(290, 220, 380, 220, kind="svc", label="traceparent")
+    s.arrow(600, 220, 690, 220, kind="neutral")
+    s.arrow(930, 220, 1010, 220, kind="data")
+    s.panel(70, 360, 1140, 80)
+    s.label(92, 390, "The three signals — metrics (Mimir), logs (Loki), traces (Tempo) — join on the trace id, so a slow", size=13)
+    s.label(92, 412, "request in Grafana links to the exact kernel-level latency eBPF measured underneath it.", size=13)
+    s.write()
+
+
+def verifier_detail():
+    s = Scene("verifier-detail", 1240, 560,
+              title="Inside the verifier: why it accepts or rejects",
+              subtitle="Abstract interpretation over every path, with a complexity budget.")
+    s.box(70, 160, 240, 110, "Load request", ["bytecode +", "map fds + BTF"], kind="svc")
+    s.box(400, 120, 240, 90, "Walk every path", ["track each register", "as a value range"], kind="govern")
+    s.box(400, 250, 240, 90, "Prune equivalents", ["state pruning keeps", "it from exploding"], kind="govern")
+    s.box(740, 160, 240, 110, "Checks", ["bounds on memory", "bounded loops", "no leaks to user"], kind="rest")
+    s.box(1040, 120, 160, 80, "accept", ["-> JIT"], kind="platform")
+    s.box(1040, 250, 160, 80, "reject", ["clear error"], kind="danger")
+    s.arrow(310, 215, 400, 175, kind="neutral")
+    s.arrow(640, 175, 740, 200, kind="govern")
+    s.arrow(640, 295, 740, 240, kind="govern")
+    s.arrow(980, 190, 1040, 165, kind="platform")
+    s.arrow(980, 240, 1040, 280, kind="danger")
+    s.panel(70, 430, 1130, 60)
+    s.label(92, 465, "Big programs hit the instruction-analysis budget — which is why you split logic across tail calls or helpers.", size=13)
+    s.write()
+
+
 SCENES = [
     ebpf_model, aya_workspace, ebpf_maps, ebpf_hooks,
     ringbuf_stream, xdp_path, lgtm_pipeline,
+    btf_core, container_uprobe, lsm_decision, frontier,
+    aya_c_boundary, correlation, verifier_detail,
 ]
