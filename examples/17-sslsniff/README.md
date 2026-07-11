@@ -41,13 +41,13 @@ plaintext; `ebpf_events_total{program="sslsniff",dir=...}` in Grafana.
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk: `bpf_probe_read_user_buf` with a dynamic
-captured length (verifier bounds); attaching three programs to one lib;
-`SSL_read`/`SSL_write` symbol names/offsets in OpenSSL 3 on Fedora 44;
-and `ProbeContext::arg`/`RetProbeContext::ret` in aya 0.14.x. If the
-data read is rejected by the verifier, clamp `captured` to a constant
-power-of-two and mask the index. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: builds, loads, attaches all three programs to `libssl`, and runs
+as described, capturing plaintext at `SSL_write` entry and `SSL_read`
+return. The dynamic-length `bpf_probe_read_user_buf` read passes the
+verifier with the constant `DATA_CAP` clamp. `SSL_read`/`SSL_write`
+symbol names/offsets are OpenSSL-3-on-Fedora-44 specific, and attach
+targets and struct offsets can be kernel-version-specific.
 
 *Ethics: this is a debugging/observability tool for systems you operate.
 Capturing other people's plaintext is exactly as sensitive as it

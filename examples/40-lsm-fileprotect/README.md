@@ -39,8 +39,10 @@ sudo sh -c 'echo x >> /tmp/ebpf-protected'   # denied even as root
 
 ## Verification status
 
-**Unverified** — kernel ≥ 5.7 with `bpf` LSM active. Confirm: the
-`inode_permission` `LsmContext` arg indexing (inode @0, mask @1, ret @2), the
-`MAY_WRITE` value, the **`i_ino` offset in `struct inode`** for the running
-kernel, and that `-1` refuses writes with `EPERM` even for root while reads
-succeed.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (kernel 7.1.3-200.fc44, which satisfies the kernel ≥ 5.7 + `bpf` LSM
+requirement): builds, loads, attaches, and runs as described — writes to the
+protected inode are refused with `EPERM` even for root while reads succeed. The
+hard-coded **`i_ino` offset in `struct inode`** and the `inode_permission` arg
+indexing are kernel-version-specific; confirm them against your kernel (CO-RE
+in Part 9 computes the offset at load time).

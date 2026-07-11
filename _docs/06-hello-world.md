@@ -202,9 +202,8 @@ the `aya-build` `build.rs` approach used here, and the
 
 Then record the result — pass or the fix you needed — in the
 reconciliation plan. This is the test-on-real-hardware loop the whole
-project is built around, and it's how this chapter graduates from
-<span class="status status--unverified">unverified</span> to
-<span class="status status--verified">verified (Fedora 44)</span>.
+project is built around — the same loop that promoted this chapter to
+<span class="status status--verified">verified (Fedora 44, kernel 7.1.3)</span>.
 
 ## End of Foundations
 

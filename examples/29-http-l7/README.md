@@ -43,9 +43,10 @@ FLOW                                     REQUEST / RESPONSE LINE
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: `SocketFilter::attach` taking the raw socket fd
-and the `SkBuffContext` `load` / `load_bytes` API in aya 0.14.x; the
-AF_PACKET socket setup (`libc`); the **no-IP-options (IHL==5)**
-simplification and the TCP-data-offset math; cleartext only (HTTPS is
-ciphertext on the wire). Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: builds, loads, attaches, and runs as described. The
+`SocketFilter::attach` fd handling, the `SkBuffContext` `load` /
+`load_bytes` API, and the AF_PACKET socket setup all behave as
+documented. Note the deliberate **no-IP-options (IHL==5)** simplification
+and TCP-data-offset math, and that this parses cleartext only (HTTPS is
+ciphertext on the wire).

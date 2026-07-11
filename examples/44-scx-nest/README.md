@@ -38,7 +38,9 @@ sudo pkill -x scx_nest                  # revert to the default scheduler
 
 ## Verification status
 
-**Unverified** — kernel ≥ 6.12. Confirm `scx-scheds` provides `scx_nest` and
-it activates, the `sched_switch` `prev_pid` offset (24) and `prev_pid == 0`
-as idle, and that under moderate load the per-CPU busy series (and `mpstat`)
-show concentration on a few cores.
+**Verified — Fedora 44, kernel 7.1.3.** `sched_ext` needs kernel ≥ 6.12,
+which 7.1.3-200.fc44 satisfies. Built on the host and run on the lab VM:
+`scx_nest` activates, the probe builds, loads, and attaches on
+`sched:sched_switch`, and the per-CPU busy series (and `mpstat`) show work
+concentrating on a few cores as described. The `sched_switch` `prev_pid`
+offset (24) and struct offsets can be kernel-version-specific.

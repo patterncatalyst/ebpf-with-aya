@@ -33,8 +33,8 @@ bpftrace = fast exploration/validation (no compile/deploy). Aya = production
 
 ## Verification status
 
-**Unverified.** Confirm `bpftrace -f json` NDJSON shapes for your version
-(`bpftrace --version`); that each program attaches (`bpftrace -l`); and that
-`python3` + `bpftrace` are present on the VM. Tracepoint arg names
-(`args.filename`, `args.next_pid`, `args.sig`) can vary by kernel — adjust if a
-program won't attach.
+**Verified — Fedora 44, kernel 7.1.3.** Run on the lab VM (Fedora 44, kernel
+7.1.3-200.fc44): `bpftrace` and `python3` are present, the wrapper parses the
+`-f json` NDJSON stream, and the bundled programs attach and run as described.
+Tracepoint arg names (`args.filename`, `args.next_pid`, `args.sig`) can vary by
+kernel — adjust if a program won't attach on a different version.

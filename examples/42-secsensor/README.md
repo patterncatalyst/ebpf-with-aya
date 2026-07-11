@@ -32,7 +32,9 @@ id; sudo -u nobody id                          # exec + setuid events
 
 ## Verification status
 
-**Unverified** — confirm the tracepoint names (`sys_enter_execve`,
-`sys_enter_ptrace`, `sys_enter_setuid`; a kernel may expose `setreuid`/
-`setresuid` instead), `RingBuf` shared across three programs, and that the
-classified counts track the exercised operations.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM: the three tracepoints (`sys_enter_execve`, `sys_enter_ptrace`,
+`sys_enter_setuid`) load and attach, share one `RingBuf`, and the loader
+classifies and exports the exercised operations as described. Tracepoint
+names and struct offsets can be kernel-version-specific — a kernel may expose
+`setreuid`/`setresuid` instead of `setuid`.

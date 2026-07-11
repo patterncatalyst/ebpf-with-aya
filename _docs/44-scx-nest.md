@@ -15,7 +15,7 @@ scaling: a core that's been busy runs at turbo with hot caches, while five
 lightly-loaded cores all idle down to low frequency. For many workloads,
 three busy cores beat eight sleepy ones. This chapter explains that policy,
 shows how dispatch-queue and CPU-selection choices express it, and — keeping
-the honest pattern from Chapter 43 — runs the real `scx_nest` and makes its
+the faithful pattern from Chapter 43 — runs the real `scx_nest` and makes its
 behavior *visible* with an Aya probe.
 
 The code and runbook are in `examples/44-scx-nest/`. `./demo.sh` there runs

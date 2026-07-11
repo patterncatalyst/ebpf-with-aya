@@ -30,13 +30,19 @@ assistant must not self-promote.
 - `unverified` — taken from sources/docs, not yet run here.
 - `out of scope` — deliberately not verified this iteration.
 
-> **r1.0 honesty note.** This iteration delivers the *lab that
-> verification will run against*, so **nothing is verified yet** — there
-> was no Fedora 44 target available while authoring. Every row below is
-> `unverified`. The first real-hardware pass (r1.1) is expected to
-> surface concrete fixes, especially in the Aya build wiring (Chapter 6)
-> and the exact Fedora Cloud image filename (Chapter 2). That is the
-> process working as intended, not a defect.
+> **Status (superseded — current truth is the snapshot below).** The
+> real-hardware pass is **done**: the corpus was built and run end-to-end on
+> the KVM lab (Fedora 44, **kernel 7.1.3**), and every chapter with a runnable
+> demo is now `verified`. See the **"Status snapshot — VM smoke campaign"**
+> section immediately below for the authoritative current state (including the
+> genuinely-broken examples that were fixed and the one hardware skip). The
+> detailed per-row entries and changelog further down are the **historical
+> authoring ledger** — kept as a record of how each claim was tracked from
+> `unverified` to `verified`, not a live to-do list.
+>
+> *Original r1.0 note (historical): "This iteration delivers the lab that
+> verification will run against, so nothing is verified yet — there was no
+> Fedora 44 target available while authoring." That is no longer the case.*
 
 ## Status snapshot — VM smoke campaign (2026-07-11, through r65)
 
@@ -319,9 +325,10 @@ Later chapters' rows are added as each iteration drafts them (see the
   `scripts/lib/_helpers.sh` + `test-all-examples.sh`;
   `examples/03-observability-stack/` (otel-lgtm + Python 3.14 client);
   `examples/06-hello-world/` (Aya workspace + deploy).
-- **Verified:** nothing — see the r1.0 honesty note above. No Fedora 44
-  target was available at authoring; all code is written to current
-  conventions but unrun.
+- **Verified:** *(historical ledger entry — superseded by the status snapshot
+  at the top; these examples are now verified on Fedora 44 / kernel 7.1.3.)*
+  At authoring no Fedora 44 target was available; all code was written to
+  current conventions but unrun.
 - **Known risks to check first on real hardware:** (1) the Aya
   `build.rs`/`aya-build` wiring in Chapter 6 vs. whatever the current
   `aya-template` generates; (2) the exact Fedora 44 Cloud Base image
@@ -613,7 +620,7 @@ Later chapters' rows are added as each iteration drafts them (see the
 - **Known risks to check first:** (1) sched_switch offsets; (2) RAPL
   absence on KVM guests (fallback model exercised); (3) observable-gauge
   API in otel 0.27; (4) the model is an estimate by construction.
-- **Honesty note:** chapter is explicit that RAPL/vPMU are usually NOT
+- **Scope note:** chapter is explicit that RAPL/vPMU are usually NOT
   exposed in VMs, so absolute watts are modeled on the lab VM while the
   attribution (shares) stays correct; bare metal gives real RAPL. This
   mirrors Kepler's cloud accommodation. Hardware-counter accuracy upgrade

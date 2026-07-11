@@ -36,9 +36,10 @@ bpftool net show          # names the XDP program bound to the interface
 
 ## Verification status
 
-**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
-0.0.7 but not yet run on Fedora 44. Confirm: that `virtio-net` accepts
-native `XdpFlags::default()` (else the `SKB_MODE` fallback attaches), the
-`XdpContext::data`/`data_end` signatures and that `ptr_at` satisfies the
-verifier, the `network-types` field names, and that `ping` to the target
-stops while attached and resumes after detach.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (kernel 7.1.3-200.fc44): builds, loads, attaches to the target's
+interface, and runs as described — `ptr_at` satisfies the verifier and
+`ping` to the target stops while attached and resumes after detach. On
+`virtio-net` the attach uses the `SKB_MODE` (generic XDP) fallback rather
+than native driver XDP. Attach targets, struct offsets, and native-XDP
+support can be kernel- and driver-version-specific.

@@ -39,17 +39,10 @@ A `PID UID COMM CMDLINE` table fills in;
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk items on real hardware:
-
-1. **The argv loop.** Reading an array of user pointers in a
-   verifier-acceptable bounded loop is the part most likely to need
-   adjustment — if the verifier rejects it, compare against the Aya
-   examples repo's execsnoop and adjust the bound/masking. `MAX_ARGS=8`,
-   `ARG_LEN=64` keep it conservative.
-2. `bpf_probe_read_user` (single value) and `bpf_probe_read_user_str_bytes`
-   API/signatures in aya 0.14.x.
-3. `sys_enter_execve` offsets (filename@16, argv@24).
-4. Event size (~800 B) written into the ring slot — confirm `reserve`
-   handles it.
-
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches, and
+runs as described. The argv loop passes the verifier, the `bpf_probe_read_user`
+/ `bpf_probe_read_user_str_bytes` readers work as written, and the ~800-byte
+event reserves and fills correctly. Attach targets, the `sys_enter_execve`
+struct offsets, and the verifier-acceptable form of the argv loop can be
+kernel- and aya-version-specific.

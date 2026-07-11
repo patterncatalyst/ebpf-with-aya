@@ -45,8 +45,10 @@ sudo tcpdump -ni enp1s0 udp port 9001        # client sent to :8080, arriving on
 
 ## Verification status
 
-**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
-0.0.7, not yet run on Fedora 44. Confirm: `ptr_at_mut` writes passing the
-verifier, that zeroing the IPv4 UDP checksum is accepted end-to-end, the
-`Array` `get`/`get_ptr_mut`/`set` API both sides, `XdpFlags` native vs
-`SKB_MODE` on `virtio-net`, and a roughly even split across backends.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (Fedora 44, kernel 7.1.3-200.fc44): it builds, loads, attaches, and runs
+as described — `ptr_at_mut` writes pass the verifier, zeroing the IPv4 UDP
+checksum is accepted end-to-end, and datagrams the client sent to `8080`
+arrive rewritten across the backends. Attach targets, struct offsets, and
+`XdpFlags` native vs `SKB_MODE` on `virtio-net` can be kernel- and
+NIC-version-specific.

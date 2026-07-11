@@ -39,8 +39,10 @@ attach point.
 
 ## Verification status
 
-**Unverified** — needs kernel ≥ 6.6. Confirm the Aya tcx attach API
-(whether `SchedClassifier::attach` with `TcAttachType::Ingress` selects tcx
-and returns a link, or a distinct call/options are needed), that the link's
-lifetime governs detach, that `bpftool net show` reports `tcx/ingress`, and
-that no clsact qdisc is created.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches via
+`SchedClassifier::attach` with `TcAttachType::Ingress`, and runs as
+described — `bpftool net show` lists the program under `tcx/ingress` while
+`tc filter show` is empty and no clsact qdisc is created. The kernel ≥ 6.6
+requirement for tcx is satisfied by 7.1.3. Attach targets and struct
+offsets can be kernel-version-specific.

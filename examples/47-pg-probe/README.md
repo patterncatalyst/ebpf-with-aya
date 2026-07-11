@@ -44,7 +44,9 @@ SELECT pid, wait_event_type, wait_event, state FROM pg_stat_activity WHERE wait_
 
 ## Verification status
 
-**Unverified.** Confirm `exec_simple_query` / `ProcSleep` symbol presence, the
-`bpf_probe_read_user_str_bytes` helper and `arg(0)` query string, the
-`ProcSleep` signature across versions, and that the latency/lock-wait series
-track `pg_stat_statements` / `pg_stat_activity`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM:
+builds, loads, attaches the `exec_simple_query` / `ProcSleep` uprobe pairs, and
+runs as described, with the latency and lock-wait series tracking
+`pg_stat_statements` / `pg_stat_activity`. The uprobes require those symbols in
+the postgres binary's symbol table, and the `ProcSleep` signature and struct
+offsets can be kernel- and postgres-version-specific.

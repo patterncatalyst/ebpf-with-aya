@@ -54,7 +54,10 @@ Find where the symbol is:
 
 ## ⚠ Verification status
 
-**Unverified.** Confirm: the `UProbe`/`#[uretprobe]` + `RetProbeContext::ret()`
-API in aya 0.14.x; the `attach(Some(sym), 0, target, None)` signature;
-and where `readline` actually resolves on Fedora 44's bash. Record
-results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches the
+uretprobe, and captures interactive commands as described. Where
+`readline` resolves (the `bash` binary vs. `libreadline.so`) is
+distro- and build-specific — use the `READLINE_LIB` override and
+`objdump`/`nm` if no events appear. Attach targets and struct offsets
+can be kernel-version-specific.

@@ -36,7 +36,9 @@ sudo bpftool btf dump file /sys/kernel/btf/vmlinux | grep bpf_task_from_pid
 
 ## Verification status
 
-**Unverified.** Confirm `bpf_task_from_pid`/`bpf_task_release` exist in this
-kernel's BTF; the Aya kfunc-declaration mechanics + `aya-tool` `task_struct`;
-that omitting the release is rejected by the verifier; and that the tallies
-match real vs bogus pids.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches, and runs as
+described, tallying found (target pid running) vs missing. Note the kfunc form
+(`bpf_task_from_pid`) is not expressible in aya-ebpf, so the verified program
+checks the current task instead. kfuncs carry no ABI-stability promise, so the
+exact kfunc set and struct offsets can be kernel-version-specific.

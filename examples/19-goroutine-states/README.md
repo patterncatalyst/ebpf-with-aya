@@ -43,9 +43,11 @@ pressure — lots of `waiting` ↔ `runnable` churn means contention).
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk: the **Go register ABI** read (RCX for
-`newval`) and the `pt_regs` field name (`rcx`) in aya 0.14.x's bindings;
-the `runtime.casgstatus` symbol being present (Go embeds symbols by
-default, but `-ldflags=-s` strips them); and the goroutine state value
-mapping for your Go version. Confirm the register with the `bpftrace`
-`reg("cx")` line. Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches the
+uprobe on `runtime.casgstatus`, and streams goroutine state transitions
+as described. The **Go register ABI** read (RCX for `newval`), the
+`pt_regs` field name, and symbol presence were all exercised in this
+run. Attach targets, the goroutine state value mapping, and register
+offsets can be Go- and kernel-version-specific; confirm the register
+with the `bpftrace` `reg("cx")` cross-check.

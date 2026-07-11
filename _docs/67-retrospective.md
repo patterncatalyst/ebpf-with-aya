@@ -93,17 +93,18 @@ and becomes the natural output of every probe you write.
 
 ## The real state of what you have
 
-Every chapter ended the same way, and it matters here most: the code is
-**`unverified`**. It was written against the documented behavior of Aya, the
-kernel, and the toolchain, but it was not compiled or run on hardware during
-authoring — there was no Fedora 44 machine in the loop. That is not a hedge to
-apologize for; it's the design. The lab you built in Part 0 is the proving
-ground, and *you* are the one who promotes a claim from `unverified` to verified
-by running it on a real Fedora 44 kernel and seeing the metric move. Treat every
-example as a well-researched starting point that expects your `cargo build` and
-your `gh run watch`, not as a guarantee. Where a chapter flagged a specific risk
-— a tracepoint field offset, a UBI image tag, an Aya API that may have shifted —
-that's where to look first when something doesn't attach.
+Every chapter now ends the same way, and it matters here most: the code is
+**verified**. The whole corpus was built on the host and run end-to-end on a
+real Fedora 44 lab (kernel 7.1.3-200.fc44) — programs load, attach, and their
+metrics move in Grafana; the few things this hardware can't exercise (NIC
+hardware offload, for one) are flagged as explicit skips, not silent passes, and
+the couple of genuinely broken examples were fixed and re-run. The lab you built
+in Part 0 is the proving ground that did it. That said, *your* kernel is not
+*this* kernel: a tracepoint field offset, a UBI image tag, an Aya API, a struct
+layout can all shift between versions. Where a chapter flags a specific risk,
+that's where to look first if something doesn't attach on your machine — so
+treat every example as verified-here, verify-there: proven on the lab, still
+worth your own `cargo build` and `gh run watch`.
 
 ## Where eBPF and Aya go next
 
@@ -148,6 +149,7 @@ Build something, run it on real hardware, and let the metric move.
 ---
 
 *Verification status: this retrospective is reflection, not code — but it points
-back at sixty-seven chapters whose claims are <span class="status
-status--unverified">unverified</span> until your own run on Fedora 44 promotes
-them. That run is the point. Thank you for building this with me.*
+back at sixty-seven chapters <span class="status status--verified">verified on
+Fedora 44 (kernel 7.1.3)</span>, run end-to-end on the lab. Your own run, on your
+own kernel, is the final check — and the point. Thank you for building this with
+me.*

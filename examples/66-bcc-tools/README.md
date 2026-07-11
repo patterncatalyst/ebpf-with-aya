@@ -32,7 +32,9 @@ with the first three; ship with Aya.
 
 ## Verification status
 
-**Unverified.** Confirm `bcc-tools` installs under `/usr/share/bcc/tools/` and
-tools run (classic BCC needs `clang`, `llvm`, kernel headers matching `uname -r`);
-that `python3-bcc` is present for `hello_bcc.py`; and that column layouts match
-your tool versions (parsers fall back to raw output).
+**Verified — Fedora 44, kernel 7.1.3.** Run on the lab VM (Fedora 44, kernel
+7.1.3-200.fc44): `bcc-tools` installs under `/usr/share/bcc/tools/`, the tools
+resolve and run through the Python wrapper, and `hello_bcc.py` compiles and
+attaches via `python3-bcc`. Classic BCC needs `clang`, `llvm`, and kernel headers
+matching `uname -r`; column layouts and attach targets can be version-specific, so
+parsers fall back to raw output where a tool's format differs.

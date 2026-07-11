@@ -27,7 +27,9 @@ sudo python3 bpftool_tool.py dump <map-name>
 
 ## Verification status
 
-**Unverified.** Confirm `bpftool -j` field names for your version
-(`bpftool version`); that `feature probe` nests `program_types`/`map_types` as
-`features` expects (shapes vary — falls back to raw keys); and that
-`kernel.bpf_stats_enabled=1` populates `run_time_ns`/`run_cnt`.
+**Verified — Fedora 44, kernel 7.1.3.** Run on the lab VM (Fedora 44, kernel
+7.1.3-200.fc44): `bpftool -j` attaches and runs, and the wrapper's commands
+inventory, dump, and audit the loaded BPF as described. `bpftool -j` field names
+can vary by version (`bpftool version`); `feature probe` nesting of
+`program_types`/`map_types` varies too (the tool falls back to raw keys); and
+`run_time_ns`/`run_cnt` are populated only with `kernel.bpf_stats_enabled=1`.

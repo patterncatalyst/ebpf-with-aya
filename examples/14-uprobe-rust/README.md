@@ -51,11 +51,12 @@ and `ebpf_events_total{program="uprobe-rust"}` climbing in Grafana.
 
 ## ⚠ Verification status
 
-**Unverified.** Confirm: `ProbeContext::arg(0)` for a uprobe in aya
-0.14.x; the `attach(Some("compute"), 0, path, None)` signature; that
-`#[no_mangle] extern "C"` keeps the symbol attachable and `inline(never)`
-preserves the call site under `--release` + LTO (if LTO inlines it away,
-build the target-app without LTO or mark it `#[no_mangle]` only). A
-mangled Rust function would need the mangled symbol and Rust's calling
-convention — covered conceptually in the chapter. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): the snoop tool and
+`target-app` build, load, attach the uprobe to `compute`, and report the
+argument as described. The `#[no_mangle] extern "C"` entry point keeps
+the symbol attachable and `#[inline(never)]` preserves the call site;
+aggressive `--release` + LTO can still inline a call site away, so if you
+see no events, confirm the symbol with the `objdump` cross-check and
+rebuild the target-app without LTO. Attach targets and calling
+conventions can be kernel- and toolchain-version-specific.

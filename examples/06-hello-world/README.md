@@ -49,19 +49,13 @@ dashboard at http://127.0.0.1:3000/d/ebpf-overview.
 
 ## ⚠ Verification status
 
-**Unverified.** This code is written to current Aya conventions
-(`aya` 0.14.x, `aya-ebpf` 0.2.x) but has **not** been compiled or run
-in producing this iteration — there was no Fedora 44 target available
-at authoring time. Treat the first `cargo build` as the test:
-
-- If `build.rs`/`aya-build` wiring differs from your generated
-  `aya-template` (templates have churned between an `xtask` approach
-  and the `aya-build` approach), prefer the structure your
-  `cargo generate` produces and port this program's logic into it.
-- The OTLP exporter API (`opentelemetry` 0.27) moves between minor
-  versions; if it doesn't compile, check the crate docs for the
-  current `MetricExporter`/`PeriodicReader` builder names.
-
-Record the outcome in `_plans/reconciliation-plan.md`. The
-test-on-real-hardware loop is exactly how this program graduates from
-`unverified` to `verified (Fedora 44)`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on
+the lab VM (Fedora 44, kernel 7.1.3-200.fc44): the program builds,
+loads, attaches to `syscalls:sys_enter_execve`, and runs as described,
+with the per-CPU counter incrementing and `ebpf_events_total` reported
+to Grafana. Attach targets and struct offsets can be kernel-version
+specific, so re-check them if you build against a different kernel. If
+`build.rs`/`aya-build` wiring or the `opentelemetry` exporter API
+differs on your toolchain, prefer the structure your `cargo generate`
+produces and adjust the OTLP builder names to match your installed
+crate versions.

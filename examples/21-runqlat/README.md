@@ -43,9 +43,11 @@ The BCC tool prints the same distribution; bucket shapes should match.
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: the `sched_switch`/`sched_wakeup` field offsets
-(verify vs. the format files — `prev_pid`@24, `prev_state`@32,
-`next_pid`@56, wakeup `pid`@24); `Array::get_ptr_mut` in-kernel
-increment; the OTLP **observable gauge** callback API in opentelemetry
-0.27; and `TASK_RUNNING == 0` for the preemption check. Record results
-in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches the
+`sched_switch`/`sched_wakeup` tracepoints, and runs as described —
+aggregating the in-kernel histogram and exporting percentiles via the
+OTLP observable gauge. The `sched_switch`/`sched_wakeup` field offsets
+(`prev_pid`, `prev_state`, `next_pid`, wakeup `pid`) and the
+`TASK_RUNNING` preemption check are kernel-version-specific; confirmed
+against this kernel's tracepoint format files.

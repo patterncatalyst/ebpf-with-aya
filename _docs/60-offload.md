@@ -16,7 +16,7 @@ well ahead of what you can actually deploy, so this chapter is deliberately
 careful about what's real, what's niche, and what's still research.
 
 The code is in `examples/60-offload/`. `./demo.sh` attaches an XDP program,
-asks for hardware-offload mode, and reports honestly what the lab NIC supports;
+asks for hardware-offload mode, and reports plainly what the lab NIC supports;
 the `README.md` has the details.
 
 {% include excalidraw.html
@@ -52,7 +52,7 @@ reported throughput several times that of the same rules on the host CPU. The
 verifier is stricter for offloaded programs, because the program can only use
 the helpers and map types the NIC actually implements.
 
-The honest caveat: **this hardware is narrow and waning.** NFP (now under
+The candid caveat: **this hardware is narrow and waning.** NFP (now under
 Corigine) is essentially the one general eBPF-offload NIC lineage, and even
 prominent SmartNICs don't do it — NVIDIA's **BlueField-2**, for instance,
 supports XDP in *driver* mode but its offload is "not tested/supported." So if
@@ -128,7 +128,7 @@ which is the whole point of offload.
 ```
 
 `ip -d link show` reporting `xdpdrv` (not `xdpoffload`) on the lab NIC is the
-honest cross-check: the program loaded in native mode on the host CPU, because
+candid cross-check: the program loaded in native mode on the host CPU, because
 there's no offload engine to take it — exactly what the chapter predicts.
 
 ## What you learned

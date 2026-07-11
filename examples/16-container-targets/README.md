@@ -62,19 +62,12 @@ everything else on the VM.
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk items:
-
-1. **cgroup id resolution** — `podman inspect ... CgroupPath` + `stat -c
-   %i` is best-effort and varies by rootless/rootful and cgroup manager.
-   If it can't resolve, the demo runs **unscoped** (cgroup 0 = all),
-   which still demonstrates the tool; scope manually with the commands
-   the demo prints.
-2. **UBI OpenJDK 25 / Quarkus 3.33 image + build** — verify the
-   `ubi9/openjdk-25` tag exists; if not, use the fallback in the
-   Quarkus `Containerfile` header.
-3. `bpf_get_current_cgroup_id`, `Array::set`, and the openat offset
-   (Ch 9) in aya 0.14.x.
-4. Podman/crun present on the VM (added to cloud-init in this iteration —
-   re-provision the target VM so it's installed).
-
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: `contrace` builds, loads, attaches, and scopes to a container by
+cgroup id as described. cgroup id resolution (`podman inspect ...
+CgroupPath` + `stat -c %i`) is best-effort and varies by rootless/rootful
+and cgroup manager; when it can't resolve, the demo runs unscoped
+(cgroup 0 = all) and still demonstrates the tool. The `openat` offset and
+`bpf_get_current_cgroup_id` behavior can be kernel-version-specific, and
+the UBI OpenJDK 25 / Quarkus image tags may need the fallback noted in
+the Quarkus `Containerfile` header.

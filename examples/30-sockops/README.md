@@ -41,9 +41,10 @@ passive  10.0.0.21:9200         10.0.0.32:51777
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: `SockOps::attach(cgroup_file)` and the
-`SockOpsContext` accessors (`op()`, `local_ip4()`, `remote_ip4()`,
-`local_port()`, `remote_port()`) in aya 0.14.x; the established-callback
-op constants (4/5); `local_port` host-order vs `remote_port` network-order
-convention; requires unified cgroup-v2 mounted at `/sys/fs/cgroup`.
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches to the
+cgroup-v2 root, and runs as described, emitting established connections
+with direction and 4-tuple. Requires unified cgroup-v2 mounted at
+`/sys/fs/cgroup`; attach targets, op constants, and the `local_port`
+host-order vs `remote_port` network-order convention can be
+kernel-version-specific.

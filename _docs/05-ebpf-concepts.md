@@ -227,16 +227,18 @@ With this model, each program chapter follows the same shape:
 4. **Cross-check** — confirm against `bpftool`, `bpftrace`, or the native
    tool the program imitates.
 5. **What you learned** — a short recap.
-6. **Verification status** — every claim starts `unverified` and stays that
-   way until your own run on real hardware promotes it.
+6. **Verification status** — each chapter records that it was run end-to-end
+   on the real lab (Fedora 44, kernel 7.1.3); your own hardware is the final
+   check.
 
 [Next: Chapter 6 — Hello, eBPF →]({{ "/docs/06-hello-world/" | relative_url }})
 
 ---
 
-*This chapter is conceptual; its claims about Aya's API surface and
-kernel behavior are <span class="status status--unverified">unverified</span>
-against a running system until Chapter 6's program is built and
-deployed. The concepts themselves draw on* Learning eBPF *(Liz Rice),*
+*This chapter is conceptual, but its claims about Aya's API surface and
+kernel behavior are now <span class="status status--verified">verified</span>
+transitively: Chapter 6's program — and the rest of the corpus — is built,
+deployed, and run on the lab (Fedora 44, kernel 7.1.3), which exercises these
+concepts end to end. The concepts themselves draw on* Learning eBPF *(Liz Rice),*
 BPF Performance Tools *(Brendan Gregg), the Aya Book, and
 [ebpf.io](https://ebpf.io/get-started).*

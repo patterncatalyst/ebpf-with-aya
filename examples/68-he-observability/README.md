@@ -75,10 +75,11 @@ If a symbol is missing, the corresponding `attach(Some("..."), ...)` will fail.
 
 ## Status
 
-**Unverified** — written against the documented TFHE-rs and Aya APIs; not built
-or run on hardware. Things to confirm on a real Fedora 44 run: the `tfhe` crate
-version/features build (you may need arch-specific features), the `he_*` symbols
-are present (`nm`), the uprobe/uretprobe pairs attach, and the histogram
-populates per `op`. **License:** TFHE-rs is free for development, research, and
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(Fedora 44, kernel 7.1.3-200.fc44): the `tfhe` workload and Aya observer build,
+the `he_*` symbols are present, the uprobe/uretprobe pairs attach, and the
+per-`op` latency histogram populates as described. Attach points are symbol- and
+build-specific — release inlining can drop the boundaries — and struct offsets
+can be kernel-version-specific. **License:** TFHE-rs is free for development, research, and
 prototyping under Zama's BSD-3-Clause-Clear license; commercial use requires
 Zama's patent license.

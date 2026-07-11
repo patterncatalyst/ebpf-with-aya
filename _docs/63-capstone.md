@@ -71,7 +71,7 @@ service processes and emits `ebpf_capstone_*` metrics, giving the kernel-side
 truth (how many syscalls, how much data, how long on-CPU) that no application
 SDK can see.
 
-The crucial step is joining that view to the trace, and there are two honest
+The crucial step is joining that view to the trace, and there are two genuine
 ways, both built earlier in the book:
 
 - **Extract the trace_id at L7.** The `traceparent` travels in the HTTP request

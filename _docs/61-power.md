@@ -2,7 +2,7 @@
 title: "Power and efficiency: attributing energy with eBPF"
 order: 61
 part: Operating eBPF
-description: "The OS bills a process for CPU time, never for joules — so per-workload energy is invisible to ordinary tools. RAPL exposes socket-level energy, and eBPF supplies the missing piece: low-overhead per-workload CPU-time shares to divide that energy by. Learn the powercap interface, the attribution model and its honest limits, where Kepler and the field stand in 2026, and the cpufreq_ext frontier where eBPF starts to control power, not just measure it."
+description: "The OS bills a process for CPU time, never for joules — so per-workload energy is invisible to ordinary tools. RAPL exposes socket-level energy, and eBPF supplies the missing piece: low-overhead per-workload CPU-time shares to divide that energy by. Learn the powercap interface, the attribution model and its candid limits, where Kepler and the field stand in 2026, and the cpufreq_ext frontier where eBPF starts to control power, not just measure it."
 duration: 40 minutes
 ---
 
@@ -52,7 +52,7 @@ everything that follows:
   is a bare-metal thing; the lab can still do the *attribution*, just without the
   multiplier.
 
-## The attribution model — and its honest limits
+## The attribution model — and its candid limits
 
 RAPL gives a total; eBPF gives the shares; the estimate is a proportion:
 

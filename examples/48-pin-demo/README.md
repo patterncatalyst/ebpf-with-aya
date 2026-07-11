@@ -30,7 +30,8 @@ ls -l /sys/fs/bpf/ebpf-aya/
 
 ## Verification status
 
-**Unverified.** Confirm `/sys/fs/bpf` is mounted; the Aya pinning API
-(`HashMap::pinned` + `map_pin_path`, `take_link`, `FdLink::try_from`/`pin`,
-`MapData::from_pin`); that the program keeps counting after the loader exits;
-and that removing the pins detaches it.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches, and pins the
+link and map to bpffs; the program keeps counting execs after the loader exits,
+a fresh `read` process opens the pinned map, and `detach` removes the pins.
+Attach targets and struct offsets can be kernel-version-specific.

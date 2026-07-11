@@ -34,7 +34,9 @@ sudo bpftool map dump pinned /sys/fs/bpf/ebpf-aya/EVENTS   # value climbing afte
 
 ## Verification status
 
-**Unverified.** Confirm `map_pin_path` + `FdLink::pin` pin to bpffs; that the
-program keeps running and `EVENTS` keeps updating after the loader exits; that a
-second run reuses the pinned map and continues the count; treat `link_update`
-atomic-swap ergonomics in Aya as evolving.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM:
+`map_pin_path` + `FdLink::pin` pin to bpffs, the program keeps running and
+`EVENTS` keeps updating after the loader exits, and a second run reuses the
+pinned map and continues the count. Attach targets and struct offsets can be
+kernel-version-specific, and `link_update` atomic-swap ergonomics in Aya are
+still evolving.

@@ -32,7 +32,9 @@ sudo bpftool prog show                                      # loaded program (of
 
 ## Verification status
 
-**Unverified.** Confirm `/sys/kernel/btf/vmlinux` exists; that `aya-tool
-generate` produces bindings (needs `bpftool` + `bindgen`); that field reads
-resolve and the existence check branches; and that CO-RE relocation records
-appear in the object. Kernels without BTF need BTFHub/external BTF.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(kernel 7.1.3-200.fc44): builds, loads, attaches, and runs as described —
+`/sys/kernel/btf/vmlinux` is present, field reads resolve, the existence check
+branches, and CO-RE relocation records appear in the object. Attach targets and
+struct offsets can be kernel-version-specific, and kernels without BTF need
+BTFHub/external BTF.

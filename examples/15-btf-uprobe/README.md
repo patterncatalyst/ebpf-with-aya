@@ -59,11 +59,10 @@ That BTF dump is exactly the type information you'd use to generate the
 
 ## ⚠ Verification status
 
-**Unverified.** Confirm: `bpf_probe_read_user::<T>(ptr)` reading a whole
-struct in aya 0.14.x; `ProbeContext::arg(0)` yielding the pointer; that
-`#[inline(never)] #[no_mangle] extern "C"` keeps `process_order`
-attachable under release+LTO; and that `debug = true` leaves usable
-DWARF for `pahole -J`. Full user-space CO-RE relocation is newer and
-less turnkey than kernel CO-RE — the robust path shown here is the
-shared/generated `#[repr(C)]` mirror. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on
+the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches
+the uprobe on `process_order`, and reads the `Order` struct as
+described. Full user-space CO-RE relocation is newer and less turnkey
+than kernel CO-RE — the robust path shown here is the shared/generated
+`#[repr(C)]` mirror. Attach targets and struct offsets can be
+kernel- and compiler-version-specific.

@@ -112,7 +112,7 @@ terminal tool, so no Grafana panel; the output *is* the inventory.
 ```
 
 Running raw `bpftool -j prog show` and seeing the same ids your `progs` table
-lists is the cross-check that the wrapper is a thin, honest layer over the tool
+lists is the cross-check that the wrapper is a thin, faithful layer over the tool
 you already trust.
 
 ## What you learned

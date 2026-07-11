@@ -124,7 +124,7 @@ That wiring — trace→logs, trace→metrics, exemplars — is exactly what the
 observability stack's datasources were provisioned for back in Chapter 3;
 this is the chapter that finally exercises all of it.
 
-> **Honest note on the seams.** Minting the `trace_id` in the loader gives us
+> **Up-front note on the seams.** Minting the `trace_id` in the loader gives us
 > *intra-service* correlation (this request's span, log, and metric line up),
 > which is the teachable goal. It is **not** distributed tracing: we don't
 > read the caller's W3C `traceparent`, so kernel spans aren't children of an

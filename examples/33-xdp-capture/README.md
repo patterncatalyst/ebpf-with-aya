@@ -38,8 +38,9 @@ yours.
 
 ## Verification status
 
-**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
-0.0.7, not yet run on Fedora 44. Confirm: `RingBuf` inside `#[xdp]`, the
-`network-types` field names (`src_addr`/`dst_addr`/`tot_len`/`source`/`dest`),
-the flags byte at TCP offset 13, `ptr_at` passing the verifier, and that the
-captured lines match `tcpdump`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches, and runs as
+described — the `RingBuf` inside `#[xdp]` passes the verifier, the
+`network-types` field names resolve, and the SYN/FIN/RST filter (flags byte at
+TCP offset 13) captures matching packets. Attach targets and struct offsets can
+be kernel-version-specific.

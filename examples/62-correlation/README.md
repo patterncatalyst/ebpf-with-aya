@@ -33,7 +33,9 @@ correlating on **time + pid + service**. Chapter 63 does the full thing.
 
 ## Verification status
 
-**Unverified.** Confirm the FastAPI container exports OTLP to the Chapter 3
-stack; that the trace appears in Tempo (3200) and links to Loki logs; that the
-correlation data-source file provisions the exemplar/tracesToLogs/derivedFields
-links; and that a `traceparent` on `curl` yields one coherent trace.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(Fedora 44, kernel 7.1.3-200.fc44): the FastAPI container builds and runs,
+exports OTLP to the Chapter 3 stack, and a `traceparent` on `curl` yields one
+coherent trace that appears in Tempo and links to its Loki logs. The correlation
+data-source file provisions the exemplar/tracesToLogs/derivedFields links as
+described. Backend ports and OTLP wiring can be environment-specific.

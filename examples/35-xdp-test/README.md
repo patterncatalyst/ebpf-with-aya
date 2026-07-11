@@ -37,9 +37,9 @@ both confirms the harness.
 
 ## Verification status
 
-**Unverified** — the load-bearing detail is the test-run binding: whether
-the installed Aya exposes a `test_run` directly, or (as here) the
-`BPF_PROG_TEST_RUN` `bpf()` command must be issued via a syscall wrapper.
-Confirm the `bpf_attr` test layout, the syscall command number (10), and
-`prog.fd()`; that the kernel accepts a 14-byte L2 header as XDP test input;
-and that `PKTS` reflects the runs afterward.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): the harness builds, loads the
+program, issues `BPF_PROG_TEST_RUN` via the syscall wrapper, and asserts
+each case's verdict along with the `PKTS` map side-effect as described. The
+`bpf_attr` test layout, the syscall command number, and XDP test-input
+handling can be kernel-version-specific.

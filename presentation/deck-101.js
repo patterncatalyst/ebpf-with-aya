@@ -9,8 +9,8 @@ const {
   addStatusTable, addCaption, addCodeSlide, addDiagramSlide, addSectionDivider, addNotes,
 } = H;
 
-const OUT = "/home/rsedor/Dev/ebpf-with-aya/presentation/ebpf-aya-101-r01.0.pptx";
-const REV = "r01.0";
+const OUT = "/home/rsedor/Dev/ebpf-with-aya/presentation/ebpf-aya-101-r01.1.pptx";
+const REV = "r01.1";
 
 const pres = newDeck();
 let pageNum = 0;
@@ -436,7 +436,7 @@ divider("06", "The observability payoff", "Kernel events, exported like any othe
     ],
     { fontSize: 16 });
   addCaption(s, "Clone the repo, bring up the VM, and run demo.sh in any chapter — every example here is runnable and verified.");
-  addNotes(s, "Where do you go from here? Two directions, both in the 201. Deeper: we take the things I hand-waved today — the verifier, and CO-RE and BTF which make programs portable across kernels — and treat them properly; we go through the map types in real depth; and we tackle the genuinely hard version of uprobes, reaching into stripped binaries hidden inside containers, which is where production application tracing actually lives. And wider: security programs that make allow-or-deny decisions at LSM hooks, and the frontier — kfuncs, struct_ops, the sched_ext scheduler, BPF timers — plus an honest look at where Aya still hits limits compared to libbpf and what to do about it. The best next step, though, is hands-on: clone the repo, bring up the VM, and run demo.sh in any chapter. Every example in this course is runnable and was verified on real hardware. Thank you — let's take questions.");
+  addNotes(s, "Where do you go from here? Two directions, both in the 201. Deeper: we take the things I hand-waved today — the verifier, and CO-RE and BTF which make programs portable across kernels — and treat them properly; we go through the map types in real depth; and we tackle the genuinely hard version of uprobes, reaching into stripped binaries hidden inside containers, which is where production application tracing actually lives. And wider: security programs that make allow-or-deny decisions at LSM hooks, and the frontier — kfuncs, struct_ops, the sched_ext scheduler, BPF timers — plus a candid look at where Aya still hits limits compared to libbpf and what to do about it. The best next step, though, is hands-on: clone the repo, bring up the VM, and run demo.sh in any chapter. Every example in this course is runnable and was verified on real hardware. Thank you — let's take questions.");
 }
 
 pres.writeFile({ fileName: OUT })

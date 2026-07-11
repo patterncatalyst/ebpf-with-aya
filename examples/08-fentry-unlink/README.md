@@ -50,19 +50,11 @@ You'll see a `PID UID RET COMM FILE` table; the deliberate
 
 ## ⚠ Verification status
 
-**Unverified.** Written to current Aya conventions; not compiled/run at
-authoring. Highest-risk items to confirm on real hardware:
-
-1. **fexit return-value access.** We read it as `ctx.arg::<i64>(2)`
-   (return value follows the 2 function args). Confirm the
-   `FExitContext` API and index in your aya version.
-2. **`FEntry`/`FExit` load+attach API** — `program.load("vfs_unlink",
-   &btf)` then `attach()`. Names/signatures may differ slightly by
-   aya version.
-3. **The filename read** carries the same `struct filename` layout
-   caveat as Chapter 7.
-4. **Kernel support** — fentry/fexit need BTF and a recent kernel;
-   Fedora 44's stock kernel qualifies, but a locked-down kernel may
-   restrict it.
-
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches both
+the fentry and fexit programs cleanly, and runs as described. The fexit
+return-value read (`ctx.arg::<i64>(4)`, the return following `vfs_unlink`'s
+four args), the `FEntry`/`FExit` load+attach path, and the filename read
+all behaved as written. fentry/fexit require kernel BTF and a recent
+kernel — both satisfied here — and attach targets and struct offsets can
+be kernel-version-specific.

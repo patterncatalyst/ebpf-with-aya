@@ -12,7 +12,7 @@ even by root. We attach to the LSM hook that mediates inode access,
 `inode_permission`, and deny any write to one protected inode. It's a small
 program, but it introduces the skill the rest of the security and tracing
 worlds lean on — **reading a kernel struct field from inside a BPF program**
-— and shows honestly where that gets fragile and how Part 9's CO-RE fixes it.
+— and shows plainly where that gets fragile and how Part 9's CO-RE fixes it.
 
 The code is in `examples/40-lsm-fileprotect/`. `./demo.sh` there builds,
 deploys, and runs it; its `README.md` covers what it does and how to drive
@@ -92,7 +92,7 @@ Reading it the way you'd write it:
   (`-EPERM`); the write is refused with "Operation not permitted," even for
   root. Otherwise allow.
 
-The hard-coded `I_INO_OFFSET` is the honest weak point. It's correct only
+The hard-coded `I_INO_OFFSET` is the real weak point. It's correct only
 for a particular kernel build; on another kernel the program would read the
 wrong bytes and either protect nothing or the wrong file. That's precisely
 the portability problem **CO-RE** solves — the loader rewrites such offsets

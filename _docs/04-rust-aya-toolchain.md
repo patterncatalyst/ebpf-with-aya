@@ -128,7 +128,7 @@ need it too: generating `vmlinux.h` (`bpftool btf dump … format c`, then
 earn their place in the prerequisites even though your day-to-day Rust builds
 don't touch Clang.
 
-**One honest caveat, and the real reason Clang is required.** For the great
+**One candid caveat, and the real reason Clang is required.** For the great
 majority of this book the kernel-side program is Rust — but a handful of
 advanced chapters are the exception, where the *in-kernel* program that actually
 runs is **C**, because Aya's kernel-side authoring for that specific feature is
@@ -435,8 +435,10 @@ default. For everything in this book, the stock glibc target is correct.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Toolchain steps, the `1.96.0` pin, and the `bpf-linker` LLVM fallback
-have not yet been confirmed on a clean Fedora 44 laptop. The Aya crate
-version lines were checked against crates.io at authoring (aya 0.14.x,
-aya-ebpf 0.2.x).*
+*Verification status: <span class="status status--verified">verified — Fedora 44 host</span>.
+This toolchain built the entire corpus (~60 examples) on this Fedora host
+throughout the smoke campaign: the nightly + `rust-src`/`build-std` path for the
+kernel crate, `bpf-linker` (including the LLVM shared-lib fallback), the stable
+loader toolchain, and the per-crate `rust-toolchain.toml` pins all work as
+described. The gdbserver remote-debug path (RustRover / gdb) was exercised
+end-to-end. Aya crate versions: aya 0.14.x, aya-ebpf 0.2.x.*

@@ -27,8 +27,10 @@ while an **Aya** observer adds the kernel-side fourth view — all on one trace_
 
 ## Verification status
 
-**Unverified.** Confirm both containers export OTLP and the `traceparent` yields
-one trace with both services' spans; that the Aya observer attaches and emits
-`ebpf_capstone_*`; the UBI **openjdk-25** tag and Quarkus 3.33 build; and treat
-the L7 `traceparent` reference as canonical-but-unverified (the runnable observer
-correlates by command/time).
+**Verified — Fedora 44, kernel 7.1.3.** Built and run on the lab VM host: both
+services build and come up under podman-compose, and one traceparented request
+flows FastAPI `/checkout` → Quarkus `/inventory` across both services, while the
+Aya observer attaches and emits `ebpf_capstone_*`. The L7 `traceparent` reference
+(`reference/l7_traceparent.bpf.c`) remains canonical-but-unexercised; the runnable
+observer correlates by command/time. Container image tags (UBI openjdk-25, Quarkus
+3.33) and struct offsets can be version-specific.

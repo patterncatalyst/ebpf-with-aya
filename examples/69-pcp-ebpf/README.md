@@ -41,9 +41,10 @@ archive and replays it; and, if `PROM_URL` is set, drops a `pmdaopenmetrics`
 
 ## Status
 
-**Unverified** — written against PCP's documented behavior; not run on hardware.
-Confirm on Fedora 44: package names/versions (`pcp`, `pcp-pmda-bpf`,
-`pcp-pmda-bpftrace`, `pcp-pmda-openmetrics`, `grafana-pcp`); the `bpf.conf` module
-section names and `./Install` flow; that enabled modules show under `pminfo bpf`;
-and the OpenMetrics bridge against whichever Prometheus endpoint carries your
-`ebpf_*` metrics. Install only from Fedora repositories.
+**Verified — Fedora 44, kernel 7.1.3.** Installed and run on the lab VM: the PCP
+packages install, the BPF/bpftrace PMDAs register via `./Install`, enabled modules
+show up under `pminfo bpf`, and a short `pmlogger` archive records and replays as
+described; the `pmdaopenmetrics` `.url` bridge pulls an `ebpf_*` Prometheus endpoint
+into the `openmetrics.*` tree. Package names/versions, the `bpf.conf` module section
+names, and available `bpf.*` modules can be release- and kernel-specific. Install
+only from Fedora repositories.

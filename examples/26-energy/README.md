@@ -52,8 +52,12 @@ md5sum              39.1%       5.87
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: the `sched_switch` offsets (prev_comm@8,
-prev_pid@24); RAPL path/availability; the OTLP observable-gauge API in
-opentelemetry 0.27; and the attribution model's accuracy (it's an
-estimate by construction). Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: builds, loads, attaches the `sched_switch` tracepoint, and runs
+the power-by-process table as described. As expected on a KVM guest, RAPL
+(`/sys/class/powercap`) is not exposed, so the VM reports power via the
+flat `ENERGY_TDP_WATTS` model — the CPU-time-share *attribution* is
+verified, but absolute watts are modeled, not measured; run on bare metal
+for real RAPL energy. The `sched_switch` struct offsets (prev_comm@8,
+prev_pid@24) can be kernel-version-specific, and per-process energy is an
+estimate by construction.

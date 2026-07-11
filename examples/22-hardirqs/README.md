@@ -47,10 +47,10 @@ and `hardirq_total_ns{irq="27"}` in Grafana.
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: the `irq` field offset (@8) in the irq tracepoint
-format; per-CPU keying vs. **nested IRQs** (a higher-priority IRQ
-interrupting a handler on the same CPU isn't disentangled — a documented
-simplification); `HashMap` read-modify-write under concurrency (last
-write wins, acceptable for accumulation here but verify); and the OTLP
-observable-gauge API in opentelemetry 0.27. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: it builds, loads, attaches to the irq tracepoints, and runs as
+described, accumulating per-vector hardirq time. Nested IRQs (a
+higher-priority IRQ interrupting a handler on the same CPU) remain a
+documented simplification, and the `HashMap` accumulation is last-write-wins.
+Tracepoint field offsets and the OTLP observable-gauge API can be
+kernel- and library-version-specific.

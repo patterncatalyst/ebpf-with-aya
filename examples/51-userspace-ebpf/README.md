@@ -25,6 +25,7 @@ Expected: `interpreter=42 jit=42` (mem[0]=21, the helper doubles it).
 
 ## Verification status
 
-**Unverified.** Confirm the `rbpf` API against the current crate version, that
-interpreter and JIT agree, and note the JIT is x86-64 only. Runs on the host;
-nothing here touches the kernel or the lab VM.
+**Verified — Fedora 44, kernel 7.1.3.** Built and run on the host (no VM, no
+root): `cargo run --release` builds against the current `rbpf` API and the
+interpreter and JIT agree — `interpreter=42 jit=42`. Nothing here touches the
+kernel or the lab VM. The JIT path is x86-64 only.

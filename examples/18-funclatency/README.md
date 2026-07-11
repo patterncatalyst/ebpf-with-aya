@@ -54,8 +54,9 @@ event rate demands it.
 
 ## ⚠ Verification status
 
-**Unverified.** Confirm: `bpf_ktime_get_ns`, `#[uprobe]`/`#[uretprobe]`
-on the same symbol, and the entry/exit `HashMap` in aya 0.14.x; that
-`slow_op` stays attachable under release+LTO (`#[inline(never)]`); and
-`f64_histogram` in opentelemetry 0.27. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM: builds, loads, attaches the `#[uprobe]`/`#[uretprobe]` pair on
+`slow_op`, and runs as described, timing calls through the entry/exit
+`HashMap` and feeding durations into the `f64_histogram`. Attach targets
+and symbol visibility can be kernel- and build-specific (`slow_op` stays
+attachable under release+LTO via `#[inline(never)]`).

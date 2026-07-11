@@ -38,7 +38,10 @@ sudo pkill -x scx_simple                # revert to the default scheduler
 
 ## Verification status
 
-**Unverified** — kernel ≥ 6.12. Confirm: `scx-scheds` provides `scx_simple`
-and it activates (`/sys/kernel/sched_ext/state` → `enabled`), the
-`/sys/kernel/sched_ext/` paths, `bpftool struct_ops list`, and that the Aya
-`sched_switch` probe counts switches per CPU while it runs.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM: `scx-scheds` provides `scx_simple`, it activates
+(`/sys/kernel/sched_ext/state` → `enabled`) and registers via
+`bpftool struct_ops list`, and the Aya `sched_switch` probe loads, attaches,
+and counts context switches per CPU while it runs. `sched_ext` needs
+kernel ≥ 6.12, which 7.1.3 satisfies. Attach targets and struct offsets can be
+kernel-version-specific.

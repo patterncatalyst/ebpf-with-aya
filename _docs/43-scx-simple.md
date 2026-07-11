@@ -14,7 +14,7 @@ a set of BPF callbacks, and load it into a running kernel without a reboot.
 This is built on **`struct_ops`**, a BPF model where your program provides a
 *structure of function pointers* the kernel calls, and it's the foundation
 of the most modern BPF surface. This chapter teaches that model through the
-smallest real scheduler, `scx_simple`, and is honest about where the Rust
+smallest real scheduler, `scx_simple`, and is candid about where the Rust
 tooling currently stands.
 
 The code and runbook are in `examples/43-scx-simple/`. `./demo.sh` there
@@ -32,7 +32,7 @@ to watch it; its `README.md` covers the details.
 > (the upstream [`scx`](https://github.com/sched-ext/scx) project) and the
 > **user-space half in Rust** (the `scx_utils` / `libbpf` crates). Aya's
 > kernel-side `struct_ops` support is still maturing. So this chapter does
-> the honest thing: it teaches the model with `scx_simple`'s real C
+> the candid thing: it teaches the model with `scx_simple`'s real C
 > callbacks, runs the actual shipping scheduler, and uses your Aya tracing
 > skills to observe it — rather than pretending a from-scratch Aya scheduler
 > is a turnkey thing today.

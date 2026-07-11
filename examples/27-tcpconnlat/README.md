@@ -12,7 +12,7 @@ the first to probe the **kernel TCP stack**.
   for one connection — the kernel-side analogue of the pid_tgid key.
 - **Reading kernel struct fields by offset** (`skc_daddr`, `skc_dport`
   at the head of `sock_common`) with `bpf_probe_read_kernel` — and an
-  honest forward-reference to **CO-RE (Ch 56)** for making those offsets
+  candid forward-reference to **CO-RE (Ch 56)** for making those offsets
   portable.
 
 ## Two-VM lab
@@ -51,10 +51,11 @@ can watch jump under network stress.
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk: the `sock_common` field offsets
-(`skc_daddr`@0, `skc_dport`@12 — verify with `pahole`; CO-RE removes the
-guesswork, Ch 56); the assumption that the **first** `tcp_rcv_state_process`
-for a sk ≈ SYN-ACK (good enough for active connects; production checks the
-TCP state); `KProbe::attach` to these symbols in aya 0.14.x; IPv4 only
-(add `tcp_v6_connect` for v6). Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (two-VM setup, tcpconnlat on ebpf-target driving connects to a
+listener on ebpf-peer): builds, loads, attaches both kprobes, and runs as
+described. The `sock_common` field offsets (`skc_daddr`@0, `skc_dport`@12)
+and the `KProbe::attach` targets (`tcp_v4_connect`,
+`tcp_rcv_state_process`) can be kernel-version-specific — confirmed on
+this kernel; verify with `pahole` on others, and CO-RE (Ch 56) removes the
+guesswork. IPv4 only (add `tcp_v6_connect` for v6).

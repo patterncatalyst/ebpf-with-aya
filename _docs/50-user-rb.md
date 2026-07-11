@@ -14,7 +14,7 @@ program is the consumer.** It's the clean way to feed a *stream* of data into a
 running program — and a good lens on a couple of newer primitives, the
 `drain`-with-callback pattern and the **dynptr** each sample arrives as.
 
-This is an honest frontier chapter. Aya recognizes the map type, but the
+This is a genuine frontier chapter. Aya recognizes the map type, but the
 ergonomic pieces — a user-space producer and the kernel-side drain helper —
 are still emerging, and the sample callback uses **dynptr**, which this part
 covers in its own chapter later. So the canonical C is in

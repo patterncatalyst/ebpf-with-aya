@@ -38,6 +38,10 @@ sudo bpftool prog show | grep -i timer   # the program stays loaded with a pendi
 
 ## Verification status
 
-**Unverified.** Confirm the `bpf_timer_*` helper lifecycle and re-arm (≥ 5.15);
-that holding the map open satisfies the user-reference requirement; and treat
-the aya-ebpf callback rendering as a sketch — the C reference is canonical.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(kernel 7.1.3-200.fc44, which satisfies the `bpf_timer` ≥ 5.15 and `bpf_wq`
+≥ 6.10 floors): it builds, loads, attaches, holds the map open, arms the timer
+once, and reports a per-second event rate. Note the in-kernel `bpf_timer`
+callback form is not expressible in aya-ebpf — the C reference in
+`reference/timer.bpf.c` is canonical, and here the rate is computed in the
+userspace loader. Attach targets and struct offsets can be kernel-version-specific.

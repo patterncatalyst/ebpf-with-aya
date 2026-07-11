@@ -56,10 +56,9 @@ flame-graph tool accepts.
 
 ## ⚠ Verification status
 
-**Unverified.** Highest-risk: the `PerfEvent::attach` signature and
-`SamplePolicy::Frequency` / `PerfEventScope` in aya 0.14.x;
-`StackTrace::get_stackid` (ebpf) and `StackTraceMap::get` + `frames()`
-(user); `online_cpus()` return type; and that user-stack capture works
-for the target (frame pointers / unwind info). User-frame symbolization
-is intentionally left as hex — wire in `blazesym` for names. Record
-results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): the `perf_event` program builds,
+loads, attaches across all online CPUs, and samples call stacks as
+described, emitting folded output. Attach targets and struct offsets can be
+kernel-version-specific. User-frame symbolization is intentionally left as
+hex — wire in `blazesym` for names.

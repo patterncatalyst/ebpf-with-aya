@@ -59,8 +59,9 @@ program's output through here end to end.
   `grafana/provisioning/datasources/datasources.yaml` here is optional
   reference for customising the three-signal correlation.
 
-*Status: unverified — not yet run end-to-end on Fedora 44. See the
-reconciliation plan.*
+*Status: verified — Fedora 44, kernel 7.1.3. The LGTM stack ran on the host
+throughout the smoke campaign; the VM exported OTLP to it and metrics/traces
+landed in Grafana for the examples that report.*
 
 ## The provisioned dashboard
 

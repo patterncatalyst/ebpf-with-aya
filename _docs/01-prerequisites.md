@@ -192,9 +192,10 @@ If all four boxes are checked, you are ready to build the lab.
 
 ---
 
-*Verification status: the commands in this chapter are
-<span class="status status--unverified">unverified</span> in the
-reconciliation plan until run on a clean Fedora 44 laptop. If
-something here doesn't match what you see, that gap is exactly what
-the [reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }})
+*Verification status: <span class="status status--verified">verified — Fedora 44 host</span>.
+These prerequisites were installed and used to build and run the whole corpus
+during the smoke campaign (Rust nightly + `rust-src`, `bpf-linker`, libvirt/KVM,
+podman, the LGTM stack). If something here doesn't match what you see on your
+own machine, that gap is exactly what the
+[reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }})
 exists to record — open an issue with your output.*

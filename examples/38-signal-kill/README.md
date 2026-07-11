@@ -35,8 +35,9 @@ sleep 60 &                                  # allowed binary keeps running
 
 ## Verification status
 
-**Unverified** — confirm: `bpf_send_signal` is callable from a syscall-entry
-tracepoint and kills the caller before `execve` completes, the
-`sys_enter_execve` filename offset (16) from Chapter 11, the bounded
-`starts_with` passing the verifier, and exit status 137 on the killed
-process.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches, and runs as
+described — `bpf_send_signal(SIGKILL)` from the `sys_enter_execve` tracepoint
+kills the forbidden binary before `execve` completes while a normal `sleep`
+survives, and the bounded `starts_with` passes the verifier. Attach targets
+and struct offsets (such as the filename offset) can be kernel-version-specific.

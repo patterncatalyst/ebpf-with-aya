@@ -41,9 +41,9 @@ tc -s qdisc show dev <iface>         # kernel-side stats/drops
 
 ## Verification status
 
-**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
-0.0.7 but not yet run on Fedora 44. Confirm: the `tc` API
-(`qdisc_add_clsact`, `SchedClassifier`, `TcAttachType::Egress`), the
-`network-types` field names and `ctx.load`/`ctx.len` signatures, that
-`TC_ACT_SHOT` drops on egress (the `:9999` connections time out), and the
-user-space `HashMap::iter()`/`get` read path.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): the classifier builds, loads,
+and attaches to the `clsact` egress hook, counts packets and bytes per
+protocol, and drops traffic to the demo port (`TC_ACT_SHOT`) as described.
+Attach targets and struct offsets (`network-types` field names,
+`ctx.load`/`ctx.len` signatures) can be kernel-version-specific.

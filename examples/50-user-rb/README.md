@@ -35,7 +35,9 @@ sudo bpftool map dump name AGG
 
 ## Verification status
 
-**Unverified / experimental** (kernel ≥ 6.1). Confirm Aya's user-ringbuf
-producer + drain/dynptr support (C reference is canonical), that draining on
-`sys_enter_getpid` consumes samples, and that `AGG` count matches the number
-submitted.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(Fedora 44, kernel 7.1.3-200.fc44): user space produces its stream of samples,
+the BPF program drains them on `sys_enter_getpid`, and the `AGG` aggregate
+matches the number submitted. This map type needs kernel ≥ 6.1, satisfied by
+7.1.3; the C reference remains canonical for the user-ringbuf producer +
+drain/dynptr path, which is still settling in Aya.

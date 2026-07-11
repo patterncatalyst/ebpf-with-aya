@@ -145,7 +145,7 @@ cd examples/57-bpf-iter && ./demo.sh
 The demo compiles the task iterator, pins it, and `cat`s it so you see a process
 table assembled entirely in the kernel — header, one row per task with fields
 read straight from each `task_struct`, and a total. There's no Grafana panel
-here, and that's the honest shape of an iterator: **its output *is* the result**
+here, and that's the plain shape of an iterator: **its output *is* the result**
 — a stream you read, not a metric time series. (If you wanted a metric, a reader
 could `read()` the iterator and count matching elements; the chapter leaves the
 output as the dump it naturally is.)

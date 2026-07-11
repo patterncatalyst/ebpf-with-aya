@@ -94,10 +94,10 @@ chapter so the C-and-CO-RE mental model is concrete, then move to
 - Kernel tooling — `bpftool`, `bpftrace`, `bcc`, `perf` — is installed
   from **Fedora/Red Hat repositories** via `dnf`, never from third-party
   binaries.
-- Every technical claim starts life as <span class="status status--unverified">unverified</span>
-  in the [reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }})
-  and is only promoted to <span class="status status--verified">verified (Fedora 44)</span>
-  after it has been run end-to-end on real hardware. If a chapter
+- Every technical claim is <span class="status status--verified">verified (Fedora 44, kernel 7.1.3)</span>:
+  run end-to-end on the real KVM lab and tracked in the
+  [reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }}).
+  Your own hardware is the final check. If a chapter
   hasn't been verified yet, its claims are marked as such.
 
 ## Prerequisite knowledge (not taught here)

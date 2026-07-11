@@ -36,7 +36,9 @@ sudo bpftool net show
 
 ## Verification status
 
-**Unverified.** Confirm the XDP program attaches and the loader reports the
-engaged mode (expect `DRV`/`SKB` on virtio, not `HW`). All HW-offload/DPU/FPGA/
-GPU claims describe external hardware/projects the lab can't exercise; only
+**Verified (partial) — Fedora 44, kernel 7.1.3.** Built on the host and run on
+the lab VM: the XDP program builds, loads, and attaches, and the loader reports
+the engaged mode — `DRV`/`SKB` on the virtio NIC, never `HW`. Verified only in
+SKB/DRV mode on virtio; the true HW-offload, DPU, FPGA, and GPU/AI claims
+describe external hardware and projects this lab cannot exercise, so only
 mode-selection is runnable here.

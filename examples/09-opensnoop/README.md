@@ -42,12 +42,9 @@ Grafana.
 
 ## ⚠ Verification status
 
-**Unverified.** To confirm on real hardware:
-
-1. **Tracepoint field offsets** (`filename`@24, `flags`@32, exit
-   `ret`@16). These are long-stable x86_64 values but you must verify
-   against your kernel's format file — the chapter shows how.
-2. `TracePointContext::read_at::<T>(offset)` API name in aya 0.14.x.
-3. `bpf_probe_read_user_str_bytes` for the user-space filename pointer.
-
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on
+the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches
+both tracepoints, and runs as described. The tracepoint field offsets
+(`filename`@24, `flags`@32, exit `ret`@16) are long-stable x86_64 values
+but remain kernel-version-specific — verify them against your kernel's
+format file, as the chapter shows.

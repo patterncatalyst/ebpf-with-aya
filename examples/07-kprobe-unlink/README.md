@@ -56,18 +56,17 @@ against the table `unlinksnoop` prints.
 
 ## ⚠ Verification status
 
-**Unverified.** Written to current Aya conventions (`aya` 0.14.x,
-`aya-ebpf` 0.2.x) but not compiled/run at authoring. The two parts most
-likely to need adjustment on real hardware:
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches to
+`vfs_unlink`, and runs as described. Two parts remain kernel-sensitive by
+nature:
 
 1. **The filename read.** `vfs_unlink`'s dentry arg (index 2) carries the
-   name at `dentry->d_name.name`; we read it at a fixed struct offset. If
-   your kernel's layout differs, the read fails gracefully (empty filename)
-   — the pid/uid/comm still report. The robust fix is CO-RE field access via
-   BTF, introduced properly in the `fentry` chapter (8) and the CO-RE
-   deep-dive (56).
+   name at `dentry->d_name.name`; we read it at a fixed struct offset,
+   which held on this kernel. If your kernel's layout differs, the read
+   fails gracefully (empty filename) — the pid/uid/comm still report. The
+   robust fix is CO-RE field access via BTF, introduced properly in the
+   `fentry` chapter (8) and the CO-RE deep-dive (56).
 2. **`RingBuf` draining.** The poll-on-timer approach here is simple and
    robust; the more efficient `AsyncFd`-based approach is an
    optimization noted in the chapter.
-
-Record results in `_plans/reconciliation-plan.md`.

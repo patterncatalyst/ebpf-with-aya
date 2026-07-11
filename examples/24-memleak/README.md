@@ -38,12 +38,12 @@ in Grafana climbs over time for a real leak.
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: uprobe+uretprobe on `malloc`/`calloc` + uprobe on
-`free` in libc (symbol names on Fedora's glibc); `ctx.arg`/`ctx.ret` and
-`get_stackid` in aya 0.14.x; user-stack capture needing frame pointers
-(hence `-fno-omit-frame-pointer` on the target — glibc itself may still
-be FP-omitted, which can truncate stacks; note for verification);
-`Array::set` pid filter; `u64_gauge` in opentelemetry 0.27. User-frame
-symbolization is hex (wire in blazesym). `realloc`/`posix_memalign` are
-not traced — a documented gap. Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (kernel 7.1.3-200.fc44): the uprobe+uretprobe on `malloc`/`calloc`
+and the uprobe on `free` load, attach, and run as described, tracking
+outstanding allocations by call stack. Attach targets and libc symbol
+names can be kernel- and glibc-version-specific. User-stack capture relies
+on frame pointers (hence `-fno-omit-frame-pointer` on the target); glibc
+itself may still be FP-omitted, which can truncate stacks, and user frames
+print as hex unless you wire in blazesym. `realloc`/`posix_memalign` are
+not traced — a documented gap.

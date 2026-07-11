@@ -32,7 +32,10 @@ sudo bpftool map dump name arena | head        # arena bytes (if built)
 
 ## Verification status
 
-**Unverified.** Confirm the dynptr ring-buffer API and aya rendering (≥ 5.19),
-that variable-length records arrive intact, and that the arena example compiles
-with `-D__BPF_FEATURE_ADDR_SPACE_CAST` and loads (≥ 6.9). aya dynptr/arena
-support is emerging; the C references are canonical.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM
+(Fedora 44, kernel 7.1.3-200.fc44): the dynptr ring-buffer producer and aya
+rendering build, load, and attach cleanly, variable-length records arrive
+intact, and the arena example compiles with `-D__BPF_FEATURE_ADDR_SPACE_CAST`
+and loads (kernel 7.1.3 satisfies the ≥ 5.19 dynptr and ≥ 6.9 arena floors).
+aya dynptr/arena support is emerging, so the C references remain canonical;
+attach targets and struct offsets can be kernel-version-specific.

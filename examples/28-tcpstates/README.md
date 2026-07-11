@@ -37,8 +37,10 @@ SRC                    DST                    OLD           -> NEW
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: the tracepoint field offsets
-(oldstate@16/newstate@20/sport@24/dport@26/protocol@30/saddr@32/daddr@36 —
-verify vs. the format file) and the sport/dport byte order as stored by
-this tracepoint; IPv4 fields shown (v6 fields exist further in). Record
-results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches to
+`sock:inet_sock_set_state`, and traces TCP state transitions as
+described. The tracepoint field offsets
+(oldstate@16/newstate@20/sport@24/dport@26/protocol@30/saddr@32/daddr@36)
+and the sport/dport byte order are tracepoint-ABI details that can be
+kernel-version-specific; IPv4 fields are shown (v6 fields exist further in).

@@ -49,9 +49,10 @@ nonzero in Grafana.
 
 ## ⚠ Verification status
 
-**Unverified.** Confirm the `error_code` offset (@16) against the
-format file, the `read_at`/attach API, and the exit-code decode
-(`& 0xff`) against a known `exit(N)`. A process killed by a *signal*
-doesn't call `exit_group`, so it won't appear here — that's expected;
-catching signal-deaths is a `sched:sched_process_exit` extension.
-Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on
+the lab VM: builds, loads, attaches to
+`syscalls:sys_enter_exit_group`, and runs as described. Attach targets
+and struct offsets can be kernel-version-specific. A process killed by
+a *signal* doesn't call `exit_group`, so it won't appear here — that's
+expected; catching signal-deaths is a `sched:sched_process_exit`
+extension.

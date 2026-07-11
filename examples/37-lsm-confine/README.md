@@ -38,9 +38,10 @@ sudo bash -c 'echo $$ > /sys/fs/cgroup/confined/cgroup.procs; curl -m2 http://ex
 
 ## Verification status
 
-**Unverified** — kernel ≥ 5.7 with `bpf` in the LSM list. Confirm: the Aya
-LSM API (`#[lsm(hook)]`, `Lsm::load(hook, &btf)`, `attach()`), the
-`LsmContext` arg indexing (trailing `ret` at index 3 for `socket_connect`),
-that returning `-1` fails `connect` with `EPERM`, and that a cgroup-v2
-directory's inode equals `bpf_get_current_cgroup_id()` (may need
-`name_to_handle_at`).
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab
+VM (Fedora 44, kernel 7.1.3-200.fc44) with `bpf` active in the LSM list: the
+program builds, loads against kernel BTF, attaches to the `socket_connect`
+hook, and runs as described — a confined cgroup's `connect()` fails with
+`EPERM` while unconfined connects succeed. The kernel ≥ 5.7 floor for BPF LSM
+is satisfied by 7.1.3. Attach targets, `LsmContext` arg indexing, and struct
+offsets can be kernel-version-specific.

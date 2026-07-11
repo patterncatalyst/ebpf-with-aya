@@ -36,8 +36,10 @@ DB instrumentation — zero code changes. See
 
 ## Verification status
 
-**Unverified.** Confirm the `tcp_recvmsg`/`tcp_sendmsg` kprobe arg0 = `struct
-sock *`; that one recv/send pair is a usable request proxy here; the
-opentelemetry 0.27 traces/logs builder APIs; whether the metrics SDK emits
-exemplars (metric→trace may be absent); and end-to-end Tempo/Loki/Prometheus
-correlation.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the lab VM:
+the `tcp_recvmsg`/`tcp_sendmsg` kprobes build, load, and attach, and the pipeline
+emits correlated spans (Tempo), logs (Loki), and RED metrics (Prometheus) sharing
+a `trace_id`. The kprobe arg0 = `struct sock *` assumption and the one recv/send
+pair as a request proxy are kernel- and workload-specific. Note the candid seam:
+this is intra-service correlation, not distributed tracing, and exemplar support
+(metric→trace) in the Rust metrics SDK may be absent on a given run.

@@ -41,10 +41,11 @@ down. Map `DEV` (major:minor) to disks with `lsblk` / `/proc/partitions`.
 
 ## ⚠ Verification status
 
-**Unverified.** Risks: the `block_rq_issue` field offsets (`dev`@8,
-`sector`@16, `nr_sector`@24 — verify vs. the format file; layout has
-changed across kernels); the `dev_t` major/minor decoding; `HashMap`
-read-modify-write for per-device counters; and the OTLP observable-gauge
-API in opentelemetry 0.27. `block_rq_complete` is an alternative
-attach point (counts finished I/O). Record results in
-`_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3.** Built on the host and run on the
+lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, attaches to
+`block:block_rq_issue`, and runs as described — the per-device SEQ% table
+updates live, and driving contrasting `dd`/`fio` workloads moves the
+sequential ratio. The `block_rq_issue` field offsets (`dev`@8, `sector`@16,
+`nr_sector`@24) and the `dev_t` major/minor decoding are kernel-version-specific;
+this run confirmed them against this kernel's format file. `block_rq_complete`
+remains an alternative attach point (counts finished I/O).
