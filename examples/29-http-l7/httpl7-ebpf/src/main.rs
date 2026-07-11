@@ -12,9 +12,12 @@
 #![no_main]
 
 use aya_ebpf::{
+    bindings::__sk_buff,
+    helpers::bpf_skb_load_bytes,
     macros::{map, socket_filter},
     maps::RingBuf,
     programs::SkBuffContext,
+    EbpfContext,
 };
 use httpl7_common::{HttpEvent, LINE_CAP};
 
@@ -70,7 +73,23 @@ fn try_http(ctx: &SkBuffContext) -> Result<(), i64> {
 
     let mut line = [0u8; LINE_CAP];
     // Bounded copy of the first line (best effort; trailing bytes may be \r\n…).
-    let _ = ctx.load_bytes(payload, &mut line);
+    // aya's load_bytes computes len = min(skb.len - offset, LINE_CAP), which can
+    // be 0 — and bpf_skb_load_bytes rejects a zero-length read on modern kernels
+    // ("invalid zero-sized read"). Read directly with a provably-nonzero length.
+    let skb = ctx.as_ptr() as *mut __sk_buff;
+    let avail = (unsafe { (*skb).len } as usize).saturating_sub(payload);
+    // Clamp to 1..=LINE_CAP: .max(1) makes it provably nonzero (no zero-sized
+    // read) and .min(LINE_CAP) keeps the write inside `line`. If there's no
+    // payload the 1-byte read just fails and `line` stays zeroed.
+    let n = avail.min(LINE_CAP).max(1);
+    unsafe {
+        let _ = bpf_skb_load_bytes(
+            skb as *const _,
+            payload as u32,
+            line.as_mut_ptr() as *mut _,
+            n as u32,
+        );
+    }
 
     if let Some(mut slot) = EVENTS.reserve::<HttpEvent>(0) {
         let ev = HttpEvent { saddr, daddr, sport, dport, len: LINE_CAP as u32, line };

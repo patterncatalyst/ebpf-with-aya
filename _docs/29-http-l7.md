@@ -149,8 +149,5 @@ cgroup.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Risks: `SocketFilter::attach` + `SkBuffContext` `load`/`load_bytes` in
-aya 0.13.x; the `AF_PACKET` socket setup; the no-IP-options (IHL==5)
-simplification and TCP-data-offset math; cleartext only. The first build
-and run are the test.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): the socket filter loads and parses cross-host HTTP request/response lines. Confirmed on this kernel.*
