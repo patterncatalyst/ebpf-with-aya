@@ -164,7 +164,11 @@ fn init_otel() -> anyhow::Result<opentelemetry_sdk::metrics::SdkMeterProvider> {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
-    let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/user-rb")))?;
+    // aya has no typed USER_RINGBUF map, so load it as an "unsupported" map and
+    // drive it ourselves via MapData::fd() (Map::Unsupported below).
+    let mut ebpf = aya::EbpfLoader::new()
+        .allow_unsupported_maps()
+        .load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/user-rb")))?;
     let prog: &mut TracePoint = ebpf.program_mut("drain_it").unwrap().try_into()?;
     prog.load()?;
     prog.attach("syscalls", "sys_enter_getpid")?;

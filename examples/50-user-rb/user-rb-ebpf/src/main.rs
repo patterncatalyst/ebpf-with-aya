@@ -8,9 +8,9 @@
 use core::cell::UnsafeCell;
 
 use aya_ebpf::{
-    bindings::{bpf_map_def, bpf_map_type::BPF_MAP_TYPE_USER_RINGBUF},
+    bindings::{bpf_dynptr, bpf_map_def, bpf_map_type::BPF_MAP_TYPE_USER_RINGBUF},
     cty::c_void,
-    helpers::bpf_user_ringbuf_drain,
+    helpers::{bpf_dynptr_data, bpf_user_ringbuf_drain},
     macros::{map, tracepoint},
     maps::HashMap,
     programs::TracePointContext,
@@ -44,8 +44,9 @@ impl UserRingBuf {
         }
     }
 
-    /// Drain all pending samples, invoking `callback` for each one.
-    pub fn drain(&self, callback: fn(&Sample) -> u32) -> i64 {
+    /// Drain all pending samples, invoking `callback` (which receives each
+    /// record as a `struct bpf_dynptr`) for each one.
+    pub fn drain(&self, callback: extern "C" fn(*mut bpf_dynptr, *mut c_void) -> i64) -> i64 {
         unsafe {
             bpf_user_ringbuf_drain(
                 self.def.get() as *mut c_void,
@@ -68,10 +69,16 @@ fn bump(key: u32, by: u64) {
     let _ = AGG.insert(&key, &n, 0);
 }
 
-// callback: invoked once per submitted sample (arrives as a dynptr)
-fn on_sample(sample: &Sample) -> u32 {
-    bump(0, 1);
-    bump(1, sample.value);
+// callback: invoked once per submitted sample, which arrives as a dynptr. The
+// kernel requires the data be read via bpf_dynptr_data (with a constant len),
+// not by casting the dynptr itself — hence the earlier verifier rejection.
+extern "C" fn on_sample(dynptr: *mut bpf_dynptr, _ctx: *mut c_void) -> i64 {
+    let data = unsafe { bpf_dynptr_data(dynptr, 0, core::mem::size_of::<Sample>() as u32) };
+    if !data.is_null() {
+        let sample = unsafe { &*(data as *const Sample) };
+        bump(0, 1);
+        bump(1, sample.value);
+    }
     0
 }
 

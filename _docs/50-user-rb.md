@@ -130,9 +130,5 @@ model inside out once more.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run (kernel ≥ 6.1): the Aya user-ring-buffer
-support (the user-space producer and the kernel-side `bpf_user_ringbuf_drain`
-+ dynptr accessor are still settling — the C reference is canonical); that
-draining on `sys_enter_getpid` consumes submitted samples; and that the `AGG`
-map's count matches the number submitted.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): user space produces 1000 samples and the BPF program drains them (count=1000, sum=500500). Uses aya 0.14 + aya-ebpf 0.2.*
