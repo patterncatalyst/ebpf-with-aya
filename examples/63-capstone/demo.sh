@@ -10,7 +10,8 @@ build(){ c_step "building eBPF observer"; cargo build --release || c_fail "cargo
 case "${1:-run}" in build) build; exit 0;; esac
 build
 c_step "bring up both services (podman-compose)"
-podman-compose up --build -d || c_info "compose failed — see quarkus-app/Containerfile (UBI openjdk-25 / Quarkus build is unverified)"
+command -v podman-compose >/dev/null || c_info "podman-compose not found — install it (pip install --user podman-compose)"
+podman-compose up --build -d || c_info "compose failed — see quarkus-app/Containerfile (Quarkus maven build; first run downloads deps and is slow)"
 c_step "deploy + start the eBPF observer on $VM"
 TIP="$("$LAB/vm-ip.sh" "$VM" 2>/dev/null || echo '')"
 if [[ -n "$TIP" ]]; then GW="$(ssh "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"; OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- || true; else c_info "(no VM; run ./target/release/capstone locally with sudo to observe host containers)"; fi

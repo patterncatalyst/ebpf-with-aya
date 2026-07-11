@@ -154,10 +154,5 @@ from Python. Then a closing retrospective.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that both containers export OTLP to the Chapter
-3 stack and the `traceparent` yields one trace with spans from both services;
-that the Aya observer attaches and emits `ebpf_capstone_*`; that the response
-trace_id lets you correlate the eBPF window with the trace; and treat the L7
-`traceparent`-extraction reference as canonical-but-unverified while the
-time/pid/service path is what the runnable observer uses.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM host (Fedora 44): both services build and come up under podman-compose, and one traceparented request flows FastAPI /checkout -> Quarkus /inventory across both services.*

@@ -205,6 +205,8 @@ telemetry path. They're environment, not code, so they're easy to miss:
   (SELinux-enforcing hosts may also relabel; this lab host runs with SELinux
   disabled.)
 
+- **`podman-compose` is a host tool.** The compose-based examples (03, 62, 63) run on the host, not the guest. Install it in your user environment: `pip install --user podman-compose`.
+
 - **Use the system libvirt, not the session one.** VMs and the `default`
   network live on `qemu:///system`. If `virsh`/`virt-install` can't find the
   `default` network, set `export LIBVIRT_DEFAULT_URI=qemu:///system` (and make
