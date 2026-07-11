@@ -88,8 +88,9 @@ your hostname and SSH key, and boots the domain with `virt-install
 cloud-init takes about a minute to install packages on first boot.
 The seed (`scripts/lab/cloud-init/user-data.tmpl`) installs everything
 the target needs — all from Fedora repositories — including
-`kernel-devel`, `clang`/`llvm`, `bpftool`, `bpftrace`, `bcc-tools`,
-and `perf`, and it writes a readiness marker once BTF is confirmed.
+`kernel-devel`, `clang`/`llvm`, `bpftool`, `libbpf-devel`, `bpftrace`,
+`bcc-tools`, and `perf`, and it writes a readiness marker once BTF is
+confirmed.
 
 ### What the lab's tooling is for
 
@@ -108,6 +109,7 @@ comes from Fedora repositories or `rustup`, never third-party binaries.
 | `perf` | `perf` | VM | sampling, PMU counters, `perf stat` energy/cycles cross-checks (Ch 23, 61) |
 | `turbostat` | `kernel-tools` | VM | per-package power/frequency/idle stats — the RAPL cross-check (Ch 61) |
 | `clang` / `llvm` | `clang`, `llvm` | VM | compile reference `.bpf.c`, generate `vmlinux.h`, run classic bcc (Ch 4, 55–58, 66) |
+| `libbpf-devel` | `libbpf-devel` | VM | `bpf/bpf_helpers.h` etc. to compile the reference `.bpf.c` and gen skeletons (Ch 49, 55, 57) |
 | `dwarves` (`pahole`) | `dwarves` | VM | inspect BTF / struct layout from DWARF (Ch 5, 15) |
 | `kernel-devel` + BTF | `kernel-devel`, in-kernel | VM | kernel headers + `/sys/kernel/btf/vmlinux` for CO-RE relocation (Ch 5, 58) |
 | `jq` | `jq` | VM | parse `bpftool -j` and Tempo JSON in demos/cross-checks (Ch 62, 65, 66) |

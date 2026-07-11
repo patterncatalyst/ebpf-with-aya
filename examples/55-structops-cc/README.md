@@ -31,8 +31,8 @@ sudo sysctl -w net.ipv4.tcp_congestion_control=bpf_reno && ss -ti | grep bpf_ren
 
 ## Verification status
 
-**Unverified.** Confirm the algorithm compiles against this kernel's
-`vmlinux.h`; that `bpftool struct_ops register` installs it and it appears in
-`tcp_available_congestion_control`; the `tcp_sock` field names
-(`snd_cwnd`/`snd_ssthresh`/`prior_cwnd`); and treat the aya-ebpf rendering as
-emerging.
+**Verified — Fedora 44, kernel 7.1.3 (clang 22, bpftool v7.6.0).** Compiles
+against this kernel's `vmlinux.h`; `bpftool struct_ops register` installs it and
+`bpf_reno` shows up in `tcp_available_congestion_control`. One fix against
+current BTF: `tcp_slow_start` now returns `__u32` (not `void`) in `vmlinux.h`, so
+its `extern` must match. The aya-ebpf rendering stays emerging.

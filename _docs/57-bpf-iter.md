@@ -181,8 +181,9 @@ the earlier chapters kept pointing forward to.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that the task iterator compiles against this
-kernel's `vmlinux.h`, that `bpftool iter pin` pins it and `cat` produces the
-process table, the `task_struct` field names (`tgid`/`pid`/`comm`); and treat
-the aya-ebpf iterator rendering as emerging — the C path is canonical.*
+*Verification status: <span class="status status--verified">verified</span>
+— Fedora 44, kernel 7.1.3 (clang 22, bpftool v7.6.0). The task iterator compiles
+against this kernel's `vmlinux.h`, `bpftool iter pin` pins it, and `cat`ing the
+pin produces the process table (469 tasks) with `tgid`/`pid`/`comm` — assembled
+entirely in the kernel. The aya-ebpf iterator rendering stays emerging — the C
+path is canonical.*

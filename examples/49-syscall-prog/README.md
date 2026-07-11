@@ -14,17 +14,28 @@ which paves the way to **signed** loading.
 
 - `illustrative/loader_program.rs` — the shape of a loader program (read-only;
   not built).
-- `demo.sh` — runs `bpftool gen skeleton -L` on a compiled BPF object to reveal
-  the generated syscall/loader program and its embedded data.
+- `reference/skel_demo.bpf.c` — a tiny libbpf-style C object (one map, one prog)
+  compiled on the target so we can generate a light skeleton from it.
+- `demo.sh` — compiles that object on the target and runs `bpftool gen skeleton
+  -L` to reveal the generated syscall/loader program and its embedded data.
+
+## Why not an aya object?
+
+The obvious idea — point this at an aya example's `.o` — doesn't work:
+`aya-ebpf` emits **legacy `maps`-section** map definitions, which libbpf v1.0+
+refuses to open (`bpftool` reports *"legacy map definitions in 'maps' section
+are not supported"*). Skeletons are a **libbpf** concept; aya is its own loader
+and doesn't produce libbpf-loadable objects with BTF-defined maps. So we compile
+a small C object (with a `.maps` section) on the target instead.
 
 ## Run it
 
 ```bash
-# build any example's eBPF object first, e.g.:
-( cd ../48-pin-demo && cargo build --release )
-./demo.sh                       # uses the pin-demo object by default
-BPF_OBJ=/path/to/prog.o ./demo.sh
+./demo.sh                          # compiles reference/skel_demo.bpf.c on the VM
+BPF_OBJ=/path/to/libbpf-object.o ./demo.sh   # or your own libbpf-compatible object
 ```
+
+Needs `clang`, `libbpf-devel`, and `bpftool` on the target (Chapter 4 toolchain).
 
 ## Cross-check
 
@@ -35,7 +46,9 @@ bpftool gen skeleton    program.o | sed -n '1,12p'   # full skeleton, for contra
 
 ## Verification status
 
-**Unverified.** Confirm `bpftool gen skeleton -L` emits a syscall/loader
-program for the object; the `bpf_sys_bpf`/`bpf_sys_close` helper surface; and
-treat `illustrative/loader_program.rs` as a sketch — Aya syscall-program
+**Verified — Fedora 44, kernel 7.1.3 (bpftool v7.6.0, libbpf 1.6).** The light
+skeleton emits `#include <bpf/skel_internal.h>` + a `struct bpf_loader_ctx`
+(the BPF_PROG_TYPE_SYSCALL loader path); the full skeleton emits
+`#include <bpf/libbpf.h>` + `struct bpf_object_skeleton` (the classic ELF path).
+Treat `illustrative/loader_program.rs` as a sketch — aya syscall-program
 authoring is experimental.

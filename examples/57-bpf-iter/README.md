@@ -36,7 +36,7 @@ the `bpf_iter_*` (`KF_ITER_*`) kfuncs from Chapter 52.
 
 ## Verification status
 
-**Unverified.** Confirm the iterator compiles against this kernel's
-`vmlinux.h`, that `bpftool iter pin` + `cat` produce the table, and the
-`task_struct` field names. aya iterator support is emerging; the C path is
-canonical.
+**Verified — Fedora 44, kernel 7.1.3 (clang 22, bpftool v7.6.0).** Compiles
+against this kernel's `vmlinux.h`; `bpftool iter pin` + `cat` produce the
+process table (469 tasks) with `tgid`/`pid`/`comm`. aya iterator support is
+emerging; the C path is canonical.

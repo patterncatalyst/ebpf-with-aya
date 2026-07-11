@@ -14,8 +14,11 @@ static __always_inline struct tcp_sock *tcp_sk(const struct sock *sk)
     return (struct tcp_sock *)sk;
 }
 
-/* building blocks the CC struct_ops interface exposes to BPF (like kfuncs) */
-extern void tcp_slow_start(struct tcp_sock *tp, __u32 acked) __ksym;
+/* building blocks the CC struct_ops interface exposes to BPF (like kfuncs).
+ * Signatures must match the kernel's BTF (now emitted into vmlinux.h): the real
+ * tcp_slow_start returns __u32 (leftover acked), not void — declaring it void
+ * gives "conflicting types for 'tcp_slow_start'". */
+extern __u32 tcp_slow_start(struct tcp_sock *tp, __u32 acked) __ksym;
 extern void tcp_cong_avoid_ai(struct tcp_sock *tp, __u32 w, __u32 acked) __ksym;
 
 SEC("struct_ops/cc_ssthresh")
