@@ -26,7 +26,7 @@ GW="$($SSH 'ip route | awk "/default/ {print \$3; exit}"')"
 c_info "OTLP -> http://$GW:4318"
 c_step "shipping Go target to $VM and starting it"
 scp -o StrictHostKeyChecking=accept-new "$GOBIN" "fedora@$IP:/home/fedora/target-go"
-$SSH 'chmod +x /home/fedora/target-go; pkill -f /home/fedora/target-go || true; nohup /home/fedora/target-go >/tmp/target-go.log 2>&1 & echo started pid $!'
+$SSH 'chmod +x /home/fedora/target-go; pkill -x target-go || true; nohup /home/fedora/target-go </dev/null >/tmp/target-go.log 2>&1 & echo started pid $!'
 c_info "confirm the symbol exists:  ssh fedora@$IP 'go version /home/fedora/target-go; nm /home/fedora/target-go | grep runtime.casgstatus'"
 c_step "attaching casgstatus uprobe (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" -- /home/fedora/target-go

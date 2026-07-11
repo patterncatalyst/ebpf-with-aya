@@ -20,7 +20,7 @@ case "${1:-run}" in
     c_info "OTLP -> http://$GW:4318"
     c_step "shipping target-app to $VM and starting it"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
-    $SSH 'chmod +x /home/fedora/target-app; pkill -f /home/fedora/target-app || true; nohup /home/fedora/target-app >/tmp/target-app.log 2>&1 & echo started pid $!'
+    $SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
     c_info "inspect the binary's type info on the VM (optional):"
     c_info "    ssh fedora@$IP 'sudo dnf install -y dwarves; pahole -J /home/fedora/target-app; bpftool btf dump file /home/fedora/target-app | grep -i order'"
     c_step "deploying btf-uprobe and attaching to process_order (Ctrl-C to stop)"

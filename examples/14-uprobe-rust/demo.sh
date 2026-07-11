@@ -26,7 +26,7 @@ case "${1:-run}" in
     c_info "OTLP -> http://$GW:4318"
     c_step "shipping target-app to $VM and starting it in the background"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
-    $SSH 'chmod +x /home/fedora/target-app; pkill -f /home/fedora/target-app || true; nohup /home/fedora/target-app >/tmp/target-app.log 2>&1 & echo started pid $!'
+    $SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
     c_info "target-app logging to /tmp/target-app.log on the VM"
     c_step "deploying uprobe-rust and attaching to compute() (Ctrl-C to stop)"
     OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$SNOOP" -- /home/fedora/target-app

@@ -22,7 +22,7 @@ c_info "OTLP -> http://$GW:4318"
 c_step "shipping + compiling Alloc.java on the VM, starting it with a small heap"
 $SSH 'command -v javac >/dev/null || { echo "install a JDK: sudo dnf install -y java-latest-openjdk-devel"; exit 1; }'
 scp -o StrictHostKeyChecking=accept-new target-java/Alloc.java "fedora@$IP:/home/fedora/Alloc.java"
-$SSH 'cd /home/fedora && javac Alloc.java && pkill -f "java .*Alloc" || true; nohup java -Xmx64m -XX:+UseG1GC -XX:+ExtendedDTraceProbes Alloc >/tmp/alloc.log 2>&1 & echo started pid $!'
+$SSH 'cd /home/fedora && javac Alloc.java && pkill -x java || true; nohup java -Xmx64m -XX:+UseG1GC -XX:+ExtendedDTraceProbes Alloc </dev/null >/tmp/alloc.log 2>&1 & echo started pid $!'
 
 c_step "resolving libjvm.so + USDT gc probe offsets on the VM"
 LIBJVM="$($SSH 'f=$(find /usr/lib/jvm -name libjvm.so 2>/dev/null | head -1); echo "$f"')"

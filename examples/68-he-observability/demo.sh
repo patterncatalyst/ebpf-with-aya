@@ -29,7 +29,7 @@ case "${1:-run}" in
     c_info "OTLP -> http://$GW:4318"
     c_step "shipping he-workload to $VM (starts in 4s so the probe attaches first)"
     scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/he-workload"
-    $SSH 'chmod +x /home/fedora/he-workload; pkill -f /home/fedora/he-workload || true; nohup sh -c "sleep 4; /home/fedora/he-workload" >/tmp/he-workload.log 2>&1 & echo scheduled'
+    $SSH 'chmod +x /home/fedora/he-workload; pkill -x he-workload || true; nohup sh -c "sleep 4; /home/fedora/he-workload" </dev/null >/tmp/he-workload.log 2>&1 & echo scheduled'
     c_info "workload will log to /tmp/he-workload.log on the VM"
     c_step "deploying he-observer and attaching to he_* (Ctrl-C to stop)"
     OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$OBS" -- /home/fedora/he-workload

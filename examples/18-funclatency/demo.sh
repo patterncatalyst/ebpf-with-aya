@@ -19,6 +19,6 @@ GW="$($SSH 'ip route | awk "/default/ {print \$3; exit}"')"
 c_info "OTLP -> http://$GW:4318"
 c_step "shipping target-app to $VM and starting it"
 scp -o StrictHostKeyChecking=accept-new "$APP" "fedora@$IP:/home/fedora/target-app"
-$SSH 'chmod +x /home/fedora/target-app; pkill -f /home/fedora/target-app || true; nohup /home/fedora/target-app >/tmp/target-app.log 2>&1 & echo started pid $!'
+$SSH 'chmod +x /home/fedora/target-app; pkill -x target-app || true; nohup /home/fedora/target-app </dev/null >/tmp/target-app.log 2>&1 & echo started pid $!'
 c_step "timing $SYM (Ctrl-C to stop; prints a histogram every 2s)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$SNOOP" -- /home/fedora/target-app "$SYM"
