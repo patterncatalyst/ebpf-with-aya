@@ -1,27 +1,36 @@
-# Example 20 — javagc (JVM GC pauses via HotSpot USDT probes)
+# Example 20 — javagc (JVM GC pauses by uprobing the G1 collector)
 
-Time JVM garbage-collection pauses by attaching to the HotSpot **USDT**
-probes `hotspot:gc__begin` and `hotspot:gc__end`.
+Time JVM garbage-collection pauses by attaching a **uprobe + uretprobe**
+to the G1 collector's stop-the-world entry point in `libjvm.so`.
 
 ## What this shows
 
-- **USDT** (User Statically-Defined Tracepoints): markers the JVM
-  authors baked into `libjvm.so` at fixed instruction offsets, described
-  in the ELF `.note.stapsdt` section. A USDT probe is just a **uprobe at
-  that offset** — so we attach a plain `UProbe` with `fn_name = None`
-  and the resolved offset.
-- Why USDT beats uprobing the JVM directly: GC internals are C++
-  (mangled, implementation-specific per collector) and partly JIT'd.
-  The USDT probes are a **stable, documented** contract across JDK
-  versions — the right surface for runtime events.
-- Timing `gc__begin → gc__end` with the entry/exit pattern (two separate
-  probe sites, keyed by pid — GC is stop-the-world per JVM) gives the
-  **GC pause** duration.
+- **The textbook approach — and why it doesn't work here.** The "right"
+  surface for JVM GC events is the HotSpot **USDT** probes
+  (`hotspot:gc__begin` / `hotspot:gc__end`) — stable markers baked into
+  `libjvm.so`. But those only exist in an OpenJDK built with
+  `--enable-dtrace`, and **Fedora's (and most distros') OpenJDK is not**.
+  On a stock JDK there are simply no gc USDT markers to attach to
+  (`readelf -n libjvm.so | grep gc__` comes back empty).
+- **The portable approach: uprobe the collector directly.** libjvm.so
+  ships an unstripped `.symtab` (only the `.debug` is split out via
+  `.gnu_debuglink`), so the collector's C++ symbols are resolvable. We
+  uprobe `G1CollectedHeap::do_collection_pause_at_safepoint` on entry and
+  put a **uretprobe** on its return — the difference is the **GC pause**.
+  This catches *every* automatic G1 pause (young/mixed/full), not just
+  explicit `System.gc()`.
+- **aya resolves the symbol for us.** We pass the mangled name to
+  `UProbe::attach(symbol, libjvm, ...)`; aya reads `.symtab` (and
+  `.dynsym`) and computes the correct file offset — no hand-rolled
+  vaddr→offset math. The name is JDK-version-specific and mangled, so the
+  demo resolves it dynamically with `nm` rather than hard-coding it.
+- Keyed by **tid**: the pause runs on the JVM's "VM Thread", so the
+  uprobe entry and the matching uretprobe return share a kernel tid.
 
 ## Note on the lab policy
 
 Our targets are normally containerized; here we run the JVM **directly
-on the VM** to keep the focus on USDT/GC. To observe the containerized
+on the VM** to keep the focus on GC timing. To observe the containerized
 **Quarkus** target (Ch 16) instead, combine this with Chapter 16's
 container-path resolution — find `libjvm.so` under the container's
 overlay and use that path.
@@ -36,32 +45,34 @@ overlay and use that path.
 
 ```bash
 ./demo.sh build     # build javagc on the host
-./demo.sh           # compile+run Alloc.java on the VM, resolve USDT offsets, time GC
+./demo.sh           # compile+run Alloc.java on the VM, resolve the G1 symbol, time GC
 ```
 
-You'll see per-pause lines and `jvm_gc_pause_ms` in Grafana (heatmap /
-p99 — the classic "are GC pauses hurting latency?" view).
+You'll see per-pause lines (`VM Thread  0.97 ms`) and `jvm_gc_pause_ms`
+in Grafana (heatmap / p99 — the classic "are GC pauses hurting latency?"
+view).
 
-## Cross-check — bpftrace definitely supports USDT
+## Cross-check — the same probe under bpftrace
 
 ```bash
-[vm]$ sudo bpftrace -e 'usdt:/path/to/libjvm.so:hotspot:gc__begin { @b[pid]=nsecs } usdt:/path/to/libjvm.so:hotspot:gc__end /@b[pid]/ { @ms=hist((nsecs-@b[pid])/1000000); delete(@b[pid]) }'
+[vm]$ LJ=$(find /usr/lib/jvm -name libjvm.so | head -1)
+[vm]$ SYM=$(nm "$LJ" | awk '/do_collection_pause_at_safepoint/{print $3; exit}')
+[vm]$ sudo bpftrace -e "uprobe:$LJ:$SYM { @b[tid]=nsecs }
+       uretprobe:$LJ:$SYM /@b[tid]/ { @ms=hist((nsecs-@b[tid])/1000000); delete(@b[tid]) }"
 ```
 
-## ⚠ Verification status
+## If you really want the USDT probes
 
-**Unverified — most experimental chapter.** Risks:
+Build an OpenJDK with `--enable-dtrace` (needs `systemtap-sdt-devel` at
+build time) or use a vendor JDK that ships them; then the `hotspot:gc__*`
+markers appear and you can attach a uprobe at each stapsdt `Location`
+instead. Aya still has no first-class USDT helper, so the mechanics
+(resolve offset → raw uprobe) are the same either way.
 
-1. **USDT offset resolution.** The demo parses `readelf -n` stapsdt
-   notes for the probe `Location`, and assumes the uprobe file offset
-   equals that vaddr (true for many shared objects, but verify — you may
-   need the vaddr→file-offset conversion). If it can't resolve, the demo
-   points you at the guaranteed-working `bpftrace` USDT command.
-2. **USDT enabled in the JDK.** Most Linux OpenJDK builds ship the
-   hotspot probes; `-XX:+ExtendedDTraceProbes` enables the fuller set.
-3. `bpf_ktime_get_ns`, two-uprobe attach by offset, entry/exit HashMap
-   in aya 0.13.x.
+## ✅ Verification status
 
-Aya has no first-class USDT helper yet, which is *why* we resolve the
-offset ourselves and attach a raw uprobe — a useful thing to understand
-regardless. Record results in `_plans/reconciliation-plan.md`.
+**Verified — Fedora 44, kernel 7.1.3, OpenJDK 26 (Red Hat build).**
+Resolves `_ZN15G1CollectedHeap32do_collection_pause_at_safepointEm`,
+attaches uprobe+uretprobe, and streams real GC pauses from the VM Thread
+(~0.4–6 ms) while `Alloc` churns allocations — exported as
+`jvm_gc_pause_ms`. aya 0.14 resolves the symbol from `.symtab`.

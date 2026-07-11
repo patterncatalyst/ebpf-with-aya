@@ -1,10 +1,13 @@
-//! javagc — time JVM GC pauses via the HotSpot USDT gc__begin/gc__end probes.
+//! javagc — time JVM GC pauses by uprobing the G1 collector's pause function.
 //!
-//! A USDT probe is a uprobe at a fixed offset in libjvm.so. This tool takes the
-//! libjvm path and the two probe offsets (resolved by the demo from the ELF
-//! .note.stapsdt section) and attaches a uprobe at each:
-//!   javagc LIBJVM BEGIN_OFFSET END_OFFSET
-//! Offsets are decimal byte offsets into the file. Exports
+//! Fedora's OpenJDK isn't built with --enable-dtrace, so the hotspot USDT gc
+//! markers don't exist. Instead we uprobe the collector's real stop-the-world
+//! entry point in libjvm.so and put a uretprobe on its return:
+//!   javagc LIBJVM SYMBOL
+//! SYMBOL is the (JDK-version-specific, mangled) name of
+//! `G1CollectedHeap::do_collection_pause_at_safepoint`, resolved by the demo
+//! from libjvm.so's .symtab. aya resolves the symbol -> file offset itself
+//! (it reads both .dynsym and .symtab). Exports
 //! ebpf_events_total{program="javagc"} and a GC-pause histogram.
 use std::time::Duration;
 
@@ -42,23 +45,22 @@ fn cstr(b: &[u8]) -> String {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut args = std::env::args().skip(1);
-    let libjvm = args.next().unwrap_or_else(|| "/usr/lib/jvm/java-25/lib/server/libjvm.so".to_string());
-    let begin_off: u64 = args.next().and_then(|s| s.parse().ok())
-        .ok_or_else(|| anyhow::anyhow!("usage: javagc LIBJVM BEGIN_OFFSET END_OFFSET (offsets from the demo's USDT resolver)"))?;
-    let end_off: u64 = args.next().and_then(|s| s.parse().ok())
-        .ok_or_else(|| anyhow::anyhow!("missing END_OFFSET"))?;
+    let libjvm = args.next().unwrap_or_else(|| "/usr/lib/jvm/java-latest-openjdk/lib/server/libjvm.so".to_string());
+    let symbol = args.next()
+        .ok_or_else(|| anyhow::anyhow!("usage: javagc LIBJVM SYMBOL  (SYMBOL = mangled G1 pause fn from the demo's .symtab resolver)"))?;
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/javagc")))?;
 
-    // Attach a uprobe at each USDT probe offset (fn name = None -> use offset).
+    // uprobe on the function entry, uretprobe on its return — both at the same
+    // symbol. aya resolves the symbol to a file offset itself (reads .symtab).
     let b: &mut UProbe = ebpf.program_mut("gc_begin").unwrap().try_into()?;
     b.load()?;
-    b.attach(begin_off, &libjvm, UProbeScope::AllProcesses)?;
+    b.attach(symbol.as_str(), &libjvm, UProbeScope::AllProcesses)?;
     let e: &mut UProbe = ebpf.program_mut("gc_end").unwrap().try_into()?;
     e.load()?;
-    e.attach(end_off, &libjvm, UProbeScope::AllProcesses)?;
+    e.attach(symbol.as_str(), &libjvm, UProbeScope::AllProcesses)?;
     if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
-    info!("javagc attached to gc__begin@{begin_off} / gc__end@{end_off} in {libjvm}");
+    info!("javagc attached uprobe+uretprobe to {symbol} in {libjvm}");
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-javagc");
