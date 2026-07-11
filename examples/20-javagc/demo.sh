@@ -20,7 +20,7 @@ GW="$($SSH 'ip route | awk "/default/ {print \$3; exit}"')"
 c_info "OTLP -> http://$GW:4318"
 
 c_step "shipping + compiling Alloc.java on the VM, starting it with a small heap"
-$SSH 'command -v javac >/dev/null || { echo "install a JDK: sudo dnf install -y java-latest-openjdk-devel"; exit 1; }'
+$SSH 'command -v javac >/dev/null || { echo "installing a JDK (one-time)…"; sudo dnf install -y java-latest-openjdk-devel >/dev/null 2>&1; }'
 scp -o StrictHostKeyChecking=accept-new target-java/Alloc.java "fedora@$IP:/home/fedora/Alloc.java"
 $SSH 'cd /home/fedora && javac Alloc.java && pkill -x java || true; nohup java -Xmx64m -XX:+UseG1GC -XX:+ExtendedDTraceProbes Alloc </dev/null >/tmp/alloc.log 2>&1 & echo started pid $!'
 
@@ -37,9 +37,10 @@ read BEG END < <($SSH "readelf -n '$LIBJVM' 2>/dev/null | awk '
   /Location:/ { if(getloc==\"begin\"&&!b){b=strtonum(\$2)} else if(getloc==\"end\"&&!e){e=strtonum(\$2)}; getloc=\"\" }
   END{print b\" \"e}'")
 if [[ -z "${BEG:-}" || -z "${END:-}" || "$BEG" == "0" ]]; then
-  c_info "couldn't auto-resolve USDT offsets. Confirm the probes exist + see them working with bpftrace (definitely supports USDT):"
-  c_info "    ssh fedora@$IP \"sudo bpftrace -e 'usdt:$LIBJVM:hotspot:gc__begin { @=count(); }'\""
-  c_fail "re-run after resolving BEGIN/END offsets, or pass them: deploy + run 'javagc $LIBJVM <begin> <end>'"
+  c_info "no HotSpot USDT gc probes in this libjvm.so. Fedora's OpenJDK is NOT"
+  c_info "built with --enable-dtrace, so hotspot:gc__begin/gc__end don't exist. Confirm:"
+  c_info "    ssh fedora@$IP \"sudo bpftrace -l 'usdt:$LIBJVM:hotspot:*'\"   # expect 0 on Fedora"
+  c_fail "this chapter needs a USDT/dtrace-enabled JVM (e.g. a --enable-dtrace OpenJDK build)."
 fi
 c_ok "gc__begin@$BEG  gc__end@$END"
 
