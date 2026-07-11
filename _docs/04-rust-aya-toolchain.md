@@ -231,29 +231,106 @@ the two-crate workspace.
    Chapter 2. Use RustRover to edit and to run `cargo build`/`clippy`;
    use the terminal to deploy.
 
-### Remote development & step-debugging against the VM (RustRover)
+### Step-debugging the loader on the VM (RustRover / gdb)
 
-> **PLACEHOLDER — to be written.** Goal: configure RustRover (JetBrains) so
-> you can build against the toolchain and **step through the user-space loader
-> while it runs on the `ebpf-target` VM**, rather than only building locally and
-> tailing logs. Fill this section in with the concrete, verified steps.
->
-> Points to cover when writing it up:
-> - **SSH remote target**: add the guest (`fedora@<vm-ip>`, key from Chapter 2)
->   as a RustRover *Remote Development* / SSH configuration.
-> - **Where things run**: the loader (user space) runs on the guest under
->   `sudo` — the debugger has to attach *there*, not on the laptop. The eBPF
->   half runs in the kernel and is **not** step-debuggable this way (inspect it
->   with `bpftool`/`bpftrace` instead — Chapter 5).
-> - **Debugger**: remote **gdb/lldb** attaching to the loader on the guest
->   (`gdbserver` on the VM, or RustRover's remote debug run config); build with
->   debug info (a `dev`/`debug` profile or `-C debuginfo=2`) so breakpoints in
->   the loader resolve.
-> - **Deploy hook**: wire a RustRover run config to `scripts/lab/deploy-to-target.sh`
->   so build → ship → run(-under-debugger) is one action.
-> - **Caveats**: `sudo` for the remote process; the deployed binary path on the
->   guest; and that eBPF-side "stepping" means map/ring-buffer inspection, not
->   source-line stepping.
+Editing locally and tailing logs gets you far, but sometimes you want to
+**stop the loader on a line and look around** — inspect the `Ebpf` object
+after `load()`, watch a ring-buffer read, see why an `attach()` returned
+an error. You can do that against the guest, with one hard boundary to
+keep straight first.
+
+#### What is (and isn't) debuggable
+
+The loader is an ordinary user-space Rust program — breakpoints, stepping,
+variable inspection all work normally. But it runs **on the guest, under
+`sudo`** (loading eBPF needs `CAP_BPF`/`CAP_SYS_ADMIN`), so the debugger
+has to attach *there*, not on your laptop. The way to bridge that is
+`gdbserver` on the VM and a `gdb` (or RustRover) that connects to it.
+
+The **eBPF half is not source-line debuggable this way**. Once a program
+is verified and loaded it runs in kernel context; there's no gdb stepping
+into it. You "debug" the kernel side by *observing* it — `bpftool prog
+dump xlated`, `bpftool map dump`, `aya-log`, and `bpftrace` (Chapter 5).
+So: gdb for the loader, `bpftool`/`bpftrace` for the program.
+
+#### The mechanism, from the terminal
+
+RustRover's remote-debug run config is a GUI wrapper over this exact flow,
+so it's worth doing once by hand — then the IDE config is obvious.
+
+**1. Build with debug info.** The `dev` profile already carries it
+(`cargo build` → `target/debug/<name>`, unoptimized + debuginfo). A
+release binary is stripped of much of it; if you must debug an optimized
+build, add `-C debuginfo=2`. Keep the binary **with symbols on the
+laptop** — gdb reads symbols locally and only the *process* runs remote.
+
+**2. Ship the binary and start `gdbserver` on the guest** (under `sudo`,
+so the inferior has the caps to load eBPF):
+
+```bash
+[laptop]$ scp target/debug/hello fedora@<vm-ip>:/home/fedora/hello
+[vm]$     sudo gdbserver 0.0.0.0:2345 /home/fedora/hello
+          Process /home/fedora/hello created; pid = ...
+          Listening on port 2345
+```
+
+(`gdbserver` ships in Fedora's `gdb-gdbserver` package.) `gdbserver`
+launches the program stopped, waiting for a debugger.
+
+**3. Connect from the laptop, pointing gdb at the local symbol-ful
+binary:**
+
+```bash
+[laptop]$ gdb -q target/debug/hello
+(gdb) target remote <vm-ip>:2345
+(gdb) break main.rs:57          # e.g. the program.load() line
+(gdb) continue
+Thread 1 "hello" hit Breakpoint 1, hello::main::{async_block#0} () at hello/src/main.rs:57
+57          program.load()?;
+(gdb) bt        # full source backtrace, through the tokio runtime
+```
+
+That's the whole loop: a source-line breakpoint in the loader stops the
+process running on the VM, with locals and backtrace resolving against
+your local source. Two practical notes gdb will remind you of:
+
+- **`set sysroot /`** (or just launching gdb with the local binary path,
+  as above) keeps it from copying shared libraries over the wire — "file
+  transfers from remote targets can be slow" otherwise.
+- gdb may offer **debuginfod** auto-download on connect; fine to decline
+  (`set debuginfod enabled off`) — you have the symbols you need locally.
+
+#### Wiring it into RustRover
+
+With the mechanism understood, the IDE config is a thin layer:
+
+- **Add the guest as an SSH host** — *Settings → Tools → SSH
+  Configurations*: host `<vm-ip>`, user `fedora`, the key from Chapter 2.
+  (RustRover *Remote Development* — running the whole IDE backend on the
+  guest — also works, but it's heavier than you need; SSH + remote debug
+  is enough.)
+- **A "Remote Debug" run configuration** (GDB Remote Debug): *Debugger*
+  = "Attach to remote GDB server", target `<vm-ip>:2345`, *Symbol file*
+  = your local `target/debug/<name>`, *Sysroot* = `/`. Set breakpoints in
+  the loader source and hit Debug; RustRover speaks the same gdb remote
+  protocol you just used.
+- **A "Before launch" step** that runs `scripts/lab/deploy-to-target.sh`
+  (Chapter 2) — or a small wrapper that also `ssh`es in to start
+  `sudo gdbserver … <binary>` — so *build → ship → run-under-debugger* is
+  one green button.
+
+#### Caveats
+
+- **`sudo` on the guest.** The inferior must have `CAP_BPF`; run
+  `gdbserver` under `sudo` (the lab's `fedora` user has passwordless
+  sudo). Attaching to an already-running loader instead? `sudo gdbserver
+  --attach :2345 <pid>`.
+- **Binary paths must match** between the `scp` destination, the
+  `gdbserver` argument, and RustRover's symbol file — mismatched builds
+  give "breakpoint set but not yet resolved" and never stop.
+- **eBPF ≠ steppable.** Breakpoints only bind in the loader. To "watch"
+  the program, inspect its maps/ring buffers and `aya-log` output — the
+  kernel-side visibility tools are Chapter 5, not gdb.
 
 ## The eBPF tooling landscape
 
