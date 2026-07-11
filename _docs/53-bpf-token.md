@@ -140,14 +140,19 @@ the "observation" is reading the delegation the kernel will enforce.
 ## Cross-check
 
 ```bash
-[vm]$ uname -r                                   # need >= 6.9 for BPF token
-[vm]$ mount | grep 'type bpf'                    # the delegate_* options on the mount
-[vm]$ sudo bpftool feature probe | grep -i token # token support in this kernel
+[vm]$ uname -r                                              # need >= 6.9 for BPF token
+[vm]$ mount | grep 'type bpf'                               # the delegate_* options on the mount
+[vm]$ sudo mount -t bpf -o delegate_cmds=bogus bpffs /mnt   # rejected → the kernel enforces the policy
+[vm]$ grep BPF_TOKEN_CREATE /usr/include/linux/bpf.h        # the token ABI is present
 ```
 
 The `delegate_*` options visible on the mount are the cross-check: they're the
 exact set of commands, maps, programs, and attach types a token derived from
 this bpffs will permit — and nothing outside that set will load, token or not.
+That a **bogus** axis is rejected (rather than silently ignored) is the proof
+the kernel is actually parsing and enforcing the delegation. Note `bpftool
+feature probe` (v7.6.0) does *not* print a "token" line even though support is
+present — the delegated mount, not that probe, is the capability check.
 
 ## What you learned
 
@@ -168,9 +173,12 @@ and workqueues** running inside the kernel.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run (kernel ≥ 6.9): that bpffs accepts the
-`delegate_*` mount options and they appear in `mount` output; that
-`bpftool feature probe` reports token support; and treat the Aya `EbpfLoader`
-token wiring as emerging — verify against the released API before relying on
-it.*
+*Verification status: <span class="status status--verified">verified (privileged half) — Fedora 44, kernel 7.1.3</span>.
+On the lab VM, bpffs accepts `delegate_cmds`/`delegate_maps`/`delegate_progs`
+and shows them in `mount`; a **bogus** axis is rejected, proving the kernel
+enforces the policy; and `BPF_TOKEN_CREATE` is present in the kernel ABI.
+(`bpftool feature probe` v7.6.0 shows no "token" line — a bpftool gap, not a
+kernel one.) The Aya `EbpfLoader` token option is confirmed **still emerging**:
+against the pinned aya 0.14.0 there is no `token_path`/token method on the
+loader, so `illustrative/loader_with_token.rs` shows the intended shape, not a
+shipped API. libbpf threads it via `bpf_token_path` today.*

@@ -38,25 +38,37 @@ assistant must not self-promote.
 > and the exact Fedora Cloud image filename (Chapter 2). That is the
 > process working as intended, not a defect.
 
-## Status snapshot — VM smoke campaign (2026-07-11, through r62)
+## Status snapshot — VM smoke campaign (2026-07-11, through r65)
 
 The full corpus was built and run end-to-end on the KVM lab
 (`ebpf-target` / `ebpf-peer`, Fedora 44, **kernel 7.1.3**, BTF present).
-Most chapters are now `verified`; the deck build (101/201) and the diagram
-accuracy pass are also done. **Three runnable examples remain open** — this
-is the actionable to-do after the machine update/reboot:
+All chapters with a runnable demo are now `verified`; the deck build
+(101/201) and the diagram accuracy pass are also done. **The open items are
+now closed** (r64–r65):
 
-| Ex | State | What's needed | How to verify |
-|----|-------|---------------|---------------|
-| **41-sudoadd** | **broken on 7.1.3** — verifier rejects the program | Retarget/retune like we did 07/08 (do_unlinkat→vfs_unlink) and 20 (USDT→.symtab). Check the `sys_enter/exit_read` arg+ret offsets (buf @24, count @32, ret @16) against *this* kernel, and whether `bpf_probe_write_user` into sudo's buffer still changes parsed policy (payload/comment padding may need tuning). | VM up → `cd examples/41-sudoadd && ./demo.sh`; watch the verifier error, adjust, confirm `/proc/sys/kernel/tainted` flips and sudo grant changes. |
-| **53-bpf-token** | unverified — emerging aya API | Needs bpffs `delegate_*` mount options (kernel ≥6.9; we have 7.1.3) + `bpftool feature probe` showing token support; verify the aya `EbpfLoader` token wiring against the *released* API. | VM up → mount bpffs with delegate opts, `./demo.sh`; confirm the mount opts appear and the loader gets a token. |
-| **60-offload** | `out of scope` — hardware skip | NIC hardware offload; no offload-capable NIC in the lab. Leave documented as a skip. | N/A on this hardware. |
+| Ex | Final state | Resolution |
+|----|-------------|------------|
+| **41-sudoadd** | **verified** (r64) | Three real bugs, not offsets. (1) Verifier rejected the program: `bpf_probe_write_user` size is `ARG_CONST_SIZE`, so the map-derived length's `0` lower bound failed as "R3 invalid zero-sized read" → clamp to `1..=64`. (2) `comm`-only targeting smashed the loader's shared-library ELF reads and bricked sudo → retarget to a `/etc/sudoers` header **signature**. (3) sudo `lseek`s back to 0 and re-reads for the actual parse → content-match every offset-0 read, not just the first. Verified: victim → `uid=0` while attached, denied on detach, disk untouched. |
+| **53-bpf-token** | **verified** (privileged half) (r65) | bpffs accepts + reads back `delegate_*`; a **bogus** axis is rejected (kernel enforces, not ignores); `BPF_TOKEN_CREATE` in the kernel ABI. Aya loader token API confirmed **still emerging** against aya 0.14.0 (`EbpfLoader` has no `token_path`) — `illustrative/loader_with_token.rs` is intended-shape, not shipped. |
+| **60-offload** | `out of scope` — hardware skip | NIC hardware offload; no offload-capable NIC in the lab. Documented skip; no action. |
+
+**Bonus fix (r64): 39-pidhide** was mislabeled `verified` but only ever
+confirmed *attach*, not the hide. On a live `/proc` (200+ entries returned in
+one `getdents64`) the `for _ in 0..64` record-walk scanned only the first
+slice and hid nothing → raised to `0..512`. Now behaviorally verified (PID
+vanishes from `ls /proc`, reappears on detach).
+
+**Corpus-wide correction (r64):** `bpf_probe_write_user` does **not** taint the
+kernel or emit a `dmesg`/journal warning on kernel 7.1.3 (verified `tainted=0`,
+no boot-journal notice while actively writing user memory). Chapters 39 and 41
+previously led their detection sections with that taint signal; both now rely
+on loaded-program enumeration instead and flag the taint as absent.
 
 Everything else that has a runnable demo is `verified (Fedora 44, kernel
-7.1.3)`, including the recently-closed **20-javagc** (uprobe the G1
-collector from libjvm `.symtab`), **47-pg-probe** (eu-unstrip symbol
-merge), **49/55/57** (C references, guest-side), and **51-userspace-ebpf**
-(host rbpf run, `interpreter=42 jit=42` — no VM needed).
+7.1.3)`, including **20-javagc** (uprobe the G1 collector from libjvm
+`.symtab`), **47-pg-probe** (eu-unstrip symbol merge), **49/55/57** (C
+references, guest-side), and **51-userspace-ebpf** (host rbpf run,
+`interpreter=42 jit=42` — no VM needed).
 
 **To resume after reboot:** `sg libvirt -c "bash scripts/lab/lab-up.sh"`
 (both guests snapshot to `lab-ready`; `revert-vm.sh` is the undo), bring up

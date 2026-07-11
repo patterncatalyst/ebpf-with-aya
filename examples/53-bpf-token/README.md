@@ -38,7 +38,18 @@ sudo bpftool feature probe | grep -i token
 
 ## Verification status
 
-**Unverified** (kernel ≥ 6.9). Confirm bpffs accepts the `delegate_*` mount
-options and they show in `mount`; that `bpftool feature probe` reports token
-support; and treat the Aya `EbpfLoader` token wiring as emerging — verify
-against the released API.
+**Verified (privileged half) — Fedora 44, kernel 7.1.3.** On the lab VM,
+bpffs accepts the `delegate_cmds`/`delegate_maps`/`delegate_progs` options and
+reads them back in `mount`; an **invalid** axis (`delegate_cmds=not_a_real_cmd`)
+is *rejected*, proving the kernel parses and enforces the policy rather than
+ignoring it; and `BPF_TOKEN_CREATE` is present in the kernel ABI
+(`/usr/include/linux/bpf.h`). Note `bpftool feature probe` (v7.6.0) does not
+surface a "token" line — the delegated mount, not that probe, is the real
+capability check.
+
+The **Aya loader-side token API remains emerging**: confirmed against the
+pinned **aya 0.14.0** — `EbpfLoader` exposes no `token_path`/token method (its
+builder is `btf`/`override_global`/`map_pin_path`/`extension`/`load*`), so the
+`illustrative/loader_with_token.rs` shape is still the intended-not-shipped
+form. libbpf-based loaders thread this via `bpf_token_path` today; track the
+Aya release notes for when the method lands.
