@@ -22,7 +22,7 @@ scp -q -o StrictHostKeyChecking=accept-new services/python/* "fedora@$TIP:/tmp/t
 $SSH "fedora@$TIP" 'cd /tmp/three-signals/java && podman build -t ts-java . && podman rm -f ts-java 2>/dev/null; podman run -d --name ts-java -p 8081:8080 ts-java >/dev/null && echo java up'
 $SSH "fedora@$TIP" 'cd /tmp/three-signals/python && podman build -t ts-python . && podman rm -f ts-python 2>/dev/null; podman run -d --name ts-python -p 8082:8080 ts-python >/dev/null && echo python up'
 sleep 2
-$SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8081/; curl -s -o /dev/null http://127.0.0.1:8082/; sleep 0.1; done" >/dev/null 2>&1 & echo driving load at both services'
+$SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8081/; curl -s -o /dev/null http://127.0.0.1:8082/; sleep 0.1; done" </dev/null >/dev/null 2>&1 & echo driving load at both services'
 c_info "Grafana 127.0.0.1:3000 — metric: histogram_quantile(0.95, sum by (le,service) (rate(ebpf_http_server_duration_ms_bucket[1m]))); then Tempo spans + Loki logs by trace_id"
 c_step "deploying httpwatch to $VM (Ctrl-C to stop)"
 OTEL_ENDPOINT="http://$GW:4318" "$LAB/deploy-to-target.sh" "$VM" "$BIN" --

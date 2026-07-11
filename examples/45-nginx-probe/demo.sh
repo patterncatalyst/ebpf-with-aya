@@ -19,7 +19,7 @@ $SSH "fedora@$TIP" 'mkdir -p /tmp/nginx-probe'
 scp -o StrictHostKeyChecking=accept-new "$SCRIPT_DIR/Containerfile" "fedora@$TIP:/tmp/nginx-probe/Containerfile" >/dev/null
 $SSH "fedora@$TIP" 'cd /tmp/nginx-probe && podman build -t ebpf-nginx . && podman rm -f ebpf-nginx 2>/dev/null; podman run -d --name ebpf-nginx -p 8080:80 ebpf-nginx && sleep 2 && echo nginx up on :8080'
 # drive load
-$SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8080/; sleep 0.05; done" >/dev/null 2>&1 & echo driving HTTP load'
+$SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8080/; sleep 0.05; done" </dev/null >/dev/null 2>&1 & echo driving HTTP load'
 sleep 1
 WPID="$($SSH "fedora@$TIP" "pgrep -f 'nginx: worker' | head -1")"
 [ -n "$WPID" ] || c_fail "could not find nginx worker pid on $VM"

@@ -22,9 +22,9 @@ c_info "target=$TIP OTLP=http://$GW:4318  (postgres + query load + lock contenti
 $SSH "fedora@$TIP" "podman rm -f ebpf-pg 2>/dev/null; podman run -d --name ebpf-pg -e POSTGRES_PASSWORD=demo -p 5432:5432 $PG_IMAGE >/dev/null && echo postgres starting"
 $SSH "fedora@$TIP" "for i in \$(seq 1 30); do podman exec ebpf-pg pg_isready -U postgres >/dev/null 2>&1 && break; sleep 1; done; $PSQL 'CREATE TABLE IF NOT EXISTS t(id int primary key, v int); INSERT INTO t VALUES (1,0) ON CONFLICT DO NOTHING;' >/dev/null && echo seeded"
 # steady query load
-$SSH "fedora@$TIP" "nohup bash -c 'while true; do $PSQL \"SELECT count(*) FROM t; SELECT pg_sleep(0.01);\" >/dev/null 2>&1; sleep 0.1; done' >/dev/null 2>&1 & echo driving query load"
+$SSH "fedora@$TIP" "nohup bash -c 'while true; do $PSQL \"SELECT count(*) FROM t; SELECT pg_sleep(0.01);\" >/dev/null 2>&1; sleep 0.1; done' </dev/null >/dev/null 2>&1 & echo driving query load"
 # lock contention: one tx holds the row, another waits on it (fires ProcSleep)
-$SSH "fedora@$TIP" "nohup bash -c 'while true; do podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"BEGIN; UPDATE t SET v=v+1 WHERE id=1; SELECT pg_sleep(2); COMMIT;\" >/dev/null 2>&1 & sleep 0.3; podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"UPDATE t SET v=v+1 WHERE id=1;\" >/dev/null 2>&1; wait; sleep 1; done' >/dev/null 2>&1 & echo staging lock contention"
+$SSH "fedora@$TIP" "nohup bash -c 'while true; do podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"BEGIN; UPDATE t SET v=v+1 WHERE id=1; SELECT pg_sleep(2); COMMIT;\" </dev/null >/dev/null 2>&1 & sleep 0.3; podman exec -e PGPASSWORD=demo ebpf-pg psql -U postgres -c \"UPDATE t SET v=v+1 WHERE id=1;\" >/dev/null 2>&1; wait; sleep 1; done' </dev/null >/dev/null 2>&1 & echo staging lock contention"
 sleep 2
 WPID="$($SSH "fedora@$TIP" "pgrep -f 'postgres:.*' | head -1 || pgrep -x postgres | head -1")"
 [ -n "$WPID" ] || c_fail "no postgres backend pid found on $VM"
