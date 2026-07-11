@@ -71,7 +71,12 @@ fn on_exit(ctx: &TracePointContext) -> Result<(), ()> {
     let total = ret as u64;
     let mut bpos: u64 = 0;
     let mut prev: u64 = 0;
-    for _ in 0..64 {
+    // A single getdents64 fills its whole buffer: `ls /proc` returns *all*
+    // entries (200+ on a live host) in one call, not 64 at a time. The bound
+    // must therefore cover a realistic /proc in one pass — there is no "next
+    // call" to catch the overflow, the entries past the bound are simply in
+    // this same buffer and would leak. The verifier still needs a constant cap.
+    for _ in 0..512 {
         if bpos >= total {
             break;
         }

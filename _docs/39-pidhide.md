@@ -105,18 +105,24 @@ The load-bearing parts:
   **offset 19**. We read both from the *user* buffer with
   `bpf_probe_read_user` (it's userspace memory, so the user reader), walking
   `bpos` forward by each `d_reclen`.
-- The **bounded `for _ in 0..64`** is mandatory: the verifier rejects an
-  unbounded walk. Sixty-four entries per call is plenty for `/proc`; you'd
-  re-hide on the next `getdents64` if a listing were larger.
+- The **bounded loop** (`for _ in 0..512`) is mandatory: the verifier rejects
+  an unbounded walk. The bound has to cover a *whole* `/proc` in one pass — a
+  live host has 200+ entries and `ls` pulls them all in a **single**
+  `getdents64` (the buffer is filled completely), so there is no "next call" to
+  catch an overflow. An entry past the bound stays in the same returned buffer
+  and would leak, unhidden. (An early draft capped this at 64 and silently
+  failed to hide anything on a real system — the cap must be a realistic
+  upper bound on entries-per-call, not a small constant.)
 - When `d_name` matches the target PID string, we **rewrite the *previous*
   entry's `d_reclen`** to `prev_reclen + reclen` with `bpf_probe_write_user`.
   Now the walker skips the target. (If the target is the very first entry
   there's no previous to extend — a known edge case left unhandled here, and
   noted because real implementations special-case it.)
 - **`bpf_probe_write_user` is the dangerous helper.** It writes into another
-  process's memory from the kernel and **sets the kernel taint flag**
-  (`TAINT_USER`) the first time it's used — which, as we'll see, is exactly
-  how a defender notices.
+  process's memory from the kernel. Older material says it also taints the
+  kernel the first time it's used; on the lab kernel (7.1.3) it does not (see
+  the detection section) — so the reliable tell is enumerating loaded
+  programs, not a passive flag.
 
 The loader writes the PID-to-hide as a null-padded string into `TARGET` and
 attaches both tracepoints; `HIDES` counts splices for an
@@ -135,23 +141,26 @@ detach and it reappears.
 
 ## Detecting it (the part that matters)
 
-The whole reason to build this is to recognize it. Three signals, from
-easiest to most thorough:
+The whole reason to build this is to recognize it. Two reliable signals, plus
+a caveat about one that's often overstated:
 
-1. **The kernel is tainted.** `bpf_probe_write_user` trips `TAINT_USER`.
-   `cat /proc/sys/kernel/tainted` becomes non-zero, and `dmesg` logs a
-   one-time warning naming the writing process. On a hardened host that
-   warning *is* the alert.
-2. **A BPF program is loaded that shouldn't be.** `sudo bpftool prog show`
+1. **A BPF program is loaded that shouldn't be.** `sudo bpftool prog show`
    lists tracepoint programs on `getdents64` — there's no legitimate reason
    for one, and `bpftool` (and your own monitoring) can enumerate every
-   loaded program and its attach point.
-3. **The data disagrees with itself.** The process exists by every channel
+   loaded program and its attach point. This is the most reliable tell.
+2. **The data disagrees with itself.** The process exists by every channel
    that *doesn't* go through `getdents64`: `kill -0 <pid>` succeeds,
    `/proc/<pid>/` is directly statable, and a BPF **task iterator**
    (Chapter in Part 8) walking the kernel's real task list shows it. A
    monitor that compares "what `ls /proc` returned" with "what the task list
    actually contains" catches the discrepancy immediately.
+3. **Don't count on a kernel taint.** Older write-ups say
+   `bpf_probe_write_user` trips `TAINT_USER` and makes `dmesg` warn. On the lab
+   kernel (7.1.3) it does **neither** — verified while this program was
+   actively rewriting `getdents64` buffers: `/proc/sys/kernel/tainted` stayed
+   `0` and `journalctl -k` for the whole boot logged no "corrupt user memory"
+   notice. Treat the loaded-program enumeration above as your real detection,
+   not a passive flag that may never flip.
 
 The lesson cuts both ways: eBPF can hide things from userspace tools, and
 eBPF (plus the kernel's own bookkeeping) is also the most reliable way to
@@ -164,10 +173,13 @@ catch that it happened.
 - **`getdents64` buffer rewriting** is how eBPF "rootkits" hide files and
   processes: splice an entry out by extending the previous record's
   `d_reclen` with `bpf_probe_write_user`.
-- That helper is **kernel-tainting and lab-only** — using it is itself a
-  detectable event.
-- **Detection**: the taint flag, enumerating loaded BPF programs, and
-  cross-checking userspace listings against the kernel's real task list.
+- That helper is **lab-only** — writing another process's memory from the
+  kernel is exactly what a defender watches for.
+- **Detection**: enumerating loaded BPF programs and cross-checking userspace
+  listings against the kernel's real task list. (Not the kernel taint flag —
+  it doesn't flip on current kernels.)
+- The scan bound must cover a **whole** `/proc` in one `getdents64` — a
+  too-small cap silently hides nothing.
 
 Next, Chapter 40 turns to defense proper: using an LSM hook to **protect a
 file from tampering**, even by root.
@@ -175,4 +187,10 @@ file from tampering**, even by root.
 ---
 
 *Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*
+Built on the host, run on the lab VM. Behaviorally confirmed, not just "loads":
+with the target PID attached, a bare `ls /proc` no longer lists it (hide count
+increments) while `kill -0 <pid>` succeeds and `/proc/<pid>/` is still directly
+statable; on detach the PID reappears. The scan bound was raised from 64 to 512
+after the original cap scanned only the first 64 of `/proc`'s 200+ single-call
+`getdents64` entries and thus hid nothing. Also confirmed on this kernel:
+`bpf_probe_write_user` does not taint (`/proc/sys/kernel/tainted` stays `0`).*
