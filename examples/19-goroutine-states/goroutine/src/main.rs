@@ -48,12 +48,12 @@ async fn main() -> anyhow::Result<()> {
     let bin = std::env::args().nth(1).unwrap_or_else(|| "/home/fedora/target-go".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/goroutine")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let prog: &mut UProbe = ebpf.program_mut("casgstatus").unwrap().try_into()?;
     prog.load()?;
     // Attach ONLY a uprobe (entry). Never a uretprobe on Go — see the chapter.
     prog.attach("runtime.casgstatus", &bin, UProbeScope::AllProcesses)?;
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
     info!("uprobe attached to runtime.casgstatus in {bin}");
 
     let provider = init_otel()?;

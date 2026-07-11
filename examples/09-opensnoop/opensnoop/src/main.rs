@@ -37,7 +37,6 @@ fn cstr(b: &[u8]) -> String {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/opensnoop")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let enter: &mut TracePoint = ebpf.program_mut("sys_enter_openat").unwrap().try_into()?;
     enter.load()?;
@@ -46,6 +45,7 @@ async fn main() -> anyhow::Result<()> {
     exit.load()?;
     exit.attach("syscalls", "sys_exit_openat")?;
     info!("opensnoop attached to syscalls:sys_{{enter,exit}}_openat");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-opensnoop");

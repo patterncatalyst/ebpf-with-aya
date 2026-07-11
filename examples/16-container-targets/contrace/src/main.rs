@@ -46,7 +46,6 @@ async fn main() -> anyhow::Result<()> {
     let label = std::env::args().nth(2).unwrap_or_else(|| if target_cgroup == 0 { "all".into() } else { "container".into() });
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/contrace")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     // Write the target cgroup id into the config map before attaching.
     {
@@ -62,6 +61,7 @@ async fn main() -> anyhow::Result<()> {
     } else {
         info!("contrace attached, scoped to cgroup {target_cgroup} (label={label})");
     }
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-contrace");

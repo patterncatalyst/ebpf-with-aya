@@ -62,13 +62,13 @@ fn print_hist(b: &Buckets) {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/runqlat")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     for tp in ["sched_wakeup", "sched_wakeup_new", "sched_switch"] {
         let p: &mut aya::programs::TracePoint = ebpf.program_mut(tp).unwrap().try_into()?;
         p.load()?;
         p.attach("sched", tp)?;
     }
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
     info!("runqlat attached to sched_wakeup/_new + sched_switch");
 
     // Shared snapshot the OTLP gauge callback reads.

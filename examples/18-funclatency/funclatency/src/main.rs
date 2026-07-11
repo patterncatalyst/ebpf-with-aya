@@ -35,7 +35,6 @@ async fn main() -> anyhow::Result<()> {
     let sym = std::env::args().nth(2).unwrap_or_else(|| "slow_op".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/funclatency")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let en: &mut UProbe = ebpf.program_mut("fn_enter").unwrap().try_into()?;
     en.load()?;
@@ -43,6 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let ex: &mut UProbe = ebpf.program_mut("fn_exit").unwrap().try_into()?;
     ex.load()?;
     ex.attach(sym.as_str(), &bin, UProbeScope::AllProcesses)?;
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
     info!("funclatency timing {sym} in {bin}");
 
     let provider = init_otel()?;

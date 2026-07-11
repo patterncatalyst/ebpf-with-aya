@@ -44,13 +44,13 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|_| "/usr/bin/bash".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/bashreadline")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let prog: &mut UProbe = ebpf.program_mut("readline_ret").unwrap().try_into()?;
     prog.load()?;
     // attach(location, target, scope): symbol "readline", whole-system.
     prog.attach("readline", &target, UProbeScope::AllProcesses)?;
     info!("uretprobe attached to readline in {target}");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-bashreadline");

@@ -49,7 +49,6 @@ async fn main() -> anyhow::Result<()> {
         .ok_or_else(|| anyhow::anyhow!("missing END_OFFSET"))?;
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/javagc")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     // Attach a uprobe at each USDT probe offset (fn name = None -> use offset).
     let b: &mut UProbe = ebpf.program_mut("gc_begin").unwrap().try_into()?;
@@ -58,6 +57,7 @@ async fn main() -> anyhow::Result<()> {
     let e: &mut UProbe = ebpf.program_mut("gc_end").unwrap().try_into()?;
     e.load()?;
     e.attach(end_off, &libjvm, UProbeScope::AllProcesses)?;
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
     info!("javagc attached to gc__begin@{begin_off} / gc__end@{end_off} in {libjvm}");
 
     let provider = init_otel()?;

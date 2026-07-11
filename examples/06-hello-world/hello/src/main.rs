@@ -52,14 +52,16 @@ async fn main() -> anyhow::Result<()> {
         "/hello"
     )))?;
 
-    if let Err(e) = EbpfLogger::init(&mut ebpf) {
-        warn!("failed to initialize aya-log: {e}");
-    }
-
     // Attach the tracepoint.
     let program: &mut TracePoint = ebpf.program_mut("hello").unwrap().try_into()?;
     program.load()?;
     program.attach("syscalls", "sys_enter_execve")?;
+
+    // aya-log 0.3's EbpfLogger::init take_map()s AYA_LOGS out of the object, so
+    // it must run AFTER the program is loaded (the program references that map).
+    if let Err(e) = EbpfLogger::init(&mut ebpf) {
+        warn!("failed to initialize aya-log: {e}");
+    }
     info!("attached to syscalls:sys_enter_execve; reporting ebpf_events_total");
 
     let provider = init_otel()?;

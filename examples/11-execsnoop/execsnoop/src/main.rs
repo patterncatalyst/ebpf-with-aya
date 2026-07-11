@@ -47,12 +47,12 @@ fn cmdline(ev: &ExecEvent) -> String {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/execsnoop")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let tp: &mut TracePoint = ebpf.program_mut("sys_enter_execve").unwrap().try_into()?;
     tp.load()?;
     tp.attach("syscalls", "sys_enter_execve")?;
     info!("execsnoop attached to syscalls:sys_enter_execve");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-execsnoop");

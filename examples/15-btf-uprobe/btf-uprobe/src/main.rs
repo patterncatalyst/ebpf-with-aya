@@ -38,12 +38,12 @@ async fn main() -> anyhow::Result<()> {
     let target = std::env::args().nth(1).unwrap_or_else(|| "/home/fedora/target-app".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/btf-uprobe")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let prog: &mut UProbe = ebpf.program_mut("process_order_enter").unwrap().try_into()?;
     prog.load()?;
     prog.attach("process_order", &target, UProbeScope::AllProcesses)?;
     info!("uprobe attached to process_order in {target}");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-btf-uprobe");

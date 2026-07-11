@@ -35,13 +35,13 @@ fn init_otel() -> anyhow::Result<opentelemetry_sdk::metrics::SdkMeterProvider> {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/hardirqs")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     for tp in ["irq_handler_entry", "irq_handler_exit"] {
         let p: &mut aya::programs::TracePoint = ebpf.program_mut(tp).unwrap().try_into()?;
         p.load()?;
         p.attach("irq", tp)?;
     }
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
     info!("hardirqs attached to irq_handler_entry/exit");
 
     // Snapshot of irq -> total_ns for the OTLP gauge callback.

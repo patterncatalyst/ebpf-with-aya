@@ -45,12 +45,12 @@ fn cstr(b: &[u8]) -> String {
 async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/sigsnoop")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let kill: &mut TracePoint = ebpf.program_mut("sys_enter_kill").unwrap().try_into()?;
     kill.load()?;
     kill.attach("syscalls", "sys_enter_kill")?;
     info!("sigsnoop attached to syscalls:sys_enter_kill");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-sigsnoop");

@@ -44,7 +44,6 @@ async fn main() -> anyhow::Result<()> {
     let lib = std::env::args().nth(1).unwrap_or_else(|| "/usr/lib64/libssl.so.3".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/sslsniff")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let w: &mut UProbe = ebpf.program_mut("ssl_write").unwrap().try_into()?;
     w.load()?;
@@ -56,6 +55,7 @@ async fn main() -> anyhow::Result<()> {
     rr.load()?;
     rr.attach("SSL_read", &lib, UProbeScope::AllProcesses)?;
     info!("sslsniff attached to SSL_write/SSL_read in {lib}");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-sslsniff");

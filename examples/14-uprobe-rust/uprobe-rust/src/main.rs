@@ -34,12 +34,12 @@ async fn main() -> anyhow::Result<()> {
     let target = std::env::args().nth(1).unwrap_or_else(|| "/home/fedora/target-app".to_string());
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/uprobe-rust")))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let prog: &mut UProbe = ebpf.program_mut("compute_enter").unwrap().try_into()?;
     prog.load()?;
     prog.attach("compute", &target, UProbeScope::AllProcesses)?;
     info!("uprobe attached to compute in {target}");
+    if let Err(e) = EbpfLogger::init(&mut ebpf) { warn!("aya-log init failed: {e}"); }
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-uprobe-rust");

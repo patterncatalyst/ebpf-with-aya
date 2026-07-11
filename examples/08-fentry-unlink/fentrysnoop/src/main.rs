@@ -54,10 +54,6 @@ async fn main() -> anyhow::Result<()> {
         env!("OUT_DIR"),
         "/fentrysnoop"
     )))?;
-    if let Err(e) = EbpfLogger::init(&mut ebpf) {
-        warn!("failed to initialize aya-log: {e}");
-    }
-
     // fentry/fexit need the kernel's BTF to resolve the target function type.
     let btf = Btf::from_sys_fs()?;
 
@@ -68,6 +64,12 @@ async fn main() -> anyhow::Result<()> {
     let exit: &mut FExit = ebpf.program_mut("vfs_unlink_exit").unwrap().try_into()?;
     exit.load("vfs_unlink", &btf)?;
     exit.attach()?;
+
+    // aya-log 0.3's EbpfLogger::init take_map()s AYA_LOGS out of the object, so
+    // it must run AFTER the programs are loaded (they reference that map).
+    if let Err(e) = EbpfLogger::init(&mut ebpf) {
+        warn!("failed to initialize aya-log: {e}");
+    }
     info!("fentry+fexit attached to vfs_unlink; watching for unlinks");
 
     let provider = init_otel()?;
