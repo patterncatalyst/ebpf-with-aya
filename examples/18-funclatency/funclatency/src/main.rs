@@ -3,7 +3,7 @@
 //! histogram. Usage: funclatency BIN SYMBOL  (default target-app slow_op).
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -39,10 +39,10 @@ async fn main() -> anyhow::Result<()> {
 
     let en: &mut UProbe = ebpf.program_mut("fn_enter").unwrap().try_into()?;
     en.load()?;
-    en.attach(Some(&sym), 0, &bin, None)?;
+    en.attach(sym.as_str(), &bin, UProbeScope::AllProcesses)?;
     let ex: &mut UProbe = ebpf.program_mut("fn_exit").unwrap().try_into()?;
     ex.load()?;
-    ex.attach(Some(&sym), 0, &bin, None)?;
+    ex.attach(sym.as_str(), &bin, UProbeScope::AllProcesses)?;
     info!("funclatency timing {sym} in {bin}");
 
     let provider = init_otel()?;

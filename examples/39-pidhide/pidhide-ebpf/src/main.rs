@@ -8,7 +8,7 @@
 use aya_ebpf::{
     helpers::{
         bpf_get_current_pid_tgid, bpf_probe_read_user, bpf_probe_read_user_str_bytes,
-        gen::bpf_probe_write_user,
+        generated::bpf_probe_write_user,
     },
     macros::{map, tracepoint},
     maps::{Array, HashMap},

@@ -5,8 +5,8 @@ license = "Apache-2.0"
 edition = "2021"
 
 [dependencies]
-aya = "0.13"
-aya-log = "0.2"
+aya = "0.14"
+aya-log = "0.3"
 hello-common = { path = "../hello-common", features = ["user"] }
 
 anyhow = "1"
@@ -21,4 +21,4 @@ opentelemetry-otlp = { version = "0.27", features = ["http-proto", "reqwest-clie
 
 [build-dependencies]
 # Compiles ../hello-ebpf for the BPF target and exposes the object via OUT_DIR.
-aya-build = "0.1"
+aya-build = "0.2"

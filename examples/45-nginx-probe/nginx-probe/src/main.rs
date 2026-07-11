@@ -5,7 +5,7 @@
 use std::collections::HashMap as Std;
 use std::time::Duration;
 
-use aya::{maps::HashMap, programs::UProbe, Ebpf};
+use aya::{maps::HashMap, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use log::info;
 use opentelemetry::{global, metrics::Counter, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
@@ -47,6 +47,10 @@ async fn main() -> anyhow::Result<()> {
     let target = std::env::args().nth(1)
         .ok_or_else(|| anyhow::anyhow!("usage: nginx-probe <nginx-binary-path> [worker-pid]"))?;
     let pid: Option<i32> = std::env::args().nth(2).and_then(|s| s.parse().ok());
+    let scope = match pid.and_then(|p| std::num::NonZeroU32::new(p as u32)) {
+        Some(p) => UProbeScope::OneProcess(p),
+        None => UProbeScope::AllProcesses,
+    };
 
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/nginx-probe")))?;
     for (prog_name, fn_name) in [
@@ -55,7 +59,7 @@ async fn main() -> anyhow::Result<()> {
     ] {
         let p: &mut UProbe = ebpf.program_mut(prog_name).unwrap().try_into()?;
         p.load()?;
-        p.attach(Some(fn_name), 0, &target, pid)?;
+        p.attach(fn_name, &target, scope)?;
     }
     info!("attached uprobes to {target} (pid {pid:?}) — measuring request latency");
 

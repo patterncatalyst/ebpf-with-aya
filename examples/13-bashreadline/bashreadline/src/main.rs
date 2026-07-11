@@ -4,7 +4,7 @@
 //! interactive bash prompts; exports ebpf_events_total{program="bashreadline"}.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -48,8 +48,8 @@ async fn main() -> anyhow::Result<()> {
 
     let prog: &mut UProbe = ebpf.program_mut("readline_ret").unwrap().try_into()?;
     prog.load()?;
-    // attach(fn_name, offset, target, pid): symbol "readline", whole-system.
-    prog.attach(Some("readline"), 0, &target, None)?;
+    // attach(location, target, scope): symbol "readline", whole-system.
+    prog.attach("readline", &target, UProbeScope::AllProcesses)?;
     info!("uretprobe attached to readline in {target}");
 
     let provider = init_otel()?;

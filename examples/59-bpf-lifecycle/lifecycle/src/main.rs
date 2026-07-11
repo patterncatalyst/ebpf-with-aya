@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
 
     // map_pin_path pins (or REUSES) the program's maps under PIN_DIR
     let mut ebpf = EbpfLoader::new()
-        .map_pin_path(PIN_DIR)
+        .map_pin_path("EVENTS", std::path::PathBuf::from(format!("{PIN_DIR}/EVENTS")))
         .load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/lifecycle")))?;
 
     let link_pin = format!("{PIN_DIR}/svc_link");

@@ -5,8 +5,8 @@ license = "Apache-2.0"
 edition = "2021"
 
 [dependencies]
-aya = "0.13"
-aya-log = "0.2"
+aya = "0.14"
+aya-log = "0.3"
 fentrysnoop-common = { path = "../fentrysnoop-common", features = ["user"] }
 
 anyhow = "1"
@@ -19,4 +19,4 @@ opentelemetry_sdk = { version = "0.27", features = ["rt-tokio", "metrics"] }
 opentelemetry-otlp = { version = "0.27", features = ["http-proto", "reqwest-client", "metrics"] }
 
 [build-dependencies]
-aya-build = "0.1"
+aya-build = "0.2"

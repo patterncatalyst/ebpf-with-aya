@@ -4,7 +4,7 @@ version = "0.1.0"
 license = "Apache-2.0"
 edition = "2021"
 [dependencies]
-aya = "0.13"
+aya = "0.14"
 httpwatch-common = { path = "../httpwatch-common", features = ["user"] }
 anyhow = "1"
 bytes = "1"
@@ -16,4 +16,4 @@ opentelemetry = { version = "0.27", features = ["trace", "logs"] }
 opentelemetry_sdk = { version = "0.27", features = ["rt-tokio", "metrics", "trace", "logs"] }
 opentelemetry-otlp = { version = "0.27", features = ["http-proto", "reqwest-client", "metrics", "trace", "logs"] }
 [build-dependencies]
-aya-build = "0.1"
+aya-build = "0.2"

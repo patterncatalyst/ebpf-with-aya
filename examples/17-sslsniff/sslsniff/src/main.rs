@@ -3,7 +3,7 @@
 //! /usr/lib64/libssl.so.3). Exports ebpf_events_total{program="sslsniff",dir}.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -48,13 +48,13 @@ async fn main() -> anyhow::Result<()> {
 
     let w: &mut UProbe = ebpf.program_mut("ssl_write").unwrap().try_into()?;
     w.load()?;
-    w.attach(Some("SSL_write"), 0, &lib, None)?;
+    w.attach("SSL_write", &lib, UProbeScope::AllProcesses)?;
     let re: &mut UProbe = ebpf.program_mut("ssl_read_enter").unwrap().try_into()?;
     re.load()?;
-    re.attach(Some("SSL_read"), 0, &lib, None)?;
+    re.attach("SSL_read", &lib, UProbeScope::AllProcesses)?;
     let rr: &mut UProbe = ebpf.program_mut("ssl_read_ret").unwrap().try_into()?;
     rr.load()?;
-    rr.attach(Some("SSL_read"), 0, &lib, None)?;
+    rr.attach("SSL_read", &lib, UProbeScope::AllProcesses)?;
     info!("sslsniff attached to SSL_write/SSL_read in {lib}");
 
     let provider = init_otel()?;

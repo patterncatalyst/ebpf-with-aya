@@ -3,7 +3,7 @@
 //! Exports ebpf_events_total{program="uprobe-rust"}.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 
     let prog: &mut UProbe = ebpf.program_mut("compute_enter").unwrap().try_into()?;
     prog.load()?;
-    prog.attach(Some("compute"), 0, &target, None)?;
+    prog.attach("compute", &target, UProbeScope::AllProcesses)?;
     info!("uprobe attached to compute in {target}");
 
     let provider = init_otel()?;

@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use aya::{
     maps::{Array, HashMap, MapData},
-    programs::{Xdp, XdpFlags},
+    programs::{Xdp, XdpMode},
     Ebpf,
 };
 use log::{info, warn};
@@ -57,9 +57,9 @@ async fn main() -> anyhow::Result<()> {
 
     let prog: &mut Xdp = ebpf.program_mut("xdp_lb").unwrap().try_into()?;
     prog.load()?;
-    match prog.attach(&iface, XdpFlags::default()) {
+    match prog.attach(&iface, XdpMode::default()) {
         Ok(_) => info!("XDP LB attached to {iface} (native); VIP_PORT={VIP_PORT} backends={backends:?}"),
-        Err(_) => { prog.attach(&iface, XdpFlags::SKB_MODE)?; warn!("XDP LB attached to {iface} (SKB_MODE)"); }
+        Err(_) => { prog.attach(&iface, XdpMode::Skb)?; warn!("XDP LB attached to {iface} (SKB_MODE)"); }
     }
 
     let provider = init_otel()?;

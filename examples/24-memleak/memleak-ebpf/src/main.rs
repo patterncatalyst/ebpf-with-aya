@@ -15,7 +15,7 @@ use aya_ebpf::{
     helpers::bpf_get_current_pid_tgid,
     macros::{map, uprobe, uretprobe},
     maps::{Array, HashMap, StackTrace},
-    programs::{ProbeContext, RetProbeContext},
+    programs::{tracing::StackIdContext, ProbeContext, RetProbeContext},
 };
 use memleak_common::AllocInfo;
 
@@ -41,9 +41,9 @@ fn on_alloc_return(ctx: &RetProbeContext) {
     if skip(pid) { return; }
     let size = match unsafe { SIZES.get(&id) } { Some(s) => *s, None => return };
     let _ = SIZES.remove(&id);
-    let ptr: u64 = ctx.ret().unwrap_or(0);
+    let ptr: u64 = ctx.ret();
     if ptr == 0 { return; }
-    let stackid = unsafe { STACKS.get_stackid(ctx, BPF_F_USER_STACK as u64) }.unwrap_or(-1) as i32;
+    let stackid = ctx.get_stackid(&STACKS, BPF_F_USER_STACK as u64).unwrap_or(-1) as i32;
     let _ = ALLOCS.insert(&ptr, &AllocInfo { size, stackid, pid }, 0);
 }
 

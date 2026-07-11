@@ -10,7 +10,7 @@ use std::time::Duration;
 
 use aya::{
     maps::{HashMap as BpfHashMap, StackTraceMap},
-    programs::{perf_event::{PerfEventScope, PerfTypeId, SamplePolicy}, PerfEvent},
+    programs::{perf_event::{PerfEventConfig, PerfEventScope, SamplePolicy, SoftwareEvent}, PerfEvent},
     util::{kernel_symbols, online_cpus},
     Ebpf,
 };
@@ -19,8 +19,6 @@ use opentelemetry::{global, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
 use profile_common::{StackKey, COMM_LEN};
 
-// perf_event_attr: software event PERF_COUNT_SW_CPU_CLOCK has config value 0.
-const PERF_COUNT_SW_CPU_CLOCK: u64 = 0;
 
 fn init_otel() -> anyhow::Result<opentelemetry_sdk::metrics::SdkMeterProvider> {
     let endpoint = std::env::var("OTEL_EXPORTER_OTLP_ENDPOINT")
@@ -66,8 +64,7 @@ async fn main() -> anyhow::Result<()> {
     let cpus = online_cpus().map_err(|(_, e)| anyhow::anyhow!("online_cpus: {e}"))?;
     for cpu in cpus {
         prog.attach(
-            PerfTypeId::Software,
-            PERF_COUNT_SW_CPU_CLOCK,
+            PerfEventConfig::Software(SoftwareEvent::CpuClock),
             PerfEventScope::AllProcessesOneCpu { cpu },
             SamplePolicy::Frequency(99),
             true,

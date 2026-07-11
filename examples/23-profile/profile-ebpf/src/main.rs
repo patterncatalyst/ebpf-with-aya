@@ -12,7 +12,7 @@ use aya_ebpf::{
     helpers::{bpf_get_current_comm, bpf_get_current_pid_tgid},
     macros::{map, perf_event},
     maps::{HashMap, StackTrace},
-    programs::PerfEventContext,
+    programs::{PerfEventContext, tracing::StackIdContext},
 };
 use profile_common::StackKey;
 
@@ -32,8 +32,8 @@ pub fn profile_cpu(ctx: PerfEventContext) -> u32 {
     }
 
     // Capture kernel and user stacks. Negative => unavailable for this sample.
-    let kstack = unsafe { STACKS.get_stackid(&ctx, 0) }.unwrap_or(-1) as i32;
-    let ustack = unsafe { STACKS.get_stackid(&ctx, BPF_F_USER_STACK as u64) }.unwrap_or(-1) as i32;
+    let kstack = ctx.get_stackid(&STACKS, 0).unwrap_or(-1) as i32;
+    let ustack = ctx.get_stackid(&STACKS, BPF_F_USER_STACK as u64).unwrap_or(-1) as i32;
 
     let key = StackKey {
         pid,

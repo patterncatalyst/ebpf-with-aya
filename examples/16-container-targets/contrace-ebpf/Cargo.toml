@@ -4,8 +4,8 @@ version = "0.1.0"
 license = "Apache-2.0"
 edition = "2021"
 [dependencies]
-aya-ebpf = "0.1"
-aya-log-ebpf = "0.1"
+aya-ebpf = "0.2"
+aya-log-ebpf = "0.2"
 contrace-common = { path = "../contrace-common" }
 [[bin]]
 name = "contrace"

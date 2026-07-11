@@ -31,7 +31,7 @@ pub fn readline_ret(ctx: RetProbeContext) -> u32 {
 
 fn try_readline(ctx: &RetProbeContext) -> Result<(), i64> {
     // Return value of readline(): char * to the typed line (user memory).
-    let line_ptr: *const u8 = ctx.ret().ok_or(0i64)?;
+    let line_ptr: *const u8 = ctx.ret();
     if line_ptr.is_null() {
         return Ok(());
     }

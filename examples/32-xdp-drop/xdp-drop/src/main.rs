@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use aya::{
     maps::{HashMap, MapData},
-    programs::{Xdp, XdpFlags},
+    programs::{Xdp, XdpMode},
     Ebpf,
 };
 use log::{info, warn};
@@ -61,10 +61,10 @@ async fn main() -> anyhow::Result<()> {
     let prog: &mut Xdp = ebpf.program_mut("xdp_filter").unwrap().try_into()?;
     prog.load()?;
     // Native (driver) XDP first; fall back to generic SKB mode (e.g. in a VM).
-    match prog.attach(&iface, XdpFlags::default()) {
+    match prog.attach(&iface, XdpMode::default()) {
         Ok(_) => info!("XDP attached to {iface} (native)"),
         Err(_) => {
-            prog.attach(&iface, XdpFlags::SKB_MODE)?;
+            prog.attach(&iface, XdpMode::Skb)?;
             warn!("XDP attached to {iface} (generic SKB_MODE — native unavailable)");
         }
     }

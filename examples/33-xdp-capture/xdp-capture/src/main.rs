@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use aya::{
     maps::{HashMap, MapData, RingBuf},
-    programs::{Xdp, XdpFlags},
+    programs::{Xdp, XdpMode},
     Ebpf,
 };
 use log::{info, warn};
@@ -59,9 +59,9 @@ async fn main() -> anyhow::Result<()> {
     let mut ebpf = Ebpf::load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/xdp-capture")))?;
     let prog: &mut Xdp = ebpf.program_mut("xdp_capture").unwrap().try_into()?;
     prog.load()?;
-    match prog.attach(&iface, XdpFlags::default()) {
+    match prog.attach(&iface, XdpMode::default()) {
         Ok(_) => info!("XDP capture attached to {iface} (native)"),
-        Err(_) => { prog.attach(&iface, XdpFlags::SKB_MODE)?; warn!("XDP attached to {iface} (SKB_MODE)"); }
+        Err(_) => { prog.attach(&iface, XdpMode::Skb)?; warn!("XDP attached to {iface} (SKB_MODE)"); }
     }
 
     let provider = init_otel()?;

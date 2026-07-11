@@ -3,7 +3,7 @@
 //! transitions by name. Exports ebpf_events_total{program="goroutine",state}.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -53,7 +53,7 @@ async fn main() -> anyhow::Result<()> {
     let prog: &mut UProbe = ebpf.program_mut("casgstatus").unwrap().try_into()?;
     prog.load()?;
     // Attach ONLY a uprobe (entry). Never a uretprobe on Go — see the chapter.
-    prog.attach(Some("runtime.casgstatus"), 0, &bin, None)?;
+    prog.attach("runtime.casgstatus", &bin, UProbeScope::AllProcesses)?;
     info!("uprobe attached to runtime.casgstatus in {bin}");
 
     let provider = init_otel()?;

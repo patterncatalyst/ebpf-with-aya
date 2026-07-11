@@ -22,7 +22,7 @@ fn cmd_load() -> anyhow::Result<()> {
     std::fs::create_dir_all(DIR)?;
     // map_pin_path + the map's `pinned` flag -> EXECS is pinned at DIR/EXECS
     let mut ebpf = EbpfLoader::new()
-        .map_pin_path(DIR)
+        .map_pin_path("EXECS", std::path::Path::new(MAP_PIN))
         .load(aya::include_bytes_aligned!(concat!(env!("OUT_DIR"), "/pin-demo")))?;
     let prog: &mut TracePoint = ebpf.program_mut("count_exec").unwrap().try_into()?;
     prog.load()?;

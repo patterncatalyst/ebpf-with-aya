@@ -4,7 +4,7 @@
 //! Exports ebpf_pg_query_duration_ms and ebpf_pg_lock_wait_ms.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use log::info;
 use opentelemetry::{global, metrics::Histogram, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
     ] {
         let p: &mut UProbe = ebpf.program_mut(prog).unwrap().try_into()?;
         p.load()?;
-        p.attach(Some(func), 0, &target, None)?; // pid=None: cover every backend
+        p.attach(func, &target, UProbeScope::AllProcesses)?; // cover every backend
     }
     info!("attached uprobes to {target} (all backends)");
 

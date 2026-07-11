@@ -77,7 +77,7 @@ pub fn ssl_read_ret(ctx: RetProbeContext) -> u32 {
     let id = bpf_get_current_pid_tgid();
     let buf = match unsafe { READ_BUF.get(&id) } { Some(b) => *b, None => return 0 };
     let _ = READ_BUF.remove(&id);
-    let ret: i64 = ctx.ret().unwrap_or(0);
+    let ret: i64 = ctx.ret::<i64>();
     emit(DIR_READ, buf as *const u8, ret);
     0
 }

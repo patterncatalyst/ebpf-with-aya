@@ -3,7 +3,7 @@
 //! read from each call. Exports ebpf_events_total{program="btf-uprobe",status}.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
 
     let prog: &mut UProbe = ebpf.program_mut("process_order_enter").unwrap().try_into()?;
     prog.load()?;
-    prog.attach(Some("process_order"), 0, &target, None)?;
+    prog.attach("process_order", &target, UProbeScope::AllProcesses)?;
     info!("uprobe attached to process_order in {target}");
 
     let provider = init_otel()?;

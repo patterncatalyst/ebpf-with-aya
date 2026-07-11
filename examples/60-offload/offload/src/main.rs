@@ -3,7 +3,7 @@
 //! virtio NIC expect DRV or SKB (host CPU): there's no offload NIC here.
 use std::time::Duration;
 
-use aya::{maps::Array, programs::{Xdp, XdpFlags}, Ebpf};
+use aya::{maps::Array, programs::{Xdp, XdpMode}, Ebpf};
 use log::info;
 use opentelemetry::{global, KeyValue};
 use opentelemetry_otlp::WithExportConfig;
@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 
     // walk down the modes: HW (offload, on the NIC) → DRV (native, host CPU) → SKB (generic)
     let mut engaged = "none";
-    for (name, flag) in [("HW", XdpFlags::HW_MODE), ("DRV", XdpFlags::DRV_MODE), ("SKB", XdpFlags::SKB_MODE)] {
+    for (name, flag) in [("HW", XdpMode::Hardware), ("DRV", XdpMode::Driver), ("SKB", XdpMode::Skb)] {
         match prog.attach(&iface, flag) {
             Ok(_) => { engaged = name; break; }
             Err(e) => info!("{name} mode unavailable on {iface}: {e}"),

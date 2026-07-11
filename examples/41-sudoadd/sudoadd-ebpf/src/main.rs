@@ -5,7 +5,7 @@
 //! disk is never touched. Uses the kernel-tainting bpf_probe_write_user.
 
 use aya_ebpf::{
-    helpers::{bpf_get_current_comm, bpf_get_current_pid_tgid, gen::bpf_probe_write_user},
+    helpers::{bpf_get_current_comm, bpf_get_current_pid_tgid, generated::bpf_probe_write_user},
     macros::{map, tracepoint},
     maps::{Array, HashMap},
     programs::TracePointContext,

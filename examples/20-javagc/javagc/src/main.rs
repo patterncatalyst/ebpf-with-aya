@@ -8,7 +8,7 @@
 //! ebpf_events_total{program="javagc"} and a GC-pause histogram.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use aya_log::EbpfLogger;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -54,10 +54,10 @@ async fn main() -> anyhow::Result<()> {
     // Attach a uprobe at each USDT probe offset (fn name = None -> use offset).
     let b: &mut UProbe = ebpf.program_mut("gc_begin").unwrap().try_into()?;
     b.load()?;
-    b.attach(None, begin_off, &libjvm, None)?;
+    b.attach(begin_off, &libjvm, UProbeScope::AllProcesses)?;
     let e: &mut UProbe = ebpf.program_mut("gc_end").unwrap().try_into()?;
     e.load()?;
-    e.attach(None, end_off, &libjvm, None)?;
+    e.attach(end_off, &libjvm, UProbeScope::AllProcesses)?;
     info!("javagc attached to gc__begin@{begin_off} / gc__end@{end_off} in {libjvm}");
 
     let provider = init_otel()?;

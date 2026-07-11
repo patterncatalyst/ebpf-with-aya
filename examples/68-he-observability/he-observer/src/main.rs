@@ -7,7 +7,7 @@
 //! to tell you where an FHE workload spends its time, and nothing about the data.
 use std::time::Duration;
 
-use aya::{maps::RingBuf, programs::UProbe, Ebpf};
+use aya::{maps::RingBuf, programs::{UProbe, uprobe::UProbeScope}, Ebpf};
 use he_common::Sample;
 use log::{info, warn};
 use opentelemetry::{global, KeyValue};
@@ -62,13 +62,13 @@ async fn main() -> anyhow::Result<()> {
     let entry: &mut UProbe = ebpf.program_mut("he_enter").unwrap().try_into()?;
     entry.load()?;
     for sym in SYMBOLS {
-        entry.attach(Some(sym), 0, &target, None)?;
+        entry.attach(sym, &target, UProbeScope::AllProcesses)?;
     }
     // One uretprobe per boundary (records the delta, tagged with the op id).
     for (prog, sym) in RET_PROGRAMS {
         let p: &mut UProbe = ebpf.program_mut(prog).unwrap().try_into()?;
         p.load()?;
-        p.attach(Some(sym), 0, &target, None)?;
+        p.attach(sym, &target, UProbeScope::AllProcesses)?;
     }
     info!("uprobe/uretprobe pairs attached to he_* in {target}");
 

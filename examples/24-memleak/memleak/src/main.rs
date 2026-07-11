@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use aya::{
     maps::{Array, HashMap as BpfHashMap, StackTraceMap},
-    programs::UProbe,
+    programs::{uprobe::UProbeScope, UProbe},
     Ebpf,
 };
 use log::{info, warn};
@@ -55,7 +55,7 @@ async fn main() -> anyhow::Result<()> {
     let attach = |ebpf: &mut Ebpf, prog: &str, sym: &str| -> anyhow::Result<()> {
         let p: &mut UProbe = ebpf.program_mut(prog).unwrap().try_into()?;
         p.load()?;
-        p.attach(Some(sym), 0, &libc, None)?;
+        p.attach(sym, &libc, UProbeScope::AllProcesses)?;
         Ok(())
     };
     attach(&mut ebpf, "malloc_enter", "malloc")?;
