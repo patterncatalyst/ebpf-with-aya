@@ -142,8 +142,8 @@ alternative to the fixed helper list these VMs reimplement.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a host run: the `rbpf` crate API used here (`assembler::assemble`,
-`EbpfVmRaw::new`, `register_helper`, `execute_program`, `jit_compile` /
-`execute_program_jit`) against the current crate version, and that the
-interpreter and JIT return the same value. The JIT is x86-64 only.*
+*Verification status: <span class="status status--verified">verified</span>
+— host run (no VM, no root). `cargo run --release` builds against the current
+`rbpf` API (`assembler::assemble`, `EbpfVmRaw::new`, `register_helper`,
+`execute_program`, `jit_compile` / `execute_program_jit`) and the interpreter
+and JIT agree: `interpreter=42 jit=42`. The JIT path is x86-64 only.*
