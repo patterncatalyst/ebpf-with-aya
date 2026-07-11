@@ -44,7 +44,7 @@ plaintext; `ebpf_events_total{program="sslsniff",dir=...}` in Grafana.
 **Unverified.** Highest-risk: `bpf_probe_read_user_buf` with a dynamic
 captured length (verifier bounds); attaching three programs to one lib;
 `SSL_read`/`SSL_write` symbol names/offsets in OpenSSL 3 on Fedora 44;
-and `ProbeContext::arg`/`RetProbeContext::ret` in aya 0.13.x. If the
+and `ProbeContext::arg`/`RetProbeContext::ret` in aya 0.14.x. If the
 data read is rejected by the verifier, clamp `captured` to a constant
 power-of-two and mask the index. Record results in
 `_plans/reconciliation-plan.md`.

@@ -60,7 +60,7 @@ That BTF dump is exactly the type information you'd use to generate the
 ## ⚠ Verification status
 
 **Unverified.** Confirm: `bpf_probe_read_user::<T>(ptr)` reading a whole
-struct in aya 0.13.x; `ProbeContext::arg(0)` yielding the pointer; that
+struct in aya 0.14.x; `ProbeContext::arg(0)` yielding the pointer; that
 `#[inline(never)] #[no_mangle] extern "C"` keeps `process_order`
 attachable under release+LTO; and that `debug = true` leaves usable
 DWARF for `pahole -J`. Full user-space CO-RE relocation is newer and

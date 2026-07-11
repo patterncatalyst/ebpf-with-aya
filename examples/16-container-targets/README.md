@@ -73,7 +73,7 @@ everything else on the VM.
    `ubi9/openjdk-25` tag exists; if not, use the fallback in the
    Quarkus `Containerfile` header.
 3. `bpf_get_current_cgroup_id`, `Array::set`, and the openat offset
-   (Ch 9) in aya 0.13.x.
+   (Ch 9) in aya 0.14.x.
 4. Podman/crun present on the VM (added to cloud-init in this iteration —
    re-provision the target VM so it's installed).
 

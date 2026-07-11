@@ -55,6 +55,6 @@ can watch jump under network stress.
 (`skc_daddr`@0, `skc_dport`@12 — verify with `pahole`; CO-RE removes the
 guesswork, Ch 56); the assumption that the **first** `tcp_rcv_state_process`
 for a sk ≈ SYN-ACK (good enough for active connects; production checks the
-TCP state); `KProbe::attach` to these symbols in aya 0.13.x; IPv4 only
+TCP state); `KProbe::attach` to these symbols in aya 0.14.x; IPv4 only
 (add `tcp_v6_connect` for v6). Record results in
 `_plans/reconciliation-plan.md`.

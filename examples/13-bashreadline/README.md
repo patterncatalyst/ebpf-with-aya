@@ -55,6 +55,6 @@ Find where the symbol is:
 ## ⚠ Verification status
 
 **Unverified.** Confirm: the `UProbe`/`#[uretprobe]` + `RetProbeContext::ret()`
-API in aya 0.13.x; the `attach(Some(sym), 0, target, None)` signature;
+API in aya 0.14.x; the `attach(Some(sym), 0, target, None)` signature;
 and where `readline` actually resolves on Fedora 44's bash. Record
 results in `_plans/reconciliation-plan.md`.

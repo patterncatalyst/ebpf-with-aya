@@ -38,7 +38,7 @@ yours.
 
 ## Verification status
 
-**Unverified** — written against Aya 0.13 / aya-ebpf 0.1 / network-types
+**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
 0.0.7, not yet run on Fedora 44. Confirm: `RingBuf` inside `#[xdp]`, the
 `network-types` field names (`src_addr`/`dst_addr`/`tot_len`/`source`/`dest`),
 the flags byte at TCP offset 13, `ptr_at` passing the verifier, and that the

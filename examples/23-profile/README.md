@@ -57,7 +57,7 @@ flame-graph tool accepts.
 ## ⚠ Verification status
 
 **Unverified.** Highest-risk: the `PerfEvent::attach` signature and
-`SamplePolicy::Frequency` / `PerfEventScope` in aya 0.13.x;
+`SamplePolicy::Frequency` / `PerfEventScope` in aya 0.14.x;
 `StackTrace::get_stackid` (ebpf) and `StackTraceMap::get` + `frames()`
 (user); `online_cpus()` return type; and that user-stack capture works
 for the target (frame pointers / unwind info). User-frame symbolization

@@ -202,7 +202,7 @@ succeeds, your toolchain is complete. Chapter 6 explains every line of
 what got generated and actually runs it against the target VM.
 
 > **The Aya crate versions you'll see:** the user-space crate is `aya`
-> (0.13.x line), the kernel crate is `aya-ebpf` (0.1.x line), logging
+> (0.14.x line), the kernel crate is `aya-ebpf` (0.2.x line), logging
 > is `aya-log` (user) + `aya-log-ebpf` (kernel). The template pins
 > compatible versions; don't mix major lines by hand.
 
@@ -438,5 +438,5 @@ default. For everything in this book, the stock glibc target is correct.
 *Verification status: <span class="status status--unverified">unverified</span>.
 Toolchain steps, the `1.96.0` pin, and the `bpf-linker` LLVM fallback
 have not yet been confirmed on a clean Fedora 44 laptop. The Aya crate
-version lines were checked against crates.io at authoring (aya 0.13.x,
-aya-ebpf 0.1.x).*
+version lines were checked against crates.io at authoring (aya 0.14.x,
+aya-ebpf 0.2.x).*

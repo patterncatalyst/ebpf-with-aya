@@ -41,7 +41,7 @@ tc -s qdisc show dev <iface>         # kernel-side stats/drops
 
 ## Verification status
 
-**Unverified** — written against Aya 0.13 / aya-ebpf 0.1 / network-types
+**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
 0.0.7 but not yet run on Fedora 44. Confirm: the `tc` API
 (`qdisc_add_clsact`, `SchedClassifier`, `TcAttachType::Egress`), the
 `network-types` field names and `ctx.load`/`ctx.len` signatures, that

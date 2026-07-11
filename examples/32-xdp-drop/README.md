@@ -36,7 +36,7 @@ bpftool net show          # names the XDP program bound to the interface
 
 ## Verification status
 
-**Unverified** — written against Aya 0.13 / aya-ebpf 0.1 / network-types
+**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
 0.0.7 but not yet run on Fedora 44. Confirm: that `virtio-net` accepts
 native `XdpFlags::default()` (else the `SKB_MODE` fallback attaches), the
 `XdpContext::data`/`data_end` signatures and that `ptr_at` satisfies the

@@ -44,7 +44,7 @@ FLOW                                     REQUEST / RESPONSE LINE
 ## ⚠ Verification status
 
 **Unverified.** Risks: `SocketFilter::attach` taking the raw socket fd
-and the `SkBuffContext` `load` / `load_bytes` API in aya 0.13.x; the
+and the `SkBuffContext` `load` / `load_bytes` API in aya 0.14.x; the
 AF_PACKET socket setup (`libc`); the **no-IP-options (IHL==5)**
 simplification and the TCP-data-offset math; cleartext only (HTTPS is
 ciphertext on the wire). Record results in

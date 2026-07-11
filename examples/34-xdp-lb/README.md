@@ -45,7 +45,7 @@ sudo tcpdump -ni enp1s0 udp port 9001        # client sent to :8080, arriving on
 
 ## Verification status
 
-**Unverified** — written against Aya 0.13 / aya-ebpf 0.1 / network-types
+**Unverified** — written against Aya 0.14 / aya-ebpf 0.2 / network-types
 0.0.7, not yet run on Fedora 44. Confirm: `ptr_at_mut` writes passing the
 verifier, that zeroing the IPv4 UDP checksum is accepted end-to-end, the
 `Array` `get`/`get_ptr_mut`/`set` API both sides, `XdpFlags` native vs

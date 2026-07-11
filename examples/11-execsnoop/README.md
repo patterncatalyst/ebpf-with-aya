@@ -47,7 +47,7 @@ A `PID UID COMM CMDLINE` table fills in;
    examples repo's execsnoop and adjust the bound/masking. `MAX_ARGS=8`,
    `ARG_LEN=64` keep it conservative.
 2. `bpf_probe_read_user` (single value) and `bpf_probe_read_user_str_bytes`
-   API/signatures in aya 0.13.x.
+   API/signatures in aya 0.14.x.
 3. `sys_enter_execve` offsets (filename@16, argv@24).
 4. Event size (~800 B) written into the ring slot — confirm `reserve`
    handles it.

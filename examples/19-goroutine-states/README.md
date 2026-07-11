@@ -44,7 +44,7 @@ pressure — lots of `waiting` ↔ `runnable` churn means contention).
 ## ⚠ Verification status
 
 **Unverified.** Highest-risk: the **Go register ABI** read (RCX for
-`newval`) and the `pt_regs` field name (`rcx`) in aya 0.13.x's bindings;
+`newval`) and the `pt_regs` field name (`rcx`) in aya 0.14.x's bindings;
 the `runtime.casgstatus` symbol being present (Go embeds symbols by
 default, but `-ldflags=-s` strips them); and the goroutine state value
 mapping for your Go version. Confirm the register with the `bpftrace`

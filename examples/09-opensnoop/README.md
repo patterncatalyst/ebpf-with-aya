@@ -47,7 +47,7 @@ Grafana.
 1. **Tracepoint field offsets** (`filename`@24, `flags`@32, exit
    `ret`@16). These are long-stable x86_64 values but you must verify
    against your kernel's format file — the chapter shows how.
-2. `TracePointContext::read_at::<T>(offset)` API name in aya 0.13.x.
+2. `TracePointContext::read_at::<T>(offset)` API name in aya 0.14.x.
 3. `bpf_probe_read_user_str_bytes` for the user-space filename pointer.
 
 Record results in `_plans/reconciliation-plan.md`.

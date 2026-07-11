@@ -305,10 +305,42 @@ attach a second NIC to each guest. That's an optional refinement
 introduced in the XDP part; the `default` network is the assumed
 baseline until then.
 
+## Daily lifecycle: snapshot, shut down, restart
+
+Once a guest is provisioned and tooled, you don't rebuild it every day —
+you **snapshot it, shut it down when you're done, and start it back up**.
+Four scripts wrap this so nothing gets left running:
+
+```bash
+cd scripts/lab
+./snapshot-vm.sh ebpf-target        # capture a "lab-ready" snapshot (RAM+disk)
+./snapshot-vm.sh ebpf-peer          # do the peer too, if you use it
+./lab-down.sh                       # gracefully shut down BOTH guests for the day
+./lab-up.sh                         # start them back up and print their IPs
+./revert-vm.sh ebpf-target          # roll back to "lab-ready" (undo a wedged run)
+```
+
+- **`snapshot-vm.sh <vm> [name]`** — take a named snapshot (default
+  `lab-ready`) once the guest is fully set up (cloud-init done,
+  `libbpf-devel`/`gdbserver`/JDK installed). Reverting to it is seconds,
+  versus minutes to re-provision. Re-running replaces the same-named snapshot.
+- **`revert-vm.sh <vm> [name]`** — restore a snapshot. This is your undo for
+  the destructive/offensive security chapters (37–42) and for anything that
+  wedges the kernel.
+- **`lab-down.sh`** — ACPI-shutdown `ebpf-target` and `ebpf-peer` so the lab
+  isn't left burning host CPU/RAM. Nothing is deleted; `FORCE=1 ./lab-down.sh`
+  hard-powers-off a guest that ignores the shutdown request. It reminds you the
+  observability stack is a *separate* container (`podman rm -f ebpf-lgtm`).
+- **`lab-up.sh`** — start whatever is defined-but-stopped and wait for DHCP
+  leases; `eval "$(./lab-up.sh --export)"` also exports `TARGET_IP`/`PEER_IP`.
+
+All four force `LIBVIRT_DEFAULT_URI=qemu:///system`; if your shell isn't in the
+`libvirt` group yet, run them via `sg libvirt -c '…'`.
+
 ## Tearing down and rebuilding
 
-When you wedge a guest — and writing `sched_ext` schedulers, you will
-— destroy and re-provision:
+When you wedge a guest beyond what a snapshot revert fixes — destroy and
+re-provision from scratch:
 
 ```bash
 cd scripts/lab && ./destroy-vm.sh ebpf-target && ./provision-vm.sh ebpf-target

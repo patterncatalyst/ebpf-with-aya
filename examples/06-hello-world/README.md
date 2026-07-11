@@ -50,7 +50,7 @@ dashboard at http://127.0.0.1:3000/d/ebpf-overview.
 ## ⚠ Verification status
 
 **Unverified.** This code is written to current Aya conventions
-(`aya` 0.13.x, `aya-ebpf` 0.1.x) but has **not** been compiled or run
+(`aya` 0.14.x, `aya-ebpf` 0.2.x) but has **not** been compiled or run
 in producing this iteration — there was no Fedora 44 target available
 at authoring time. Treat the first `cargo build` as the test:
 

@@ -38,6 +38,6 @@ ssh fedora@"$(../../scripts/lab/vm-ip.sh ebpf-target)" 'sleep 60 & p=$!; kill -T
 
 **Unverified.** Confirm the `sys_enter_kill` offsets against your
 kernel's format file, and the `TracePointContext::read_at` /
-`TracePoint` attach API in aya 0.13.x. Note `kill -0` and signals to
+`TracePoint` attach API in aya 0.14.x. Note `kill -0` and signals to
 already-dead PIDs still generate a `kill()` syscall, so they show up
 too. Record results in `_plans/reconciliation-plan.md`.

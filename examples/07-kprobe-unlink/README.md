@@ -56,8 +56,8 @@ against the table `unlinksnoop` prints.
 
 ## ⚠ Verification status
 
-**Unverified.** Written to current Aya conventions (`aya` 0.13.x,
-`aya-ebpf` 0.1.x) but not compiled/run at authoring. The two parts most
+**Unverified.** Written to current Aya conventions (`aya` 0.14.x,
+`aya-ebpf` 0.2.x) but not compiled/run at authoring. The two parts most
 likely to need adjustment on real hardware:
 
 1. **The filename read.** `vfs_unlink`'s dentry arg (index 2) carries the

@@ -197,7 +197,10 @@ cd examples/03-observability-stack && ./demo.sh down
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-The stack, client, and dashboard have not yet been run end-to-end on
-Fedora 44. The `otel-lgtm` tag (`0.28.0`) was current at authoring;
-confirm and pin whatever you actually run.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+The stack, client, and dashboard were run end-to-end on Fedora 44
+(kernel 7.1.3-200.fc44): `grafana/otel-lgtm:0.28.0` comes up under rootless
+Podman, Grafana is reachable on `127.0.0.1:3000`, the Python 3.14 client
+pushes over OTLP on `127.0.0.1:4318`, and its metrics, traces, and logs land
+in the auto-loaded dashboard. The `otel-lgtm` tag (`0.28.0`) is pinned in
+`compose.yaml`.*

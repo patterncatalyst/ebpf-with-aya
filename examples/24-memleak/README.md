@@ -40,7 +40,7 @@ in Grafana climbs over time for a real leak.
 
 **Unverified.** Risks: uprobe+uretprobe on `malloc`/`calloc` + uprobe on
 `free` in libc (symbol names on Fedora's glibc); `ctx.arg`/`ctx.ret` and
-`get_stackid` in aya 0.13.x; user-stack capture needing frame pointers
+`get_stackid` in aya 0.14.x; user-stack capture needing frame pointers
 (hence `-fno-omit-frame-pointer` on the target — glibc itself may still
 be FP-omitted, which can truncate stacks; note for verification);
 `Array::set` pid filter; `u64_gauge` in opentelemetry 0.27. User-frame

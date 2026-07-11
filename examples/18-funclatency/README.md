@@ -55,7 +55,7 @@ event rate demands it.
 ## ⚠ Verification status
 
 **Unverified.** Confirm: `bpf_ktime_get_ns`, `#[uprobe]`/`#[uretprobe]`
-on the same symbol, and the entry/exit `HashMap` in aya 0.13.x; that
+on the same symbol, and the entry/exit `HashMap` in aya 0.14.x; that
 `slow_op` stays attachable under release+LTO (`#[inline(never)]`); and
 `f64_histogram` in opentelemetry 0.27. Record results in
 `_plans/reconciliation-plan.md`.

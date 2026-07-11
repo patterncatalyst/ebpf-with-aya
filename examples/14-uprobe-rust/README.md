@@ -52,7 +52,7 @@ and `ebpf_events_total{program="uprobe-rust"}` climbing in Grafana.
 ## ⚠ Verification status
 
 **Unverified.** Confirm: `ProbeContext::arg(0)` for a uprobe in aya
-0.13.x; the `attach(Some("compute"), 0, path, None)` signature; that
+0.14.x; the `attach(Some("compute"), 0, path, None)` signature; that
 `#[no_mangle] extern "C"` keeps the symbol attachable and `inline(never)`
 preserves the call site under `--release` + LTO (if LTO inlines it away,
 build the target-app without LTO or mark it `#[no_mangle]` only). A

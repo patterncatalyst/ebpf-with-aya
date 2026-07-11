@@ -43,7 +43,7 @@ passive  10.0.0.21:9200         10.0.0.32:51777
 
 **Unverified.** Risks: `SockOps::attach(cgroup_file)` and the
 `SockOpsContext` accessors (`op()`, `local_ip4()`, `remote_ip4()`,
-`local_port()`, `remote_port()`) in aya 0.13.x; the established-callback
+`local_port()`, `remote_port()`) in aya 0.14.x; the established-callback
 op constants (4/5); `local_port` host-order vs `remote_port` network-order
 convention; requires unified cgroup-v2 mounted at `/sys/fs/cgroup`.
 Record results in `_plans/reconciliation-plan.md`.

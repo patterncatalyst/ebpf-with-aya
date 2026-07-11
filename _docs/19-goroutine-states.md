@@ -125,8 +125,9 @@ unless the binary was built with `-ldflags=-s`.)
 - **Never uretprobe Go** — moving stacks make return trampolines unsafe.
 - eBPF sees the OS thread, not the goroutine.
 
-Last in this part: **`javagc`**, timing JVM garbage collection through
-USDT probes.
+Last in this part: **`javagc`**, timing JVM garbage collection — learning
+why a stock OpenJDK ships no gc USDT markers and uprobing the G1 collector's
+stop-the-world function (resolved from `libjvm.so`'s symbol table) instead.
 
 ---
 
