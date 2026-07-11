@@ -47,7 +47,7 @@ def cmd_top(a):
     if not any(r[2] for r in rows):
         print("run stats are zero — enable with: sudo sysctl -w kernel.bpf_stats_enabled=1")
         print("(or: sudo ./bpftool_tool.py top --enable-stats, then generate activity)")
-    rows.sort(reverse=True)
+    rows.sort(key=lambda r: (r[0], r[1], r[2]), reverse=True)  # numeric fields only; the trailing dict isn't comparable
     print(f"{'ID':>5} {'TYPE':<16} {'NAME':<20} {'AVG ns/run':>12} {'RUN_CNT':>14}")
     for avg, rt, rc, p in rows[:a.top]:
         print(f"{p.get('id'):>5} {p.get('type',''):<16} {p.get('name','-'):<20} {avg:>12.0f} {rc:>14}")

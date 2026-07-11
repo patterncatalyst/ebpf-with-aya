@@ -12,6 +12,14 @@ pub extern "C" fn process_order(order: *const Order) -> u64 {
     o.amount_cents // trivial work so it isn't optimized away
 }
 
+// Keep `process_order` in the binary as a real, uprobe-able symbol: a plain
+// #[no_mangle] fn that's only called internally can still be inlined and then
+// GC'd by the linker (--gc-sections), leaving no symbol for the uprobe to
+// resolve. A #[used] pointer to it forces both the compiler and linker to
+// retain the standalone function.
+#[used]
+static KEEP_PROCESS_ORDER: extern "C" fn(*const Order) -> u64 = process_order;
+
 fn main() {
     println!("target-app pid {} — submitting orders every 500ms", std::process::id());
     let mut id: u64 = 1000;

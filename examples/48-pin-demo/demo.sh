@@ -17,7 +17,7 @@ scp -q -o StrictHostKeyChecking=accept-new "$BIN" "fedora@$TIP:/tmp/pinctl"
 c_step "load + pin (the loader exits immediately after)"
 $SSH "fedora@$TIP" 'sudo mount | grep -q "type bpf" || sudo mount -t bpf bpf /sys/fs/bpf; sudo /tmp/pinctl load'
 c_step "loader is gone — but the objects persist in bpffs"
-$SSH "fedora@$TIP" 'ls -l /sys/fs/bpf/ebpf-aya/ ; echo; sudo bpftool prog show | grep -A2 tracepoint | head; echo; sudo bpftool link show | head'
+$SSH "fedora@$TIP" 'sudo ls -l /sys/fs/bpf/ebpf-aya/ ; echo; sudo bpftool prog show | grep -A2 tracepoint | head; echo; sudo bpftool link show | head'
 c_step "read the counter from a fresh process (twice — watch it climb)"
 $SSH "fedora@$TIP" "sudo OTEL_EXPORTER_OTLP_ENDPOINT=http://$GW:4318 /tmp/pinctl read"
 sleep 2
