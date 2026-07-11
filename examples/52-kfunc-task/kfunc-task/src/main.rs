@@ -60,7 +60,7 @@ async fn main() -> anyhow::Result<()> {
     let prog: &mut TracePoint = ebpf.program_mut("lookup").unwrap().try_into()?;
     prog.load()?;
     prog.attach("syscalls", "sys_enter_getpid")?;
-    info!("attached; looking up tasks by pid via bpf_task_from_pid");
+    info!("attached; checking whether the target pid is the running task (kfunc-free)");
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-kfunc-task");

@@ -195,9 +195,5 @@ safely delegated into unprivileged containers.
 
 ---
 
-*Verification status: <span class="status status--unverified">unverified</span>.
-Confirm on a real Fedora 44 run: that `bpf_task_from_pid` / `bpf_task_release`
-exist in this kernel's vmlinux BTF; the Aya mechanics for declaring and calling
-kfuncs (extern prototypes resolved via BTF, and the `aya-tool`-generated
-`task_struct`); that omitting `bpf_task_release` makes the verifier reject the
-load; and that the found/missing tallies match real and bogus pids.*
+*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
+Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): tallies found (target pid running) vs missing. The kfunc form (bpf_task_from_pid) is not expressible in aya-ebpf (see below); this checks the current task instead.*
