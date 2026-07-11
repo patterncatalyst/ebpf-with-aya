@@ -1,9 +1,12 @@
-//! unlinksnoop-ebpf — a kprobe on do_unlinkat().
+//! unlinksnoop-ebpf — a kprobe on vfs_unlink().
 //!
-//! do_unlinkat(int dfd, struct filename *name) is the kernel function behind
-//! the unlink()/unlinkat() syscalls. A kprobe fires on its entry, where we can
-//! read the calling process's identity (stable helpers) and *attempt* to read
-//! the filename out of the second argument (the version-sensitive part).
+//! vfs_unlink(struct mnt_idmap *, struct inode *dir, struct dentry *dentry,
+//! struct inode **delegated) is the VFS-layer function behind unlink()/
+//! unlinkat(). (The older do_unlinkat() helper this chapter first targeted was
+//! inlined away on newer kernels — vfs_unlink is the stable target real tools
+//! use.) A kprobe fires on its entry, where we read the calling process's
+//! identity (stable helpers) and *attempt* to read the unlinked name out of
+//! the dentry argument (the version-sensitive part).
 //!
 //! Each hit pushes an UnlinkEvent into a ring buffer for user space to drain.
 #![no_std]
@@ -23,14 +26,14 @@ use unlinksnoop_common::{UnlinkEvent, NAME_LEN};
 static EVENTS: RingBuf = RingBuf::with_byte_size(256 * 1024, 0);
 
 #[kprobe]
-pub fn do_unlinkat(ctx: ProbeContext) -> u32 {
-    match try_do_unlinkat(&ctx) {
+pub fn vfs_unlink(ctx: ProbeContext) -> u32 {
+    match try_vfs_unlink(&ctx) {
         Ok(()) => 0,
         Err(_) => 1,
     }
 }
 
-fn try_do_unlinkat(ctx: &ProbeContext) -> Result<(), i64> {
+fn try_vfs_unlink(ctx: &ProbeContext) -> Result<(), i64> {
     // Reserve a slot in the ring buffer for one event.
     let mut entry = match EVENTS.reserve::<UnlinkEvent>(0) {
         Some(e) => e,
@@ -48,17 +51,18 @@ fn try_do_unlinkat(ctx: &ProbeContext) -> Result<(), i64> {
         (*event).filename = [0u8; NAME_LEN];
     }
 
-    // --- The version-sensitive part: read the filename. ---
-    // do_unlinkat's 2nd arg is `struct filename *`. The path string lives at
-    // `filename->name` (a `const char *`). We read the pointer, then the bytes.
-    // If the layout differs on your kernel, this read fails gracefully and the
-    // filename stays empty — the event is still emitted with pid/uid/comm.
-    if let Some(name_ptr) = ctx.arg::<*const u8>(1) {
+    // --- The version-sensitive part: read the unlinked name. ---
+    // vfs_unlink's 3rd arg (index 2) is `struct dentry *`. The name lives at
+    // dentry->d_name.name. On this kernel the offsets are:
+    //   struct dentry.d_name @ 32 (a struct qstr), struct qstr.name @ 8
+    // so the `const char *` name pointer sits at dentry + 40. These offsets are
+    // kernel-version-specific; if the layout differs the read fails gracefully
+    // and the filename stays empty — the event is still emitted with pid/uid/comm.
+    const DENTRY_NAME_PTR_OFF: usize = 32 + 8;
+    if let Some(dentry) = ctx.arg::<*const u8>(2) {
         unsafe {
-            // `struct filename` begins with `const char *name;` on current
-            // kernels, so the first pointer-sized field is the path pointer.
-            let path_ptr = bpf_probe_read_kernel::<*const u8>(name_ptr as *const *const u8);
-            if let Ok(p) = path_ptr {
+            let name_pptr = dentry.add(DENTRY_NAME_PTR_OFF) as *const *const u8;
+            if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_pptr) {
                 let dst = &mut (*event).filename;
                 let _ = bpf_probe_read_kernel_str_bytes(p, dst);
             }

@@ -57,11 +57,11 @@ async fn main() -> anyhow::Result<()> {
         warn!("failed to initialize aya-log: {e}");
     }
 
-    let program: &mut KProbe = ebpf.program_mut("do_unlinkat").unwrap().try_into()?;
+    let program: &mut KProbe = ebpf.program_mut("vfs_unlink").unwrap().try_into()?;
     program.load()?;
-    // Attach to the kernel function do_unlinkat (offset 0 = entry).
-    program.attach("do_unlinkat", 0)?;
-    info!("kprobe attached to do_unlinkat; watching for unlinks");
+    // Attach to the kernel function vfs_unlink (offset 0 = entry).
+    program.attach("vfs_unlink", 0)?;
+    info!("kprobe attached to vfs_unlink; watching for unlinks");
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-unlinksnoop");

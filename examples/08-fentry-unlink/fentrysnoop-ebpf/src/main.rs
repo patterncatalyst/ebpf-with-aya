@@ -1,4 +1,9 @@
-//! fentrysnoop-ebpf — fentry + fexit on do_unlinkat.
+//! fentrysnoop-ebpf — fentry + fexit on vfs_unlink.
+//!
+//! (Originally do_unlinkat, which newer kernels inlined away; vfs_unlink is the
+//! stable VFS-layer target. It takes 4 args — mnt_idmap, dir, dentry, delegated
+//! — so the unlinked name comes from the dentry, and fexit reads the return
+//! value at index 4.)
 //!
 //! fentry/fexit attach to a function's entry/exit using BTF trampolines rather
 //! than the int3 breakpoints kprobes use. They're lower overhead, give typed
@@ -30,8 +35,8 @@ static EVENTS: RingBuf = RingBuf::with_byte_size(256 * 1024, 0);
 #[map]
 static INFLIGHT: HashMap<u64, UnlinkEvent> = HashMap::with_max_entries(1024, 0);
 
-#[fentry(function = "do_unlinkat")]
-pub fn do_unlinkat_enter(ctx: FEntryContext) -> u32 {
+#[fentry(function = "vfs_unlink")]
+pub fn vfs_unlink_enter(ctx: FEntryContext) -> u32 {
     let _ = try_enter(&ctx);
     0
 }
@@ -46,11 +51,15 @@ fn try_enter(ctx: &FEntryContext) -> Result<(), i64> {
         filename: [0u8; NAME_LEN],
     };
 
-    // fentry gives typed args; arg 1 is `struct filename *`. We still copy the
-    // path string via probe_read, but BTF makes the arg typing trustworthy.
-    let name_ptr = unsafe { ctx.arg::<*const u8>(1) };
+    // fentry gives typed args; for vfs_unlink arg 2 is `struct dentry *`. The
+    // unlinked name is dentry->d_name.name — on this kernel the name pointer is
+    // at dentry + 40 (d_name @ 32, qstr.name @ 8). Version-sensitive; reads that
+    // miss just leave the filename empty.
+    const DENTRY_NAME_PTR_OFF: usize = 32 + 8;
+    let dentry = unsafe { ctx.arg::<*const u8>(2) };
     unsafe {
-        if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_ptr as *const *const u8) {
+        let name_pptr = dentry.add(DENTRY_NAME_PTR_OFF) as *const *const u8;
+        if let Ok(p) = bpf_probe_read_kernel::<*const u8>(name_pptr) {
             let _ = bpf_probe_read_kernel_str_bytes(p, &mut ev.filename);
         }
     }
@@ -59,8 +68,8 @@ fn try_enter(ctx: &FEntryContext) -> Result<(), i64> {
     Ok(())
 }
 
-#[fexit(function = "do_unlinkat")]
-pub fn do_unlinkat_exit(ctx: FExitContext) -> u32 {
+#[fexit(function = "vfs_unlink")]
+pub fn vfs_unlink_exit(ctx: FExitContext) -> u32 {
     let _ = try_exit(&ctx);
     0
 }
@@ -73,8 +82,8 @@ fn try_exit(ctx: &FExitContext) -> Result<(), i64> {
     let mut ev = *stored;
 
     // In an fexit program the return value follows the function's arguments.
-    // do_unlinkat takes 2 args, so the return value is at index 2.
-    ev.ret = unsafe { ctx.arg::<i64>(2) } as i32;
+    // vfs_unlink takes 4 args, so the return value is at index 4.
+    ev.ret = unsafe { ctx.arg::<i64>(4) } as i32;
 
     if let Some(mut slot) = EVENTS.reserve::<UnlinkEvent>(0) {
         unsafe { *slot.as_mut_ptr() = ev; }

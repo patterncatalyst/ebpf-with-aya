@@ -61,14 +61,14 @@ async fn main() -> anyhow::Result<()> {
     // fentry/fexit need the kernel's BTF to resolve the target function type.
     let btf = Btf::from_sys_fs()?;
 
-    let enter: &mut FEntry = ebpf.program_mut("do_unlinkat_enter").unwrap().try_into()?;
-    enter.load("do_unlinkat", &btf)?;
+    let enter: &mut FEntry = ebpf.program_mut("vfs_unlink_enter").unwrap().try_into()?;
+    enter.load("vfs_unlink", &btf)?;
     enter.attach()?;
 
-    let exit: &mut FExit = ebpf.program_mut("do_unlinkat_exit").unwrap().try_into()?;
-    exit.load("do_unlinkat", &btf)?;
+    let exit: &mut FExit = ebpf.program_mut("vfs_unlink_exit").unwrap().try_into()?;
+    exit.load("vfs_unlink", &btf)?;
     exit.attach()?;
-    info!("fentry+fexit attached to do_unlinkat; watching for unlinks");
+    info!("fentry+fexit attached to vfs_unlink; watching for unlinks");
 
     let provider = init_otel()?;
     let meter = global::meter("ebpf-fentrysnoop");
