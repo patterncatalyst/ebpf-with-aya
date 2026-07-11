@@ -17,13 +17,19 @@ GW="$($SSH "fedora@$TIP" 'ip route | awk "/default/{print \$3; exit}"')"
 c_info "target=$TIP OTLP=http://$GW:4318  (building nginx with symbols — first run is slow)"
 $SSH "fedora@$TIP" 'mkdir -p /tmp/nginx-probe'
 scp -o StrictHostKeyChecking=accept-new "$SCRIPT_DIR/Containerfile" "fedora@$TIP:/tmp/nginx-probe/Containerfile" >/dev/null
-$SSH "fedora@$TIP" 'cd /tmp/nginx-probe && podman build -t ebpf-nginx . && podman rm -f ebpf-nginx 2>/dev/null; podman run -d --name ebpf-nginx -p 8080:80 ebpf-nginx && sleep 2 && echo nginx up on :8080'
+$SSH "fedora@$TIP" 'cd /tmp/nginx-probe && podman build -t ebpf-nginx .'
+# Rootless podman doesn't expose a container's binary to the host namespace where
+# the (root) uprobe loader runs — /proc/<pid>/root and the overlay MergedDir are
+# both unreachable. So extract the symboled nginx to a host path and bind-mount
+# THAT back in: the container then executes a host-accessible inode the uprobe can
+# resolve and attach to.
+$SSH "fedora@$TIP" 'cid=$(podman create ebpf-nginx); podman cp $cid:/usr/sbin/nginx /tmp/ebpf-nginx-bin; podman rm $cid >/dev/null; podman rm -f ebpf-nginx 2>/dev/null; podman run -d --name ebpf-nginx -v /tmp/ebpf-nginx-bin:/usr/local/nginx/sbin/nginx:ro,Z -p 8080:80 ebpf-nginx && sleep 2 && echo nginx up on :8080'
 # drive load
 $SSH "fedora@$TIP" 'nohup bash -c "while true; do curl -s -o /dev/null http://127.0.0.1:8080/; sleep 0.05; done" </dev/null >/dev/null 2>&1 & echo driving HTTP load'
 sleep 1
 WPID="$($SSH "fedora@$TIP" "pgrep -f 'nginx: worker' | head -1")"
 [ -n "$WPID" ] || c_fail "could not find nginx worker pid on $VM"
-TARGET="/proc/$WPID/root/usr/sbin/nginx"
+TARGET="/tmp/ebpf-nginx-bin"   # host-accessible binary the container executes (bind-mounted)
 c_info "worker pid=$WPID  nginx binary=$TARGET"
 $SSH "fedora@$TIP" "nm $TARGET 2>/dev/null | grep -q ngx_http_process_request && echo 'symbols present ✓' || echo 'WARNING: symbols not found — install debuginfo or check the build'"
 c_step "deploying nginx-probe to $VM (Ctrl-C to stop)"

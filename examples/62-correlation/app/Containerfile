@@ -1,5 +1,8 @@
 # Multi-stage UBI build for the instrumented FastAPI service (Python 3.14)
 FROM registry.access.redhat.com/ubi9/python-314 AS build
+# UBI python images run as uid 1001, which can't write to root-owned /opt.
+# Switch to root just to create the venv there.
+USER 0
 WORKDIR /app
 COPY requirements.txt .
 RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
