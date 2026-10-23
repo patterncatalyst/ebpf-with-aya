@@ -2115,13 +2115,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "a curated subset of the ~100 bcc tools (iovisor/bcc) \u2014 each at the layer it observes",
+   "text": "a curated subset of the ~100 bcc tools (iovisor/bcc): each at the layer it observes",
    "fontSize": 12,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "a curated subset of the ~100 bcc tools (iovisor/bcc) \u2014 each at the layer it observes",
+   "originalText": "a curated subset of the ~100 bcc tools (iovisor/bcc): each at the layer it observes",
    "lineHeight": 1.25,
    "baseline": 12
   }
