@@ -178,12 +178,3 @@ confirms you read them correctly.
 That closes the advanced kernel surface. Part 9 — **Operating eBPF** — steps up
 a level to running this in production, beginning with the **CO-RE** deep-dive
 the earlier chapters kept pointing forward to.
-
----
-
-*Verification status: <span class="status status--verified">verified</span>
-— Fedora 44, kernel 7.1.3 (clang 22, bpftool v7.6.0). The task iterator compiles
-against this kernel's `vmlinux.h`, `bpftool iter pin` pins it, and `cat`ing the
-pin produces the process table (469 tasks) with `tgid`/`pid`/`comm` — assembled
-entirely in the kernel. The aya-ebpf iterator rendering stays emerging — the C
-path is canonical.*

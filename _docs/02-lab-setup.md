@@ -359,14 +359,3 @@ rebuild is fast.
 - [x] The guest interface name noted for the networking chapters
 
 [Next: Chapter 3 — The observability stack →]({{ "/docs/03-observability-stack/" | relative_url }})
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Every command and script in this chapter was run to build the actual lab used to
-verify the corpus: the `ebpf-target` / `ebpf-peer` guests provision from these
-steps, boot with BTF present, and the daily lifecycle scripts
-(`lab-up`/`lab-down`/`snapshot`/`revert`) work as described. The Fedora Cloud
-image filename can still drift against the live mirror — see the callout above.
-Record any deltas in the
-[reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }}).*

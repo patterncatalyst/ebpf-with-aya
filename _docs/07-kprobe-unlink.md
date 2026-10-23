@@ -200,8 +200,3 @@ part flagged above.
 Next, the same `unlink` target with **`fentry`** — lower overhead than
 a kprobe, with typed, BTF-relocated argument access that fixes the
 fragility you just met.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

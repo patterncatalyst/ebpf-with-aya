@@ -255,12 +255,3 @@ whole reason we uprobe the function.)
 That completes **User-space & language probing**. Next the tutorial
 turns to **Performance & resources** — scheduling latency, IRQs,
 profiling, memory.
-
----
-
-*Verification status: <span class="status status--verified">verified</span>
-— Fedora 44, kernel 7.1.3, OpenJDK 26 (Red Hat build). Confirmed the stock
-JDK ships **no** hotspot gc USDT markers, then resolved
-`_ZN15G1CollectedHeap32do_collection_pause_at_safepointEm` from `.symtab`,
-attached uprobe+uretprobe via aya 0.14, and streamed real GC pauses from
-the VM Thread (~0.4–6 ms) exported as `jvm_gc_pause_ms`.*

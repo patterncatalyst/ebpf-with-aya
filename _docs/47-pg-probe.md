@@ -167,8 +167,3 @@ When the database's own view agrees with the kernel's, the probe is faithful.
 That closes the Application targets part. Next, Part 8 turns to the advanced
 kernel surface — the BPF features that arrived in 2024–2026 — starting with
 detaching and pinning programs so they outlive their loader.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

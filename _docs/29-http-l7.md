@@ -146,8 +146,3 @@ method — the start of an L7 dashboard.
 
 Next: **`sockops`** — reacting to TCP connection lifecycle from a
 cgroup.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): the socket filter loads and parses cross-host HTTP request/response lines. Confirmed on this kernel.*

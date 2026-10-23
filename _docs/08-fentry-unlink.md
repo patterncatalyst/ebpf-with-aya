@@ -178,8 +178,3 @@ return-value read and your entry/exit correlation are correct.
 
 Next we move from unlink to the file-open path with **`opensnoop`**,
 and start building per-event tooling in earnest.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

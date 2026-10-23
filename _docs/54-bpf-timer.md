@@ -191,8 +191,3 @@ work; and the program remaining loaded with a pending timer is the
 
 Next, Chapter 55 looks at **struct_ops** in general — implementing kernel
 policy interfaces in BPF, the mechanism beneath the schedulers of Part 6.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): reports a per-second event rate. The in-kernel bpf_timer form is not expressible in aya-ebpf (see below); the rate is computed in the userspace loader.*

@@ -141,8 +141,3 @@ states over time — a useful health signal (a spike in `TIME_WAIT` or
 
 Next part-section: **L7 tracing** (HTTP via socket filters and syscall
 tracepoints) and **`sockops`**.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -145,11 +145,3 @@ lab to prove your work and a dashboard to show it. The most useful thing now is
 not to read another chapter — it's to open the lab, pick a real question about a
 system you care about, and write the probe that answers it. The loop is yours.
 Build something, run it on real hardware, and let the metric move.
-
----
-
-*Verification status: this retrospective is reflection, not code — but it points
-back at sixty-seven chapters <span class="status status--verified">verified on
-Fedora 44 (kernel 7.1.3)</span>, run end-to-end on the lab. Your own run, on your
-own kernel, is the final check — and the point. Thank you for building this with
-me.*

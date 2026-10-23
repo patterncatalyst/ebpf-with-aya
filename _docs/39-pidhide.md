@@ -183,14 +183,3 @@ catch that it happened.
 
 Next, Chapter 40 turns to defense proper: using an LSM hook to **protect a
 file from tampering**, even by root.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built on the host, run on the lab VM. Behaviorally confirmed, not just "loads":
-with the target PID attached, a bare `ls /proc` no longer lists it (hide count
-increments) while `kill -0 <pid>` succeeds and `/proc/<pid>/` is still directly
-statable; on detach the PID reappears. The scan bound was raised from 64 to 512
-after the original cap scanned only the first 64 of `/proc`'s 200+ single-call
-`getdents64` entries and thus hid nothing. Also confirmed on this kernel:
-`bpf_probe_write_user` does not taint (`/proc/sys/kernel/tainted` stays `0`).*

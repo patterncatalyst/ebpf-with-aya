@@ -146,15 +146,3 @@ program plus data, with libbpf no longer in the loading path.
 
 Next, Chapter 50 looks at the **user ring buffer** — a channel that runs the
 other direction, from user space into a BPF program.
-
----
-
-*Verification status: <span class="status status--verified">verified</span>
-— Fedora 44, kernel 7.1.3 (bpftool v7.6.0, libbpf 1.6). `bpftool gen skeleton
--L` on a libbpf-style C object (`reference/skel_demo.bpf.c`, compiled on the
-target) emits the `struct bpf_loader_ctx` / `skel_internal.h` light skeleton —
-the BPF_PROG_TYPE_SYSCALL loader path — while the full skeleton emits the
-classic `libbpf.h` / `bpf_object_skeleton` ELF path. Note: aya-ebpf objects
-can't be used here — they carry legacy `maps`-section definitions that libbpf
-v1.0+ rejects. The aya-ebpf loader-program sketch stays illustrative —
-syscall-program authoring in aya is experimental.*

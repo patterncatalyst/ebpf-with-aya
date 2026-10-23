@@ -195,8 +195,3 @@ the registered struct — the `struct_ops` mechanism made visible.
 Next, Chapter 44 moves past the minimal policy to a more realistic one —
 `scx_nest`-style ideas about keeping work on warm cores — to see how dispatch
 queues express a real scheduling strategy.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*
