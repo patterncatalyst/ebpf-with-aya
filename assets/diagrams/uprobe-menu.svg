@@ -16,7 +16,7 @@
 <text x="720.0" y="222.5" font-size="11.5" fill="#555555" text-anchor="middle">libjvm: gc__begin</text>
 <text x="720.0" y="237.5" font-size="11.5" fill="#555555" text-anchor="middle">attach at its offset · Ch 20</text>
 <text x="440" y="25" font-size="11" fill="#888" text-anchor="middle" font-weight="700">user-space probing: attach to a symbol or marker in a binary</text>
-<text x="440" y="292" font-size="11" fill="#b8650a" text-anchor="middle">entry probe sees args (C ABI: RDI, RSI, …); return probe sees the result — but mind non-C ABIs (Go) and never uretprobe Go</text>
+<text x="440" y="292" font-size="11" fill="#b8650a" text-anchor="middle">entry probe sees args (C ABI: RDI, RSI, …); return probe sees the result: but mind non-C ABIs (Go) and never uretprobe Go</text>
 <path d="M420,100 L160,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <path d="M440,100 L440,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <path d="M460,100 L720,170" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>

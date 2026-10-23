@@ -881,13 +881,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "runtime.casgstatus fires on every transition \u2014 one uprobe sees the whole machine",
+   "text": "runtime.casgstatus fires on every transition: one uprobe sees the whole machine",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "runtime.casgstatus fires on every transition \u2014 one uprobe sees the whole machine",
+   "originalText": "runtime.casgstatus fires on every transition: one uprobe sees the whole machine",
    "lineHeight": 1.25,
    "baseline": 11
   }

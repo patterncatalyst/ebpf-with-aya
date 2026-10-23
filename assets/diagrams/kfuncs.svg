@@ -26,5 +26,5 @@
 <text x="440" y="30" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">two ways to call into the kernel from BPF</text>
 <text x="220" y="196" font-size="13" fill="#6a6a6a" text-anchor="middle">adding one is a permanent ABI commitment</text>
 <text x="660" y="196" font-size="13" fill="#b8650a" text-anchor="middle">subsystems export their own; expect churn</text>
-<text x="440" y="348" font-size="11" fill="#888" text-anchor="middle">drop the release on any path and the program won&#x27;t load — kfuncs let the verifier enforce reference safety</text>
+<text x="440" y="348" font-size="11" fill="#888" text-anchor="middle">drop the release on any path and the program won&#x27;t load: kfuncs let the verifier enforce reference safety</text>
 </svg>

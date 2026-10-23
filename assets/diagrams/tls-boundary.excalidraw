@@ -944,13 +944,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "the wire is encrypted \u2014 the plaintext is at SSL_write's buffer on entry and SSL_read's on return",
+   "text": "the wire is encrypted: the plaintext is at SSL_write's buffer on entry and SSL_read's on return",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "the wire is encrypted \u2014 the plaintext is at SSL_write's buffer on entry and SSL_read's on return",
+   "originalText": "the wire is encrypted: the plaintext is at SSL_write's buffer on entry and SSL_read's on return",
    "lineHeight": 1.25,
    "baseline": 11
   }

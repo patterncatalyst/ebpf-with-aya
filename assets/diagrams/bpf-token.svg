@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 360" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
 <defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
 <rect x="24" y="210" width="548" height="118" rx="12" fill="#fafafa" stroke="#ddd"/>
-<text x="36" y="230" font-size="12" font-weight="700" fill="#888">container (user namespace) — no init-ns CAP_BPF</text>
+<text x="36" y="230" font-size="12" font-weight="700" fill="#888">container (user namespace): no init-ns CAP_BPF</text>
 <rect x="40" y="54" width="200" height="58" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>
 <text x="140.0" y="81.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">privileged runtime</text>
 <text x="140.0" y="98.0" font-size="11.5" fill="#555555" text-anchor="middle">(init userns)</text>
@@ -31,5 +31,5 @@
 <text x="581.0" y="242.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">token_fd</text>
 <text x="581.0" y="242.0" font-size="11" fill="#b8650a" text-anchor="middle">token_fd</text>
 <text x="440" y="26" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">delegating BPF into a container without init-namespace privilege</text>
-<text x="440" y="350" font-size="11" fill="#888" text-anchor="middle">the four axes (cmds / maps / progs / attachs) are the policy — the token grants only what was delegated: trust, not unconditional access</text>
+<text x="440" y="350" font-size="11" fill="#888" text-anchor="middle">the four axes (cmds / maps / progs / attachs) are the policy: the token grants only what was delegated: trust, not unconditional access</text>
 </svg>

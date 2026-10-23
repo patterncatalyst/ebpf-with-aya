@@ -654,13 +654,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "the captured stack names the code that leaked \u2014 that's what makes it actionable",
+   "text": "the captured stack names the code that leaked: that's what makes it actionable",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "the captured stack names the code that leaked \u2014 that's what makes it actionable",
+   "originalText": "the captured stack names the code that leaked: that's what makes it actionable",
    "lineHeight": 1.25,
    "baseline": 11
   }

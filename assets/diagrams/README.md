@@ -3,11 +3,11 @@
 Architecture and concept diagrams for the tutorial. Each diagram is a
 pair:
 
-- `<name>.svg` — the themed vector image the site embeds (this is what
+- `<name>.svg`: the themed vector image the site embeds (this is what
   renders).
-- `<name>.excalidraw` — the **editable source**. Open it at
+- `<name>.excalidraw`: the **editable source**. Open it at
   excalidraw.com to revise, then re-export the SVG (File → Export image
-  → SVG) — or regenerate both from the spec (see below).
+  → SVG): or regenerate both from the spec (see below).
 
 Embed a diagram in a chapter with the include:
 
@@ -15,7 +15,7 @@ Embed a diagram in a chapter with the include:
 {% raw %}{% include excalidraw.html
    file="ebpf-lifecycle"
    alt="describe the diagram for screen readers"
-   caption="Figure N.x — short caption" %}{% endraw %}
+   caption="Figure N.x: short caption" %}{% endraw %}
 ```
 
 ## Catalogue

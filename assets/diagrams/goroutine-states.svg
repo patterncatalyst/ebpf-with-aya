@@ -29,5 +29,5 @@
 <path d="M560,200 L650,200" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <text x="583.0" y="194.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">exit</text>
 <text x="583.0" y="194.0" font-size="11" fill="#555" text-anchor="middle">exit</text>
-<text x="410" y="285" font-size="11" fill="#b8650a" text-anchor="middle">runtime.casgstatus fires on every transition — one uprobe sees the whole machine</text>
+<text x="410" y="285" font-size="11" fill="#b8650a" text-anchor="middle">runtime.casgstatus fires on every transition: one uprobe sees the whole machine</text>
 </svg>

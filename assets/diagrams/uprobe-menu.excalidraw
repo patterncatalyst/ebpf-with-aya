@@ -689,13 +689,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "entry probe sees args (C ABI: RDI, RSI, \u2026); return probe sees the result \u2014 but mind non-C ABIs (Go) and never uretprobe Go",
+   "text": "entry probe sees args (C ABI: RDI, RSI, \u2026); return probe sees the result: but mind non-C ABIs (Go) and never uretprobe Go",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "entry probe sees args (C ABI: RDI, RSI, \u2026); return probe sees the result \u2014 but mind non-C ABIs (Go) and never uretprobe Go",
+   "originalText": "entry probe sees args (C ABI: RDI, RSI, \u2026); return probe sees the result: but mind non-C ABIs (Go) and never uretprobe Go",
    "lineHeight": 1.25,
    "baseline": 11
   }
