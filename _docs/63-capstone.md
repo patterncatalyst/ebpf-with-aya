@@ -151,8 +151,3 @@ as one.
 Next, Part 10 is an optional **field guide** to the command-line tools we've
 leaned on for validation — `bpftrace`, `bpftool`, and the BCC tools — driven
 from Python. Then a closing retrospective.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM host (Fedora 44): both services build and come up under podman-compose, and one traceparented request flows FastAPI /checkout -> Quarkus /inventory across both services.*

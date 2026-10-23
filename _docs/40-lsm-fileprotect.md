@@ -162,8 +162,3 @@ permissions can't.
 That rounds out the introduction to security with eBPF — confining,
 reacting, hiding, and protecting. Later parts return to this surface with
 richer kernel-struct access once CO-RE is in hand.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -128,8 +128,3 @@ unless the binary was built with `-ldflags=-s`.)
 Last in this part: **`javagc`**, timing JVM garbage collection — learning
 why a stock OpenJDK ships no gc USDT markers and uprobing the G1 collector's
 stop-the-world function (resolved from `libjvm.so`'s symbol table) instead.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -173,8 +173,3 @@ That closes the **Networking** part. We built up from timing a connection to
 dropping, capturing, and load-balancing packets in the driver. Next is
 **Part 5, Security & LSM**, where eBPF stops reporting on the kernel and
 starts making allow/deny decisions for it.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -205,16 +205,3 @@ The same toolkit as Chapter 39, plus one policy control:
 Next, Chapter 42 closes the security part by turning all of this into a
 **telemetry sensor**: many security-relevant hooks feeding one event stream,
 the shape of a real runtime-security tool.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3, sudo 1.9.17p2</span>.
-Built on the host, run on the lab VM. Detached, `victim` cannot sudo; while
-attached, `sudo -u victim sudo -n id` returns `uid=0(root)` on the first
-attempt and sudo itself stays healthy; on detach `victim` is denied again and
-`/etc/sudoers` on disk is unchanged. The original program was rejected by this
-kernel's verifier (`bpf_probe_write_user` size is `ARG_CONST_SIZE` → the
-possibly-zero length failed as "R3 invalid zero-sized read"); the size is now
-clamped to `1..=64`. Targeting was moved from `comm`-only to a sudoers-header
-signature after the `comm`-only version corrupted sudo's shared-library reads
-and missed the `lseek`-rewound parse read (both detailed above).*

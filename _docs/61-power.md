@@ -163,8 +163,3 @@ eBPF shares are real, the joules need hardware the guest doesn't see.
 
 Next, Chapter 62 closes the book: a look back across everything from a kprobe
 counting `unlink` to operating a fleet, and where eBPF and Aya go from here.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

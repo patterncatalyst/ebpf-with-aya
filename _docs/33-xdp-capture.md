@@ -182,8 +182,3 @@ That's the most direct "is my capture correct?" check there is.
 
 Next, Chapter 34 makes XDP *forward*: a small load balancer that rewrites
 packets and fans them across backends with `XDP_TX`/`XDP_PASS`.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

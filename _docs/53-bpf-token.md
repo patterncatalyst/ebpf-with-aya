@@ -170,15 +170,3 @@ present — the delegated mount, not that probe, is the capability check.
 
 Next, Chapter 54 turns to BPF that schedules its own deferred work — **timers
 and workqueues** running inside the kernel.
-
----
-
-*Verification status: <span class="status status--verified">verified (privileged half) — Fedora 44, kernel 7.1.3</span>.
-On the lab VM, bpffs accepts `delegate_cmds`/`delegate_maps`/`delegate_progs`
-and shows them in `mount`; a **bogus** axis is rejected, proving the kernel
-enforces the policy; and `BPF_TOKEN_CREATE` is present in the kernel ABI.
-(`bpftool feature probe` v7.6.0 shows no "token" line — a bpftool gap, not a
-kernel one.) The Aya `EbpfLoader` token option is confirmed **still emerging**:
-against the pinned aya 0.14.0 there is no `token_path`/token method on the
-loader, so `illustrative/loader_with_token.rs` shows the intended shape, not a
-shipped API. libbpf threads it via `bpf_token_path` today.*

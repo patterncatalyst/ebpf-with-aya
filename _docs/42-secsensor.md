@@ -158,8 +158,3 @@ That closes the **Security & LSM** part: confine, react, hide, protect,
 escalate, and finally compose it all into a sensor. The next part leaves
 security for a very different power — writing a CPU **scheduler** in BPF with
 `sched_ext`.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -215,8 +215,3 @@ without reading a byte of data.
   profiling** (Chapter 23) attributes the multiply's milliseconds to the NTT
   routines underneath, viewable as a Pyroscope flamegraph panel. Both stay
   data-blind: a duration and a stack of addresses, never an operand.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

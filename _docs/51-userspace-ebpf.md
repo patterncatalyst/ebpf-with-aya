@@ -139,11 +139,3 @@ ordinary eBPF you'd recognize from any kernel program.
 
 Next, Chapter 52 returns to the kernel for **kfuncs** — the modern, typed
 alternative to the fixed helper list these VMs reimplement.
-
----
-
-*Verification status: <span class="status status--verified">verified</span>
-— host run (no VM, no root). `cargo run --release` builds against the current
-`rbpf` API (`assembler::assemble`, `EbpfVmRaw::new`, `register_helper`,
-`execute_program`, `jit_compile` / `execute_program_jit`) and the interpreter
-and JIT agree: `interpreter=42 jit=42`. The JIT path is x86-64 only.*

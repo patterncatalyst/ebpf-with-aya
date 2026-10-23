@@ -432,13 +432,3 @@ default. For everything in this book, the stock glibc target is correct.
   cross-distro) choice for the loader — distinct from CO-RE's kernel portability
 
 [Next: Chapter 5 — eBPF concepts and tools →]({{ "/docs/05-ebpf-concepts/" | relative_url }})
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44 host</span>.
-This toolchain built the entire corpus (~60 examples) on this Fedora host
-throughout the smoke campaign: the nightly + `rust-src`/`build-std` path for the
-kernel crate, `bpf-linker` (including the LLVM shared-lib fallback), the stable
-loader toolchain, and the per-crate `rust-toolchain.toml` pins all work as
-described. The gdbserver remote-debug path (RustRover / gdb) was exercised
-end-to-end. Aya crate versions: aya 0.14.x, aya-ebpf 0.2.x.*

@@ -192,8 +192,3 @@ stability, is exactly the thing to verify before relying on one.
 
 Next, Chapter 53 looks at the **BPF token** — how this kernel surface gets
 safely delegated into unprivileged containers.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): tallies found (target pid running) vs missing. The kfunc form (bpf_task_from_pid) is not expressible in aya-ebpf (see below); this checks the current task instead.*
