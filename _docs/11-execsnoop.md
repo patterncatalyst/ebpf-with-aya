@@ -6,6 +6,18 @@ description: "Trace every program launch with its full command line: the new ski
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Read `argv`, an array of user-space string pointers, in a bounded loop the verifier accepts.
+- Write a large event directly into a reserved ring-buffer slot instead of the limited BPF stack.
+- Choose fixed-size argument slots over dynamic buffer offsets to keep pointer arithmetic verifier-safe.
+- Reassemble a process's command line from fixed slots in user space.
+- Cross-check a reconstructed command line against the BCC `execsnoop-bpfcc` tool.
+
+## Why this matters
+
 `execsnoop` shows every program that runs on the system, with its
 command line. It's one of the most useful tools in the eBPF canon:
 short-lived processes that `ps` and `top` never catch show up here the

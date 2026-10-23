@@ -6,6 +6,17 @@ description: "The other enforcement style: instead of denying a syscall at an LS
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Send a signal from inside the kernel with bpf_send_signal()
+- Match a forbidden binary at a sys_enter_execve tracepoint
+- Stop a process before its exec completes
+- Explain why this enforcement style belongs in a lab
+
+## Why this matters
+
 Chapter 37 *prevented* an operation by returning `-EPERM` from an LSM hook.
 There's a second enforcement style: let the event happen and **react** to
 it. eBPF can send a signal to a process from inside the kernel with

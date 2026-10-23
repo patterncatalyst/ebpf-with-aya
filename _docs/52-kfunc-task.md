@@ -6,6 +6,18 @@ description: "The BPF helper list froze, so the kernel grew a better mechanism: 
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why the frozen helper list stopped scaling, and how kfuncs replace it with BTF-registered kernel functions
+- Explain how the `KF_ACQUIRE`, `KF_RELEASE`, `KF_RET_NULL`, and `KF_TRUSTED_ARGS` flags let the verifier reason about kernel object references
+- Write an Aya program that acquires a `task_struct` by pid with `bpf_task_from_pid` and is forced to release it with `bpf_task_release`
+- Demonstrate that the verifier rejects a program at load time if it leaks an acquired reference on any code path
+- Use bpftool and vmlinux BTF to confirm a kfunc exists in the running kernel before relying on it
+
+## Why this matters
+
 For most of this book, the way a BPF program reached into the kernel was a
 **helper**: `bpf_ktime_get_ns`, `bpf_map_lookup_elem`, `bpf_probe_read_user`.
 Helpers are a numbered, frozen UAPI: a fixed table the kernel commits to

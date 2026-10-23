@@ -6,6 +6,18 @@ description: "A new kind of BPF program: implementing a CPU scheduler with sched
 duration: 50 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain the `struct_ops` model: a BPF program filling in a kernel-defined struct of callback functions
+- Identify the scheduler callbacks (`select_cpu`, `enqueue`, `dispatch`, `init`, `exit`) and what each one decides
+- Describe how dispatch queues (DSQs) hold runnable tasks between "runnable" and "running"
+- Run the real `scx_simple` scheduler on the lab VM and observe it with an Aya `sched_switch` probe
+- Explain how the watchdog keeps a misbehaving scheduler from hanging the machine
+
+## Why this matters
+
 Until now every BPF program in this book has *hooked* the kernel: observed
 an event or mediated a decision. `sched_ext` is different: it lets a BPF
 program *be* a kernel subsystem. With it you implement the CPU scheduler

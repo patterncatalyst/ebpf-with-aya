@@ -6,6 +6,18 @@ description: "Build a sampling CPU profiler with a perf_event program firing at 
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why a sampling profiler has a fixed, bounded cost unlike per-event tracers
+- Attach a `perf_event` program across all CPUs with a fixed-frequency sample policy
+- Capture kernel and user call stacks with `bpf_get_stackid` into a `StackTrace` map
+- Symbolize kernel frames via `/proc/kallsyms` and recognize the limits of symbolizing user frames
+- Emit folded-stack output for flame graphs and continuous profiling with Pyroscope
+
+## Why this matters
+
 `runqlat` and `hardirqs` told you *how long* things waited. A profiler
 tells you *where* the CPU actually spends its time: which functions are
 on-CPU when you look. `profile` does it by **sampling**: a timer fires at

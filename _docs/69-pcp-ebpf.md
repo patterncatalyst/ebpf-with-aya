@@ -6,6 +6,17 @@ description: "Performance Co-Pilot is the other major metrics model: pull-and-re
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain PCP's pull-and-record architecture: PMDAs feeding `pmcd`, clients reading live, `pmlogger` archiving for replay.
+- Identify PCP's eBPF on-ramp: `pmdabpf` (CO-RE modules), `pmdabpftrace` (bpftrace scripts), and the legacy `pmdabcc`.
+- Bridge an Aya program's `ebpf_*` OTLP metrics into PCP through `pmdaopenmetrics`.
+- Decide when PCP's always-on host recording complements the book's request-correlated OTLP stack.
+
+## Why this matters
+
 The whole book pushes metrics: an Aya loader exports OTLP to a collector, and
 Grafana reads it. **Performance Co-Pilot (PCP)** is the other major model in Linux
 performance monitoring, and it works the other way around: a daemon on each host

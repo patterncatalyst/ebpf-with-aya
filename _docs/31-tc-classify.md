@@ -6,6 +6,17 @@ description: "Move from observing traffic to acting on it: attach a classifier t
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a classifier to the clsact qdisc on both ingress and egress
+- Return a TC_ACT verdict (pass, drop, or redirect) from a BPF program
+- Count egress packets per protocol in a kernel map
+- Drop traffic to a chosen port with a TC_ACT_SHOT verdict
+
+## Why this matters
+
 Every networking program so far has *watched*: Chapter 27 timed connects,
 28 tracked state changes, 29 read request lines, 30 noted established
 sockets. None of them changed what the kernel did with a packet. This

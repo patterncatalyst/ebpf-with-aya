@@ -6,6 +6,17 @@ description: "The bookend to execsnoop: trace process termination and exit codes
 duration: 15 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a tracepoint to `syscalls:sys_enter_exit_group` to capture process exit codes without reading `task_struct`
+- Decode the raw `exit_group` argument's low byte and explain how it differs from the high/low byte encoding in `task_struct->exit_code` and the `wait()` status
+- Build a ring-buffer consumer that labels each exit as `ok` or `nonzero` for a Grafana panel
+- Verify captured exit codes against `bpftrace`'s tracepoint output
+
+## Why this matters
+
 `exitsnoop` completes what `execsnoop` started: where execsnoop caught
 every process launch, exitsnoop catches every termination and its exit
 code. Run together they bracket the full life of every process on the

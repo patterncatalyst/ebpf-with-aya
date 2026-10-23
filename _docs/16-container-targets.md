@@ -6,6 +6,18 @@ description: Stand up real application targets (Java 25 + Quarkus and Python 3.1
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Build Java and Python application targets as multi-stage UBI containers
+- Explain why the kernel sees every container's processes and why existing tracers need no container-specific API
+- Translate between the host PID eBPF reports and the in-container PID a process shows
+- Scope an eBPF program to one container by resolving its cgroup id and filtering on `bpf_get_current_cgroup_id()`
+- Identify crun's role as Fedora's OCI runtime and where SELinux confinement matters for observation
+
+## Why this matters
+
 So far we've probed bash and a tiny Rust binary. Real targets are
 *services*, and on Fedora they run in **containers**. This chapter
 bootstraps two you'll reuse in every chapter that follows: a

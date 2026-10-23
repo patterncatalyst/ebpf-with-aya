@@ -6,6 +6,17 @@ description: "Trace every TCP connection through its state machine using the sin
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Trace every TCP state transition with the single `sock:inet_sock_set_state` tracepoint
+- Read connection endpoints and state directly from tracepoint fields, with no struct-offset chasing
+- Map kernel TCP state constants to readable names
+- Decide when to prefer a stable tracepoint over a kprobe
+
+## Why this matters
+
 Chapter 27 timed one transition (connect → established) the hard way,
 with kprobes and `struct sock` offsets. This chapter watches the
 **entire** TCP state machine: every connection moving through
@@ -31,7 +42,7 @@ Because the tracepoint hands you the fields, there are **no kprobes and
 no `struct sock` offsets**: the soft spot from Chapter 27 simply isn't
 here. You still read the tracepoint's own fields by offset (from its
 format file), but those offsets are part of a stable ABI the kernel
-maintains deliberately, not internal struct layout that drifts:
+maintains, not internal struct layout that drifts:
 
 ```rust
 #[tracepoint]

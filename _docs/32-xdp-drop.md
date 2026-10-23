@@ -6,6 +6,17 @@ description: "Drop and count packets at XDP, the eXpress Data Path, in the drive
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach an XDP program in the driver before an sk_buff is allocated
+- Read raw packet bytes between the data and data_end pointers
+- Satisfy the verifier's bounds-checking discipline on every access
+- Drop and count packets at the earliest, fastest hook
+
+## Why this matters
+
 Chapter 31 put your code on the packet path at the qdisc, working on a
 fully-formed `sk_buff`. **XDP** (the eXpress Data Path) goes lower and
 earlier: it runs in the network driver, on the raw received frame,

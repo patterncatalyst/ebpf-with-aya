@@ -6,6 +6,18 @@ description: "A short final project for the applications part. We can't symbol-p
 duration: 50 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why Java (JIT-compiled) and Python (interpreted) can't be symbol-probed the way nginx was, and why the kernel socket layer is the language-agnostic alternative
+- Hook `tcp_recvmsg`/`tcp_sendmsg` keyed by the socket pointer to time a request for any language's service
+- Mint one `trace_id` per request and emit a span, a log, and a RED metric that all carry it
+- Click through from a metric to its trace to its logs in Grafana using that shared `trace_id`
+- Place this teaching-grade pipeline against OBI, the production tool that solves the same problem with real L7 parsing and W3C propagation
+
+## Why this matters
+
 This part has aimed eBPF at one real server at a time. This final project steps
 back and asks the question the whole observability stack was built for: can we
 make eBPF produce the **three signals** (metrics, logs, and traces)
@@ -85,7 +97,7 @@ The key choices:
   (`java`, `python3.14`) so user space can attribute it to the right service
   *without* reading any kernel struct. That's our stand-in for OBI's far
   richer service discovery.
-- This is deliberately a **simplification**: one `recv`/`send` pair is a
+- This is a **simplification**: one `recv`/`send` pair is a
   decent proxy for a request on a simple keep-alive-light workload, but it
   doesn't parse HTTP, doesn't handle pipelining, and times service work rather
   than the full request. OBI parses the L7 protocol to get this right; we're

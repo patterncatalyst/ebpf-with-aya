@@ -6,6 +6,17 @@ description: "Close the security part by building the sensor layer of a runtime-
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Compose several attacker-relevant hooks (execve, ptrace, setuid) into one sensor
+- Emit a single structured event stream to Grafana
+- Distinguish observing from shielding
+- Map the architecture a runtime-security tool is built from
+
+## Why this matters
+
 The last five chapters were single moves: confine a connection, kill a
 process, hide a PID, protect a file, forge a read. A real runtime-security
 tool (think Falco or Tetragon) is the *composition* of many such probes into

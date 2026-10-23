@@ -6,6 +6,17 @@ description: "Parse application-layer HTTP out of raw packets with a socket-filt
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Parse HTTP out of raw packets with a socket-filter program
+- Walk Ethernet, IPv4, and TCP headers to locate the TCP payload
+- Attach a socket filter to a raw `AF_PACKET` socket bound to an interface
+- Weigh socket-filter L7 tracing against syscall/uprobe tracing for encrypted traffic
+
+## Why this matters
+
 Connection-level tools (Ch 27–28) tell you *that* a connection happened;
 **L7** tracing tells you *what was said* on it: the HTTP method and
 path, the response status. This chapter does it with a **socket

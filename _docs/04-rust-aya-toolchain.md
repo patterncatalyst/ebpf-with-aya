@@ -6,6 +6,18 @@ description: "Install Rust 1.96.0 via rustup (not dnf), add the nightly BPF targ
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Install Rust with rustup, pinned to the project's version, instead of Fedora's packaged rustc.
+- Add the nightly toolchain and the `rust-src` component the BPF target needs.
+- Install `bpf-linker` and `cargo-generate`, then scaffold a workspace from the `aya-template`.
+- Explain the LLVM/Clang/rustc compiler path that turns Rust and C source into BPF bytecode.
+- Choose between a dynamic glibc loader and a static musl loader for cross-distro deployment.
+
+## Why this matters
+
 This chapter installs everything needed to *build* eBPF programs in
 Rust on your laptop. Aya is unusual and pleasant here: for the great majority of this book
 the kernel-side and user-side are both Rust, with no Clang in the loop,

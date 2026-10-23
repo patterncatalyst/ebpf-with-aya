@@ -6,6 +6,18 @@ description: "BCC ships the ~100 ready-made tracers whose names recur in every c
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Distinguish classic BCC (runtime-compiled inline C) from libbpf-tools (precompiled CO-RE binaries).
+- Map the BCC suite's tools to the kernel layer each observes and the Aya chapter each mirrors.
+- Resolve, run, and parse a BCC tool's columnar output into a summary from Python.
+- Explain what a BCC tool is underneath, using a minimal `BPF(text=...)` program.
+- Decide when to reach for BCC, bpftrace, bpftool, or Aya.
+
+## Why this matters
+
 The last stop in the field guide is the toolkit that started it all. **BCC** (the
 BPF Compiler Collection) ships roughly a hundred ready-made tracers, and their
 names have appeared in nearly every "Cross-check" section of this book:

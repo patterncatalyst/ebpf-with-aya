@@ -6,6 +6,18 @@ description: "Closing the advanced part with one more inversion. Instead of reac
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain how a BPF iterator inverts program execution so the kernel drives a per-element loop
+- Write an `iter/task` program that emits formatted output through a seq_file
+- Use the `seq_num == 0` and NULL-element sentinels to print a header and a summary
+- Pin a BPF iterator to bpffs and read its output with `cat`
+- Distinguish the iterator program type from open-coded iterators like `bpf_for`
+
+## Why this matters
+
 This part has been a tour of inversions: kfuncs let BPF call the kernel,
 struct_ops let BPF implement the kernel, timers let BPF schedule the kernel. The
 last one is about *reading* the kernel. Every program so far has waited for the

@@ -6,6 +6,18 @@ description: "A program you load in a demo dies the instant the loader exits: fi
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Pin a program, link, and map to bpffs so they outlive the loader process
+- Use `BPF_LINK_UPDATE` to swap a program under a live link with zero downtime
+- Reuse a pinned map across versions so state survives an upgrade
+- Explain the three pillars of operating eBPF: pinning, atomic link update, and map reuse
+- Compare a by-hand systemd/pinning setup to fleet orchestrators like L3AF and bpfman
+
+## Why this matters
+
 Every `demo.sh` in this book has the same hidden assumption: the loader stays
 running. Press Ctrl-C and the program detaches, the maps free, the data plane
 goes dark, because a BPF object's lifetime is tied to the **file descriptors**

@@ -6,6 +6,18 @@ description: Time JVM garbage-collection pauses; learn what USDT is and why it's
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain what a USDT probe is and why it's the ideal surface for observing stable runtime-internal events
+- Check whether a binary ships USDT markers with `readelf -n` and `bpftrace -l` before assuming they exist
+- Resolve a C++ symbol from `libjvm.so`'s unstripped `.symtab` and attach a uprobe/uretprobe pair to time it
+- Time JVM garbage-collection pauses by keying entry/return timestamps by thread id
+- Attribute GC pauses to individual JVMs on a shared node by cgroup/PID and collector label
+
+## Why this matters
+
 This chapter times JVM **garbage-collection pauses**. In doing so it
 introduces **USDT**, the mechanism language runtimes use to expose
 stable internal events. The JVM, CPython, Node, and others *can* ship

@@ -6,6 +6,17 @@ description: "Time a function per call by pairing a uprobe at entry with a uretp
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Time a function by pairing a uprobe at entry with a uretprobe at return and subtracting `bpf_ktime_get_ns()` timestamps
+- Key per-call start times by `pid_tgid` so concurrent calls on different threads don't collide
+- Weigh per-call ring-buffer events against an in-kernel log2 histogram and know when to switch
+- Record durations into an OTLP histogram instrument so Grafana can compute percentiles and heatmaps
+
+## Why this matters
+
 "Why is this slow?" starts with "how long does this function take?"
 `funclatency` answers it: pair a uprobe at a function's entry with a
 uretprobe at its return, subtract timestamps, and you have a per-call

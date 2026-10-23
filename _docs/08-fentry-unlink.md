@@ -6,6 +6,18 @@ description: Revisit the unlink target with fentry/fexit, BTF-trampoline probes 
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach fentry/fexit BTF-trampoline probes and compare their overhead and argument typing to a kprobe.
+- Bridge an entry probe to an exit probe with a `pid_tgid`-keyed `HashMap`.
+- Read a traced function's return value from a fexit program and report success versus failure.
+- Load fentry/fexit programs against kernel BTF with `Btf::from_sys_fs()`.
+- Cross-check success/failure counts against `bpftrace`'s `fexit` probe.
+
+## Why this matters
+
 Chapter 7's kprobe told you an unlink was *attempted* and dredged the
 filename out of a raw pointer. This chapter attaches to the same
 target, `vfs_unlink` (Chapter 7 explains why it isn't `do_unlinkat`
@@ -143,7 +155,7 @@ counter.add(1, &[KeyValue::new("program", "fentrysnoop"), KeyValue::new("result"
 cd examples/08-fentry-unlink && ./demo.sh
 ```
 
-The demo deliberately generates both successful deletes *and* a failing
+The demo generates both successful deletes *and* a failing
 one (`rm` of a nonexistent path) so you see a non-zero `RET`:
 
 ```bash

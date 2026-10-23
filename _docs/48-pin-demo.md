@@ -6,6 +6,18 @@ description: "Open the advanced part with the lifecycle question every earlier c
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain reference counting: why a BPF program detaches when its loader's file descriptors close
+- Pin a program, map, and link to bpffs so they outlive the loader
+- Read a pinned map's data from a separate process with no loader running
+- Detach a pinned program by removing its pin
+- Use bpftool to inspect pinned programs, links, and maps on bpffs
+
+## Why this matters
+
 Every loader so far has ended the same way: it attaches a program, loops while
 holding a file descriptor, and when you press Ctrl-C the program detaches and
 vanishes. That's the right shape for a tool you run interactively, but it

@@ -6,6 +6,18 @@ description: "Meet a different model: a sock_ops program attached to a cgroup th
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a `sock_ops` program to a cgroup-v2 directory
+- React to TCP connection-lifecycle callbacks and read the 4-tuple directly from context
+- Distinguish active and passive connection establishment by callback type
+- Identify what `sock_ops` can do beyond observation: socket options, congestion control, sockmaps
+- Account for the host/network byte-order mismatch between local and remote ports
+
+## Why this matters
+
 Every networking tool so far *observed*: a tracepoint fired, a packet
 arrived, and you read it. `sock_ops` is different in two ways: it's
 attached to a **cgroup** rather than a function or interface, and the

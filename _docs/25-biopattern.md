@@ -6,6 +6,17 @@ description: "Classify block-device I/O as sequential or random per device by tr
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Classify block I/O as sequential or random from sector arithmetic alone
+- Trace `block_rq_issue` and read `dev`/`sector`/`nr_sector` fields by offset
+- Maintain per-device state in the kernel to classify requests without emitting per-I/O events
+- Decode a `dev_t` into major:minor and map it to a disk name
+
+## Why this matters
+
 Storage performance hinges on one thing more than almost any other:
 whether I/O is **sequential** or **random**. Spinning disks fall off a
 cliff on random access; even SSDs prefer sequential. `biopattern`

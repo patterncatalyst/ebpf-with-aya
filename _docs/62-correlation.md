@@ -6,6 +6,18 @@ description: "We have used the metrics half of the observability stack for sixty
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Name the four backends behind `otel-lgtm` (Prometheus, Tempo, Loki, Pyroscope) and the signal each stores.
+- Explain where Mimir fits as the production swap for Prometheus, with the same PromQL and correlation.
+- Trace how the W3C `traceparent` header keeps one request coherent across services as a single trace_id.
+- Identify the Grafana data-source links (exemplars, tracesToLogs, derivedFields) that stitch metrics, traces, and logs together.
+- Join an eBPF event to that trace_id, either by capturing it at L7 or by correlating on time, pid, and service.
+
+## Why this matters
+
 Every program in this book has fed Grafana the same kind of thing: an `ebpf_*`
 **metric**. We graphed counters and gauges and never once looked at the other
 two signals, and the backend has been quietly running them the whole time.
@@ -56,7 +68,7 @@ development/demo backend optimized for a five-second startup, so it uses
 single-binary **Prometheus** for metrics. **Mimir** is what you graduate to in
 production: a horizontally scalable, multi-tenant, long-retention metrics store
 that ingests via **Prometheus remote-write** and serves the **same PromQL**. The
-swap is deliberately invisible to everything above it: Grafana points at Mimir
+swap stays invisible to everything above it: Grafana points at Mimir
 with the *Prometheus* data-source type (`url: .../prometheus`), your `ebpf_*`
 queries are unchanged, and exemplar-based correlation works identically. So:
 learn and demo on Prometheus, deploy on Mimir when you need 1B-series scale and

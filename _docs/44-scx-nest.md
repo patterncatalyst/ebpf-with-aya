@@ -6,6 +6,18 @@ description: "Move past the minimal scheduler to a real strategy. The scx_nest p
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain the nest policy: concentrating work on a small set of warm cores instead of spreading it thin
+- Describe why CPU frequency scaling and cache warmth favor a few busy cores over many idle ones
+- Trace how `select_cpu` expresses promotion into the nest and demotion out of it
+- Identify the `bpf_cpumask_*` kfuncs used to track nest membership
+- Run the real `scx_nest` scheduler and measure per-CPU busy time with an Aya probe to see the concentration
+
+## Why this matters
+
 `scx_simple` answered the scheduling questions in the dumbest way that works:
 everything on one global queue, any idle CPU grabs it. A real policy is an
 *opinion* about where work should go. `scx_nest` has a sharp one, borrowed

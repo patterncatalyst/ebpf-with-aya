@@ -6,6 +6,18 @@ description: "Attribute power consumption to individual processes (the modern su
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why per-process power is an attribution model, not a direct measurement
+- Credit each task its on-CPU time in-kernel via `sched_switch`
+- Read system power from RAPL energy counters, or fall back to a TDP-based model when RAPL is unavailable
+- Attribute system power to processes by their share of CPU time
+- Recognize why virtualization breaks the hardware power-measurement path
+
+## Why this matters
+
 This chapter closes *Performance & resources* with the newest reason
 people reach for eBPF: **energy**. Data-center power is expensive and
 carbon-relevant, and "which process is burning the watts?" has become a

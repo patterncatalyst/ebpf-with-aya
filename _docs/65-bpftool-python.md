@@ -6,6 +6,17 @@ description: "bpftool was our ground truth all book: prog show, map dump, link s
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain what bpftool's JSON output (`-j`) exposes for a loaded program: `map_ids`, holder `pids`, and `run_time_ns`/`run_cnt`.
+- Build a Python wrapper around `bpftool -j` that inventories and audits loaded BPF programs, maps, and links.
+- Use the `top` and `audit` commands to find which programs cost the most CPU and who holds them.
+- Enable kernel BPF stats (`kernel.bpf_stats_enabled`) to get real runtime figures.
+
+## Why this matters
+
 Where bpftrace (Chapter 64) *asks the kernel questions*, **bpftool** *inspects
 and manages what's already loaded*, and it was the cross-check in nearly every
 chapter: `prog show` to confirm our program loaded, `map dump` to verify a

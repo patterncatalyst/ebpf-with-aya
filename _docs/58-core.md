@@ -6,6 +6,18 @@ description: "The portability machinery the whole book has leaned on, finally ex
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why a hardcoded struct field offset breaks when the kernel's layout changes
+- Describe how CO-RE relocations record field name and type instead of a baked-in offset
+- Use `vmlinux.h` and `BPF_CORE_READ` to read kernel struct fields portably
+- Check for field existence with `bpf_core_field_exists` to support kernels missing a field
+- Generate portable Rust bindings with `aya-tool generate` and distinguish CO-RE's kernel-version portability from musl's distro portability
+
+## Why this matters
+
 Part 9 is about *operating* eBPF: running it across a fleet, not just on the
 one VM in front of you. That starts with the question every chapter so far
 has quietly relied on someone else answering: **why does a program that reads

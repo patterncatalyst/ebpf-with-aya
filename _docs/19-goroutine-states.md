@@ -6,6 +6,17 @@ description: "Probe the Go scheduler's state machine through runtime.casgstatus,
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Probe `runtime.casgstatus` to observe every goroutine state transition through one function
+- Read Go's ABIInternal argument registers directly from `pt_regs` instead of using `ctx.arg(n)`, which assumes the C ABI
+- Explain why a uretprobe must never attach to a Go binary, and what breaks if it does
+- Distinguish the OS thread eBPF reports from a goroutine's identity
+
+## Why this matters
+
 Go multiplexes thousands of goroutines onto a handful of OS threads, and
 its scheduler funnels **every** goroutine state transition through one
 function: `runtime.casgstatus`. A uprobe there is a window onto the

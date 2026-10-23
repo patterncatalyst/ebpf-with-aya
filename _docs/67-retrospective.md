@@ -21,7 +21,7 @@ way, the real state of what you have, and where eBPF and Aya go from here.
 
 ## How the parts built on each other
 
-The **Foundations** (Part 0) were deliberately front-loaded with a real lab and
+The **Foundations** (Part 0) were front-loaded with a real lab and
 a real observability stack, so that the very first program in Chapter 6 reported
 into Grafana rather than printing to a terminal. Everything after inherited that:
 no program in this book is a toy that only prints.

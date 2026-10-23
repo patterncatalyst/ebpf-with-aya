@@ -6,6 +6,17 @@ description: "Everything the book has built, in a single request. A curl carryin
 duration: 60 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Trace a single `curl` request as its `traceparent` propagates from FastAPI through Quarkus into one distributed trace.
+- Identify the three application signals (spans, metrics, logs) each service contributes under that trace_id.
+- Join an Aya program's kernel-level syscall and byte counts to the same trace, by L7 extraction or by time/pid/service correlation.
+- Read one request end to end across Tempo, Loki, Prometheus, and the eBPF view in a single Grafana investigation.
+
+## Why this matters
+
 This is the chapter the whole book has been walking toward. Individually you can
 now write a kprobe, a uprobe, an XDP filter, an LSM hook; emit metrics, drain a
 ring buffer, pin a program, relocate it with CO-RE; and stand up Tempo, Loki,
