@@ -2,14 +2,14 @@
 title: "funclatency"
 order: 18
 part: User-space & language probing
-description: Time a function per call by pairing a uprobe at entry with a uretprobe at return and bpf_ktime_get_ns, then turn the durations into an OTLP latency histogram — and weigh per-call events against an in-kernel histogram.
+description: "Time a function per call by pairing a uprobe at entry with a uretprobe at return and bpf_ktime_get_ns, then turn the durations into an OTLP latency histogram, and weigh per-call events against an in-kernel histogram."
 duration: 25 minutes
 ---
 
 "Why is this slow?" starts with "how long does this function take?"
 `funclatency` answers it: pair a uprobe at a function's entry with a
 uretprobe at its return, subtract timestamps, and you have a per-call
-duration. Collect enough of them and you have a latency distribution —
+duration. Collect enough of them and you have a latency distribution:
 the thing percentiles and heatmaps are built from. This chapter builds
 it and feeds the durations into the observability stack as a real
 histogram.
@@ -37,7 +37,7 @@ pub fn fn_exit(_ctx: RetProbeContext) -> u32 {
 }
 ```
 
-`bpf_ktime_get_ns()` is a monotonic nanosecond clock — exactly what you
+`bpf_ktime_get_ns()` is a monotonic nanosecond clock: exactly what you
 want for intervals (it doesn't jump with wall-clock changes). Keying the
 start time by `pid_tgid` means each thread's call is timed
 independently, so concurrent calls don't clobber each other. The
@@ -52,16 +52,16 @@ the choice is a real engineering trade-off:
    ships each `delta_ns` to user space via a ring buffer, and user space
    records it into a histogram. Simple, and it lets user space drive a
    real OTLP histogram the stack understands. The cost is one event per
-   call — fine at modest rates.
+   call: fine at modest rates.
 2. **Aggregate a histogram in the kernel** (what the classic
    `funclatency` does): keep an array of log2 bucket counters as a map;
    the uretprobe just increments `buckets[log2(delta)]`; user space
-   reads the buckets periodically. Almost no per-call overhead — right
+   reads the buckets periodically. Almost no per-call overhead: right
    for hot functions called millions of times.
 
 We take approach 1 because it plugs straight into OTLP and is easier to
 read; the chapter's example notes where approach 2 swaps in. Knowing
-*why* you'd switch — call rate — is the actual lesson.
+*why* you'd switch (call rate) is the actual lesson.
 
 ## Into an OTLP histogram
 
@@ -74,7 +74,7 @@ let hist = meter.f64_histogram("function_latency_ms").build();
 hist.record(delta_ns as f64 / 1_000_000.0, &[KeyValue::new("symbol", sym)]);
 ```
 
-That gives the stack a proper histogram series — Grafana can render a
+That gives the stack a proper histogram series: Grafana can render a
 heatmap or compute p50/p95/p99 without you precomputing them. Alongside,
 the tool prints a console ASCII histogram in log2-µs buckets, the way
 `funclatency` always has, so you get an immediate read in the terminal
@@ -100,11 +100,11 @@ slow_op: 240 calls
 1024 -> 2047     112  |********************************
 ```
 
-and `function_latency_ms{symbol="slow_op"}` in Grafana — point a heatmap
+and `function_latency_ms{symbol="slow_op"}` in Grafana: point a heatmap
 panel at it, or a percentile query, and you have the same view you'd
 build for a real service. Aim `funclatency` at any symbol in any binary
 (`SYM=… ./demo.sh`, or pass a path + symbol) and you can time arbitrary
-user-space functions — your code, a library, anything with a symbol.
+user-space functions: your code, a library, anything with a symbol.
 
 **In Grafana** (`127.0.0.1:3000` → Explore), the latency lands as a histogram: graph `histogram_quantile(0.95, sum by (le) (rate(ebpf_function_latency_ms_bucket[1m])))` for the p95, or render `ebpf_function_latency_ms_bucket` as a heatmap to watch the whole distribution shift under load.
 
@@ -124,7 +124,7 @@ bucket shape should match yours.
 - Turn durations into an **OTLP histogram** for heatmaps and
   percentiles, with a console histogram for immediate feedback.
 - The per-call-event vs. in-kernel-histogram choice is about **call
-  rate** — know when to switch.
+  rate**: know when to switch.
 
 That closes the *User-space & language probing* part's core
 techniques. The remaining chapters in this part (goroutine states,

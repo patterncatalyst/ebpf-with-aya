@@ -2,14 +2,14 @@
 title: "uprobe on a Rust binary"
 order: 14
 part: User-space & language probing
-description: Point a uprobe at a function in a Rust program you built — confront symbol mangling and calling conventions, read a function argument at entry, and lay the groundwork for tracing your own services.
+description: "Point a uprobe at a function in a Rust program you built: confront symbol mangling and calling conventions, read a function argument at entry, and lay the groundwork for tracing your own services."
 duration: 25 minutes
 ---
 
 Chapter 13 probed someone else's binary (bash) at a symbol that
 happened to be C. This chapter probes a **Rust** binary you built, and
 reads a function's argument as it's called. Two Rust-specific things
-surface immediately — **symbol mangling** and **calling convention** —
+surface immediately: **symbol mangling** and **calling convention**,
 and handling them is the point of the chapter. This is also the
 foundation for tracing your *own* Rust services later.
 
@@ -41,15 +41,15 @@ default ABI is unspecified and may pass arguments differently, so for a
 function you intend to probe by argument, `extern "C"` pins it to the C
 convention and makes `ctx.arg(0)` correct. For probing arbitrary
 *existing* Rust code you don't control, you'd instead work from the
-mangled symbol and the actual register placement — more involved, and a
+mangled symbol and the actual register placement: more involved, and a
 good reason to add `#[no_mangle] extern "C"` shims at points you want to
 observe.
 
 > For probing third-party Rust binaries you can't modify, you resolve
 > the mangled symbol (e.g. with `nm`/`rustfilt`) and attach to it by
 > name or offset; argument reading then follows Rust's ABI for that
-> signature. This chapter takes the tractable path — your own code, a
-> `no_mangle extern "C"` entry point — so the mechanics are clean.
+> signature. This chapter takes the tractable path (your own code, a
+> `no_mangle extern "C"` entry point) so the mechanics are clean.
 
 ## The target and the probe
 
@@ -71,7 +71,7 @@ Attaching points at the **target binary's path** and the symbol:
 prog.attach(Some("compute"), 0, "/home/fedora/target-app", None)?;
 ```
 
-Same `attach` shape as Chapter 13 — only the artifact and symbol
+Same `attach` shape as Chapter 13; only the artifact and symbol
 change. The uprobe fires inside `target-app`'s process every time
 `compute` is entered, reads `rdi`, and ships it to user space.
 
@@ -95,10 +95,10 @@ PID      compute(arg0)
 
 and `ebpf_events_total{program="uprobe-rust"}` rising in Grafana. You
 are reading a live argument out of a running Rust program from a probe
-in the kernel — without modifying or recompiling the app at attach
+in the kernel, without modifying or recompiling the app at attach
 time.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-uprobe-rust` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — calls into the instrumented Rust function as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-uprobe-rust` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: calls into the instrumented Rust function as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check
 
@@ -124,7 +124,7 @@ are both right.
 - Probing Rust means handling **mangling** (`#[no_mangle]`) and
   **calling convention** (`extern "C"` so `ctx.arg(0)` is the C-ABI
   first argument), plus keeping a real call site (`#[inline(never)]`).
-- You can read live arguments out of your own running binaries — the
+- You can read live arguments out of your own running binaries: the
   basis for service tracing in later chapters.
 
 Next, the part continues with USDT/BTF-assisted user probes and runtime

@@ -9,7 +9,7 @@ duration: 15 minutes
 This chapter is the floor. By the end you will have confirmed that
 your laptop can run KVM virtual machines, that rootless Podman works,
 and that you have the handful of host packages the rest of the
-tutorial assumes. Nothing here loads eBPF yet — that waits until you
+tutorial assumes. Nothing here loads eBPF yet: that waits until you
 have a throwaway VM to load it *into* (Chapter 2).
 
 ## Why a VM at all?
@@ -70,7 +70,7 @@ nproc && free -h && df -h ~ / && lscpu | grep -E 'Virtualization|Model name'
 You want at least 4 CPUs, 16 GB total memory, 40 GB free where your
 home directory lives, and a `Virtualization:` line reporting `VT-x`
 (Intel) or `AMD-V`. If that line is missing, virtualization is
-disabled in your firmware — reboot into BIOS/UEFI setup and enable
+disabled in your firmware: reboot into BIOS/UEFI setup and enable
 "Intel VT-x" / "SVM Mode", then re-check.
 
 ## Host operating system
@@ -87,7 +87,7 @@ cat /etc/fedora-release && uname -r
 ```
 
 You should see Fedora 44 and a 6.x kernel. The host kernel version
-matters less than you might think — the eBPF programs run in the
+matters less than you might think: the eBPF programs run in the
 *guest's* kernel, which you control independently.
 
 ## The virtualization stack: KVM, QEMU, libvirt
@@ -129,10 +129,10 @@ virt-host-validate qemu | grep -Ei 'kvm|accel' && lsmod | grep kvm
 You want `QEMU: Checking for hardware virtualization : PASS` and a
 `kvm_intel` or `kvm_amd` module loaded. If `virt-host-validate`
 reports a warning about cgroups or IOMMU, that is usually fine for
-this tutorial; a hard `FAIL` on hardware virtualization is not — fix
+this tutorial; a hard `FAIL` on hardware virtualization is not: fix
 the firmware setting from the hardware section above.
 
-> **macOS note** — macOS is not a tested host platform here. You can
+> **macOS note**: macOS is not a tested host platform here. You can
 > run the *client* and *observability* pieces on macOS via Podman
 > Desktop, but the KVM target VM has no macOS equivalent in this
 > tutorial. If you only have a Mac, run the whole lab inside one Linux
@@ -153,13 +153,13 @@ podman run --rm registry.access.redhat.com/ubi9/ubi-minimal:latest echo OK
 ```
 
 That should print `OK` with no `sudo`. It also proves you can pull UBI
-images without any Red Hat subscription — which is the whole point of
+images without any Red Hat subscription, which is the whole point of
 standardizing on UBI for this tutorial.
 
-> **SELinux and `:Z`** — Fedora runs SELinux in enforcing mode. Every
+> **SELinux and `:Z`**: Fedora runs SELinux in enforcing mode. Every
 > bind mount in this tutorial carries the `:Z` suffix (e.g.
 > `-v ./conf:/conf:Z`) so the container can read the host directory.
-> It is correct on Fedora and a no-op — harmless — anywhere without
+> It is correct on Fedora and a no-op (harmless) anywhere without
 > SELinux.
 
 ## A quick word on kernel tooling
@@ -188,4 +188,4 @@ kernel; the meaningful runs happen in the guest.
 
 If all four boxes are checked, you are ready to build the lab.
 
-[Next: Chapter 2 — Lab setup →]({{ "/docs/02-lab-setup/" | relative_url }})
+[Next: Chapter 2: Lab setup →]({{ "/docs/02-lab-setup/" | relative_url }})

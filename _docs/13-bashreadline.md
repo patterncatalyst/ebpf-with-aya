@@ -2,14 +2,14 @@
 title: "uprobe + bashreadline"
 order: 13
 part: User-space & language probing
-description: The first user-space probe — attach a uretprobe to bash's readline() to capture commands typed at interactive prompts, learning how uprobes target a binary or library by symbol and read the calling process's memory.
+description: "The first user-space probe: attach a uretprobe to bash's readline() to capture commands typed at interactive prompts, learning how uprobes target a binary or library by symbol and read the calling process's memory."
 duration: 25 minutes
 ---
 
 Everything in *Tracing the kernel* attached to the kernel. This part
 turns the lens around: **uprobes** attach to functions inside
-user-space programs and libraries. The classic first example —
-`bashreadline` — attaches to bash's `readline()` and shows every
+user-space programs and libraries. The classic first example
+(`bashreadline`) attaches to bash's `readline()` and shows every
 command a user types at an interactive prompt. It's a small program
 that teaches the whole uprobe model.
 
@@ -18,11 +18,11 @@ The code is in `examples/13-bashreadline/`. `./demo.sh` there builds, deploys, a
 {% include excalidraw.html
    file="uprobe-menu"
    alt="User-space probing surfaces: an eBPF uprobe can attach to an executable symbol, a shared-library symbol, or a USDT marker; an entry probe sees arguments and a return probe sees results."
-   caption="Figure 13.1 — the user-space probing menu" %}
+   caption="Figure 13.1: the user-space probing menu" %}
 
 ## What a uprobe is
 
-A **uprobe** attaches to a function in a *binary or shared library* —
+A **uprobe** attaches to a function in a *binary or shared library*,
 identified by a file path plus a symbol name (or a raw offset). When
 any process executes that code, your program runs. A **uretprobe** is
 the same idea at function *return*, where the return value is
@@ -39,16 +39,15 @@ process's address space, read with the **user** probe helpers.
 ## Why readline
 
 When you type a command at an interactive bash prompt and press Enter,
-bash got that line from `readline()` — the GNU Readline function that
+bash got that line from `readline()`: the GNU Readline function that
 handles line editing, history, and completion. Its return value is a
 `char *` pointing to the line you typed. So a uretprobe on `readline`
 captures interactive shell commands at the moment of entry, before any
-parsing — a beautifully direct demonstration, and a genuinely useful
-audit primitive.
+parsing: a direct demonstration and a useful audit primitive.
 
 It only sees **interactive** input. A command run non-interactively
 (`ssh host 'cmd'`, a shell script) never calls `readline`. That's not a
-limitation to work around — it's the precise semantics: this sees what
+limitation to work around; it's the precise semantics: this sees what
 a human typed.
 
 ## The kernel side
@@ -73,14 +72,14 @@ pub fn readline_ret(ctx: RetProbeContext) -> u32 {
 }
 ```
 
-`ctx.ret()` gives the return value — the uretprobe analogue of
-`ctx.arg(n)` — which for `readline` is a `char *` to the line the user
+`ctx.ret()` gives the return value (the uretprobe analogue of
+`ctx.arg(n)`), which for `readline` is a `char *` to the line the user
 just typed. That pointer is into the **bash process's** memory, so we
 can't dereference it; `bpf_probe_read_user_str_bytes` copies the string
 into the event. Note the shape we'll reuse for every ring-buffer
 program: `reserve` a typed slot, write *through* its pointer (filling the
 cheap-to-get `pid`/`uid`/`comm` directly, then the user string), and
-`submit`. There's no entry probe and no map to bridge — the line only
+`submit`. There's no entry probe and no map to bridge: the line only
 exists at *return*, so a single uretprobe is the whole program.
 
 ## The user side
@@ -101,7 +100,7 @@ symbol table.
 
 One real-world wrinkle: **where `readline` lives varies.** On some
 builds it's compiled into the `bash` binary; on others it's in
-`libreadline.so`. If no events appear, the symbol is in the library —
+`libreadline.so`. If no events appear, the symbol is in the library:
 point the target at it instead (the example reads a `READLINE_LIB`
 override). You find out with:
 
@@ -131,7 +130,7 @@ Each line appears in the `PID UID COMMAND` table the instant you press
 Enter, and `ebpf_events_total{program="bashreadline"}` climbs in
 Grafana.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-bashreadline` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — interactive bash commands as they are entered as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-bashreadline` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: interactive bash commands as they are entered as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check
 
@@ -146,7 +145,7 @@ print the same lines.
 
 - uprobes/uretprobes attach to user-space functions by **path +
   symbol**; uretprobes read the return value via `ctx.ret()`.
-- The memory you read belongs to the **traced process** — user probe
+- The memory you read belongs to the **traced process**: user probe
   helpers, always.
 - You attach to a concrete on-disk artifact, so you must know which
   binary or library holds the symbol (`objdump`/`nm`).

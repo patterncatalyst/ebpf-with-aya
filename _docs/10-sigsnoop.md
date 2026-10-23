@@ -2,13 +2,13 @@
 title: "sigsnoop"
 order: 10
 part: Tracing the kernel
-description: A shorter sibling to opensnoop — one tracepoint on the kill syscall to trace which process signals which, with signal-number-to-name mapping done in user space.
+description: "A shorter sibling to opensnoop: one tracepoint on the kill syscall to trace which process signals which, with signal-number-to-name mapping done in user space."
 duration: 15 minutes
 ---
 
 `sigsnoop` is the minimal per-event tool: a single tracepoint, one
-event per signal sent, no entry/exit correlation. It traces `kill(2)` —
-who sent which signal to whom — and is a good place to reinforce two
+event per signal sent, no entry/exit correlation. It traces `kill(2)`:
+who sent which signal to whom, and is a good place to reinforce two
 ideas with very little code: reading a couple of tracepoint arguments,
 and keeping the kernel program dumb while user space does the friendly
 formatting.
@@ -47,20 +47,20 @@ pub fn sys_enter_kill(ctx: TracePointContext) -> u32 {
 Reading it as Aya sees it: `ctx.read_at::<i64>(16)` pulls the `pid`
 argument from the tracepoint record at the offset the format file gave
 us. Syscall tracepoints store *every* argument in a 64-bit slot
-regardless of its C type, so we read an `i64` and narrow to `i32` — ask
+regardless of its C type, so we read an `i64` and narrow to `i32`. Ask
 for an `i32` directly and you'd take four bytes of an eight-byte slot
 and get away with it on little-endian x86_64 until the day you don't.
 The sender needs no argument: it's the current process, so
 `bpf_get_current_pid_tgid() >> 32` is its PID and
 `bpf_get_current_comm()` its name. Then the same `reserve` → write →
 `submit` ring-buffer emit from Chapter 9, sized for one `SignalEvent`.
-There's no `HashMap` here because there's nothing to correlate — `kill`
+There's no `HashMap` here because there's nothing to correlate: `kill`
 is reported the instant it's called, so this is the floor of what a
 useful tracer looks like.
 
 ## The user side
 
-A lone tracepoint is the simplest possible attach — one program, one
+A lone tracepoint is the simplest possible attach: one program, one
 `(category, name)` pair, then drain:
 
 ```rust
@@ -72,8 +72,8 @@ let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 
 `try_into::<&mut TracePoint>()` confirms the program is a tracepoint,
 `load()` runs the verifier, and `attach("syscalls", "sys_enter_kill")`
-wires it up. Draining is the Chapter 9 loop — `ring.next()`,
-`read_unaligned` into a `SignalEvent` — with the one twist this chapter
+wires it up. Draining is the Chapter 9 loop (`ring.next()`,
+`read_unaligned` into a `SignalEvent`) with the one twist this chapter
 is about: the kernel handed us the signal *number*, and turning that
 into something legible is user space's job.
 
@@ -81,7 +81,7 @@ into something legible is user space's job.
 
 The kernel program records the *number* `15`, not the string
 `"SIGTERM"`. Mapping numbers to names, looking up process names,
-pretty-printing — all of that happens in user space, where you have an
+pretty-printing: all of that happens in user space, where you have an
 allocator, the standard library, and no verifier. This is a deliberate
 pattern: the in-kernel half should do the minimum (capture raw facts on
 the hot path), and the user half does everything else.
@@ -100,7 +100,7 @@ println!("{:<7} {:<16} {:<8} {}", ev.sender_pid, cstr(&ev.comm), name, ev.target
 counter.add(1, &[KeyValue::new("program", "sigsnoop"), KeyValue::new("signal", name)]);
 ```
 
-Now Grafana can break `ebpf_events_total` down by signal type — a
+Now Grafana can break `ebpf_events_total` down by signal type: a
 `SIGKILL` spike from one process is the kind of thing that's invisible
 in aggregate but obvious once labelled.
 
@@ -119,7 +119,7 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'sleep 60 & p=$!; kill -TERM $p
 The `SENDER COMM SIGNAL TARGET` table shows the `SIGTERM`, and the
 `signal` label appears in Grafana.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-sigsnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — signals as they are sent, by program as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-sigsnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: signals as they are sent, by program as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check
 
@@ -129,13 +129,13 @@ The `SENDER COMM SIGNAL TARGET` table shows the `SIGTERM`, and the
 
 Note `bpftrace` reads the same args by *name* (`args.pid`, `args.sig`)
 because it resolves the format file for you; your Aya program reads them
-by *offset*. Same data, two ways of naming it — and a good reminder that
+by *offset*. Same data, two ways of naming it, and a good reminder that
 the offsets you hardcoded come straight from that format.
 
 ## What you learned
 
 - The minimal tracer: one tracepoint, two arg reads, one event.
-- The division of labor — dumb kernel program, smart user space —
+- The division of labor (dumb kernel program, smart user space)
   applied to signal-name mapping and metric labelling.
 
 This closes the first sweep of "Tracing the kernel." Next we turn to

@@ -7,12 +7,12 @@ duration: 45 minutes
 ---
 
 Every program in this book so far has *reported*: it watched an event and
-wrote a number or a record. An LSM program is different in kind — its
+wrote a number or a record. An LSM program is different in kind: its
 **return value is a decision the kernel obeys**. Linux Security Modules are
 the mediation layer behind SELinux and AppArmor: hundreds of `security_*`
 hook points where the kernel asks "is this allowed?" before doing
 something. **BPF LSM** (kernel 5.7+) lets you answer that question with an
-eBPF program — return `0` to allow, a negative errno to deny. This part is
+eBPF program: return `0` to allow, a negative errno to deny. This part is
 where eBPF stops describing the kernel and starts governing it, and this
 chapter is the model plus a first, contained policy: confine one
 container's outbound connections.
@@ -21,7 +21,7 @@ The code is in `examples/37-lsm-confine/`. `./demo.sh` there builds,
 deploys, and runs it; its `README.md` covers what it does and how to drive
 it.
 
-> **Before this part — enable the BPF LSM.** BPF LSM only works if the
+> **Before this part: enable the BPF LSM.** BPF LSM only works if the
 > `bpf` LSM is active in the kernel's LSM list. On most Fedora 44 installs
 > it already is; check on the target with:
 >
@@ -29,14 +29,14 @@ it.
 > [vm]$ cat /sys/kernel/security/lsm        # the list must include "bpf"
 > ```
 >
-> If `bpf` is missing, add it and reboot — `scripts/lab/enable-bpf-lsm.sh
+> If `bpf` is missing, add it and reboot: `scripts/lab/enable-bpf-lsm.sh
 > ebpf-target` does exactly that (it appends `bpf` to the `lsm=` kernel
 > cmdline with `grubby` and reboots). The demo runs this for you.
 
 {% include excalidraw.html
    file="lsm-decide"
    alt="A process calls connect(), which reaches the LSM hook security_socket_connect. The attached BPF LSM program decides: if the caller's cgroup is OK it returns 0 (allow) and the connect proceeds; if the caller is in a confined cgroup it returns -EPERM (deny) and the connect is blocked. The program's return value decides; here the decision is scoped by cgroup id, confining one container while leaving the host untouched."
-   caption="Figure 37.1 — The LSM program's return value decides: 0 allows, negative denies" %}
+   caption="Figure 37.1: The LSM program's return value decides: 0 allows, negative denies" %}
 
 ## The mediation model
 
@@ -45,8 +45,8 @@ action commits. The kernel calls every attached LSM in turn; if any returns
 non-zero, the operation fails with that errno. A BPF LSM program is just
 another voice in that chain:
 
-- **Return `0`** — this program allows the operation (others may still deny).
-- **Return a negative errno** (`-EPERM`, `-EACCES`, …) — deny, and the
+- **Return `0`**: this program allows the operation (others may still deny).
+- **Return a negative errno** (`-EPERM`, `-EACCES`, …): deny, and the
   syscall returns that error to user space.
 - **Respect prior denials.** The kernel passes the running return value as
   the hook's last argument; a well-behaved program checks it and, if a
@@ -55,14 +55,14 @@ another voice in that chain:
 
 This is **Mandatory Access Control**: the policy is enforced by the kernel,
 not the application, and the application can't opt out. The contrast with
-the rest of the book is sharp — a kprobe that returns a value changes
+earlier chapters is sharp: a kprobe that returns a value changes
 nothing; an LSM program's return value is the whole point.
 
 ## How the code works
 
 Our policy: a process whose **cgroup** is on a confined list may not open
 outbound connections. Everything else is allowed. Scoping by cgroup is what
-makes this safe and useful — you confine *one container* and the host keeps
+makes this safe and useful: you confine *one container* and the host keeps
 working.
 
 ### The program
@@ -90,10 +90,10 @@ pub fn confine_connect(ctx: LsmContext) -> i32 {
 Walking it:
 
 - **`#[lsm(hook = "socket_connect")]`** attaches to the
-  `security_socket_connect` hook — the kernel's "may this socket connect?"
+  `security_socket_connect` hook: the kernel's "may this socket connect?"
   question. The program type carries BTF type information, which is why it
   can be attached to a named kernel hook at all.
-- **`bpf_get_current_cgroup_id()`** is a plain helper — no struct walking.
+- **`bpf_get_current_cgroup_id()`** is a plain helper: no struct walking.
   It returns the cgroup id of the calling task, the same 64-bit id you'd
   match a container by (Chapter 16). We don't even look at the destination
   address; the policy here is "this cgroup gets no outbound connections."
@@ -141,11 +141,11 @@ confined `curl` fails with a connection error (the kernel returned `-EPERM`
 from `connect`), the normal one succeeds, and `ebpf_lsm_denied_total` climbs
 in Grafana. Stop the loader and both succeed again.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_lsm_denied_total[1m])` — blocked connection attempts per second.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_lsm_denied_total[1m])`: blocked connection attempts per second.
 
 ## Cross-check
 
-On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
+On the target (`[vm]$` meaning `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 
 ```bash
 [vm]$ cat /sys/kernel/security/lsm                  # must include "bpf"
@@ -169,8 +169,8 @@ listing an `lsm` program confirms what's enforcing it.
   `Lsm::load(hook, &btf)` → `attach()`), and the `bpf` LSM must be active in
   the kernel's LSM list.
 - **cgroup-scoped policy**: `bpf_get_current_cgroup_id()` lets you confine
-  one container while leaving the host alone — MAC you can target.
+  one container while leaving the host alone: MAC you can target.
 
-Next, Chapter 38 takes the other enforcement style — instead of denying a
+Next, Chapter 38 takes the other enforcement style: instead of denying a
 syscall, *react* to one with a **signal program** that kills an offending
 process on the spot.

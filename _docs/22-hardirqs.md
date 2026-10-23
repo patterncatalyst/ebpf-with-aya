@@ -2,12 +2,12 @@
 title: "hardirqs"
 order: 22
 part: Performance & resources
-description: "Measure the time the kernel spends in hardware-interrupt handlers, per IRQ vector, by timing the irq tracepoints keyed by CPU and accumulating per-vector totals in a kernel map — and understand why hardirq time is hidden latency."
+description: "Measure the time the kernel spends in hardware-interrupt handlers, per IRQ vector, by timing the irq tracepoints keyed by CPU and accumulating per-vector totals in a kernel map, and understand why hardirq time is hidden latency."
 duration: 25 minutes
 ---
 
 Hardware interrupts are the kernel dropping everything to service a
-device — a packet arrived, a disk finished, a timer fired. Handlers are
+device: a packet arrived, a disk finished, a timer fired. Handlers are
 supposed to be fast, but when a device is busy, the *aggregate* time in
 hardirq context can become significant, and it's stolen from whatever
 was running. `hardirqs` measures it per IRQ vector, so you can see which
@@ -20,7 +20,7 @@ The code is in `examples/22-hardirqs/`. `./demo.sh` there builds, deploys, and r
 
 A CPU servicing a hardware interrupt isn't running your task, isn't
 counted as your task's CPU time, and the handler can't be preempted.
-A flood of interrupts — a busy NIC, a thrashing disk — burns CPU in
+A flood of interrupts (a busy NIC, a thrashing disk) burns CPU in
 short bursts that don't show up as any process's usage but absolutely
 show up as latency. `top` looks calm; your tail latencies don't. Seeing
 hardirq time **per vector** points straight at the offending device.
@@ -29,14 +29,14 @@ hardirq time **per vector** points straight at the offending device.
 
 Two tracepoints bracket every handler:
 
-- **`irq:irq_handler_entry`** — a handler is about to run. It carries the
+- **`irq:irq_handler_entry`**: a handler is about to run. It carries the
   IRQ number (`irq` field).
-- **`irq:irq_handler_exit`** — it finished (also carries `irq`, plus the
+- **`irq:irq_handler_exit`**: it finished (also carries `irq`, plus the
   handler's return value).
 
 The timing is the familiar entry/exit pattern, but the key is different.
 Earlier tools keyed by pid or pid_tgid; an IRQ handler isn't associated
-with a task — it runs in **interrupt context on a specific CPU**. So we
+with a task: it runs in **interrupt context on a specific CPU**. So we
 key the start timestamp by **CPU id**:
 
 ```rust
@@ -54,7 +54,7 @@ key the start timestamp by **CPU id**:
 since a handler runs to completion on that CPU, the entry and exit see
 the same CPU, so the stamp matches up.
 
-> **Nested IRQs — a documented simplification.** A higher-priority
+> **Nested IRQs: a documented simplification.** A higher-priority
 > interrupt can interrupt a handler already running on the same CPU. Our
 > single-slot-per-CPU `START` map doesn't disentangle that nesting (the
 > inner IRQ overwrites the outer's stamp). For per-vector *totals* this
@@ -79,7 +79,7 @@ HIST.insert(&irq, &updated, 0);
 Read-modify-write on a shared map has a small race window under
 concurrency (two CPUs updating different IRQs is fine; the same IRQ from
 two CPUs at once could lose an update). For accumulating totals that's
-an acceptable approximation — flagged in the verification notes, and the
+an acceptable approximation: flagged in the verification notes, and the
 kind of trade-off you make consciously.
 
 ## To the console, and to Grafana
@@ -95,7 +95,7 @@ IRQ          COUNT      TOTAL(us)      AVG(ns)
 
 and exports each vector's total as an OTLP observable gauge
 `hardirq_total_ns{irq="27"}`. Cross-reference the IRQ numbers with
-`/proc/interrupts` on the VM to put device names to the vectors — IRQ 27
+`/proc/interrupts` on the VM to put device names to the vectors: IRQ 27
 might be your virtio NIC, IRQ 19 the disk controller.
 
 ## Build, deploy, observe
@@ -104,7 +104,7 @@ might be your virtio NIC, IRQ 19 the disk controller.
 cd examples/22-hardirqs && ./demo.sh
 ```
 
-Then make interrupts happen on the VM — flood-ping the gateway and push
+Then make interrupts happen on the VM: flood-ping the gateway and push
 some direct disk I/O:
 
 ```bash
@@ -113,7 +113,7 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'ping -f -c 5000 GATEWAY >/dev/
 
 The network and block IRQ vectors should jump to the top of the table.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-hardirqs` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — hard IRQs, by handler as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-hardirqs` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: hard IRQs, by handler as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check
 
@@ -124,14 +124,14 @@ The network and block IRQ vectors should jump to the top of the table.
 
 ## What you learned
 
-- **Hardirq time** is CPU stolen in interrupt context — invisible to
+- **Hardirq time** is CPU stolen in interrupt context: invisible to
   per-process accounting, visible as latency.
 - Time IRQ handlers with `irq_handler_entry`/`exit`, keyed by **CPU**
   (not task), because they run in interrupt context.
 - Accumulate **per-vector totals in a kernel `HashMap`**; read and
   export them periodically.
 - Be explicit about the **nested-IRQ** and read-modify-write
-  simplifications — they're conscious trade-offs, not bugs.
+  simplifications: they're conscious trade-offs, not bugs.
 
 Next: sampling the CPU with a **profiler** (`profile`) to see *where*
 time goes, not just how long things wait.

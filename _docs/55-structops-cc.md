@@ -2,14 +2,14 @@
 title: "struct_ops: BPF that implements the kernel"
 order: 55
 part: Advanced kernel surface
-description: "Most BPF observes or filters at a hook the kernel calls. struct_ops inverts that: the kernel defines an interface — a struct of function pointers — and BPF supplies the whole implementation, which the kernel then calls into like a built-in module. Understand the vtable model behind Part 6's schedulers, write a minimal TCP congestion-control algorithm in BPF, and see the same mechanism reused across the kernel."
+description: "Most BPF observes or filters at a hook the kernel calls. struct_ops inverts that: the kernel defines an interface (a struct of function pointers) and BPF supplies the whole implementation, which the kernel then calls into like a built-in module. Understand the vtable model behind Part 6's schedulers, write a minimal TCP congestion-control algorithm in BPF, and see the same mechanism reused across the kernel."
 duration: 45 minutes
 ---
 
 Everything in this book so far has been BPF *reacting*: the kernel hits a hook
-it owns — a kprobe, a tracepoint, an XDP point — and calls your one program.
+it owns (a kprobe, a tracepoint, an XDP point) and calls your one program.
 **struct_ops** turns that relationship inside out. Here the kernel defines a
-whole **interface** — a `struct` full of function pointers, a vtable — and BPF
+whole **interface** (a `struct` full of function pointers, a vtable), and BPF
 supplies the *entire implementation*. Once registered, the kernel calls into
 your BPF programs at each of the interface's call sites exactly as if you'd
 shipped a kernel module implementing that policy. This is the mechanism beneath
@@ -24,21 +24,21 @@ alongside cubic and reno; the `README.md` has the details.
 
 {% include excalidraw.html
    file="structops"
-   alt="struct_ops: BPF implements a kernel interface (a vtable), and the kernel calls in. On the left, BPF programs in sections struct_ops/ssthresh, struct_ops/cong_avoid, and struct_ops/undo_cwnd fill the slots of a STRUCT_OPS map holding a struct tcp_congestion_ops, which is registered via a link. On the right, the TCP stack's call sites invoke them: on ACK it calls cong_avoid, on loss it calls ssthresh, and the algorithm is selected via sysctl or setsockopt. The kernel calls your BPF. The same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, and FUSE — BPF as a pluggable kernel module."
-   caption="Figure 55.1 — BPF fills a kernel-defined vtable; the kernel calls into it at the interface's call sites" %}
+   alt="struct_ops: BPF implements a kernel interface (a vtable), and the kernel calls in. On the left, BPF programs in sections struct_ops/ssthresh, struct_ops/cong_avoid, and struct_ops/undo_cwnd fill the slots of a STRUCT_OPS map holding a struct tcp_congestion_ops, which is registered via a link. On the right, the TCP stack's call sites invoke them: on ACK it calls cong_avoid, on loss it calls ssthresh, and the algorithm is selected via sysctl or setsockopt. The kernel calls your BPF. The same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, and FUSE: BPF as a pluggable kernel module."
+   caption="Figure 55.1: BPF fills a kernel-defined vtable; the kernel calls into it at the interface's call sites" %}
 
 ## The inversion
 
 A normal BPF attachment answers the question "what should run when the kernel
-reaches *this* point?" — one program, one hook. A kernel **interface** asks a
+reaches *this* point?"; one program, one hook. A kernel **interface** asks a
 bigger question: "who implements *this whole policy*?" TCP congestion control
 is the classic example. The kernel doesn't have one congestion-control hook; it
-has a `struct tcp_congestion_ops` — a contract of operations the TCP stack
+has a `struct tcp_congestion_ops`: a contract of operations the TCP stack
 calls at different moments:
 
-- `.ssthresh(sk)` — on loss, return the new slow-start threshold.
-- `.cong_avoid(sk, ack, acked)` — on each ACK, grow the congestion window.
-- `.undo_cwnd(sk)` — after a spurious loss, what window to restore.
+- `.ssthresh(sk)`: on loss, return the new slow-start threshold.
+- `.cong_avoid(sk, ack, acked)`: on each ACK, grow the congestion window.
+- `.undo_cwnd(sk)`: after a spurious loss, what window to restore.
 - plus optional hooks (`.init`, `.set_state`, `.cwnd_event`, `.pkts_acked`…).
 
 Historically you implemented that contract by writing a kernel module (cubic,
@@ -46,13 +46,13 @@ bbr, reno) and registering it. struct_ops lets you implement it **in BPF**:
 provide a program for each function pointer, register the filled-in struct, and
 the TCP stack calls your programs at exactly those moments. As the feature's
 authors noted, this brought the *fast turnaround* of user-space experimentation
-to something that absolutely must run in-kernel — test a new congestion
+to something that absolutely must run in-kernel: test a new congestion
 algorithm in production without shipping a kernel, without leaving the kernel.
 
 ## How struct_ops works
 
-The mechanism rests on three things this book has already built up — BTF, the
-BPF trampoline, and CO-RE — and looks like this:
+The mechanism rests on three things this book has already built up (BTF, the
+BPF trampoline, and CO-RE) and looks like this:
 
 - A special map of type **`BPF_MAP_TYPE_STRUCT_OPS`** holds *the struct itself*
   as its value. You declare it as a global in `SEC(".struct_ops.link")`, with
@@ -71,7 +71,7 @@ BPF trampoline, and CO-RE — and looks like this:
 - Each implementation is a program in **`SEC("struct_ops/<anything>")`** with
   the signature the kernel expects for that slot.
 - At load, the loader uses **BTF reflection** to match your struct and its
-  members to the kernel's real `tcp_congestion_ops` — by member **name, BTF
+  members to the kernel's real `tcp_congestion_ops`, by member **name, BTF
   kind, and size**. If a field's name or type doesn't line up with the kernel's
   definition, it's rejected. This is why the same machinery works for *any*
   kernel struct_ops interface without per-interface loader code: it's reflection
@@ -80,7 +80,7 @@ BPF trampoline, and CO-RE — and looks like this:
   the algorithm now appears in the kernel's list and can be selected. Closing
   the link **unregisters** it. The verifier specifically permits these programs
   to *write* a few kernel fields they need to (e.g. parts of `tcp_sock`), which
-  ordinary tracing programs may not — implementing policy means mutating state,
+  ordinary tracing programs may not: implementing policy means mutating state,
   carefully and within bounds the verifier checks.
 
 ## A minimal congestion-control algorithm
@@ -117,10 +117,10 @@ Reading it as the TCP stack will run it:
   how many packets were acked. Below the slow-start threshold we grow the
   window exponentially (`tcp_slow_start`); above it, additively
   (`tcp_cong_avoid_ai`). Those two are kernel functions the CC struct_ops
-  interface makes callable — the same way kfuncs (Chapter 52) expose typed
+  interface makes callable, the same way kfuncs (Chapter 52) expose typed
   kernel functions to BPF, the congestion-control interface exposes its building
   blocks.
-- On loss the stack calls **`cc_ssthresh`**; we return half the window — textbook
+- On loss the stack calls **`cc_ssthresh`**; we return half the window: textbook
   Reno multiplicative decrease.
 - We're allowed to *write* `tcp_sock` fields here (via those helpers) precisely
   because we're implementing the interface, and the verifier knows it.
@@ -137,8 +137,8 @@ connection that selects it runs *your code* on every ACK and every loss.
 
 ## The same mechanism, everywhere
 
-Once you see the pattern — *BPF fills a kernel-defined vtable, registered as a
-struct_ops map* — you recognize it across the modern kernel:
+Once you see the pattern, *BPF fills a kernel-defined vtable, registered as a
+struct_ops map*, you recognize it across the modern kernel:
 
 - **sched_ext** (Part 6): `sched_ext_ops` is a struct_ops with dozens of slots
   (`.enqueue`, `.dispatch`, `.select_cpu`…). The schedulers you wrote there were
@@ -152,13 +152,13 @@ unlocks all of them.
 
 ## Where Aya fits
 
-struct_ops authoring in aya-ebpf is **emerging** — the same frontier the
-sched_ext chapters flagged — so the canonical implementation lives in
+struct_ops authoring in aya-ebpf is **emerging** (the same frontier the
+sched_ext chapters flagged), so the canonical implementation lives in
 `examples/55-structops-cc/reference/cc.bpf.c`, and the example registers it the
 production way, with **`bpftool struct_ops register`**, which needs no Aya at
 all. An Aya rendering is included to read. The conceptual takeaway doesn't
-depend on the tooling: struct_ops is reflection over BTF, so any loader — libbpf,
-bpftool, eventually Aya — installs it the same way.
+depend on the tooling: struct_ops is reflection over BTF, so any loader (libbpf,
+bpftool, eventually Aya) installs it the same way.
 
 ## Build, deploy, observe
 
@@ -167,8 +167,8 @@ cd examples/55-structops-cc && ./demo.sh
 ```
 
 The demo generates `vmlinux.h`, compiles the CC algorithm, and registers it with
-`bpftool`. There's no Grafana panel — like the BPF token, this is a
-control-plane act, not a data source — so you observe it where the kernel
+`bpftool`. There's no Grafana panel; like the BPF token, this is a
+control-plane act, not a data source, so you observe it where the kernel
 exposes it: the algorithm appearing in `tcp_available_congestion_control`, and,
 if you select it and drive traffic, in per-socket stats.
 
@@ -189,15 +189,15 @@ implementation of its own interface.
 
 - **struct_ops** inverts the usual model: the kernel defines an **interface** (a
   struct of function pointers) and BPF supplies the whole implementation, which
-  the kernel calls at the interface's call sites — BPF as a pluggable kernel
+  the kernel calls at the interface's call sites: BPF as a pluggable kernel
   module.
 - It works by **BTF reflection**: a `BPF_MAP_TYPE_STRUCT_OPS` map holds the
   struct, `SEC("struct_ops/…")` programs fill its slots, members are matched to
   the kernel's by name/kind/size, and registering a link installs it; the
   verifier lets these programs write the fields the interface requires.
 - The original user is **TCP congestion control**, and the *same* mechanism
-  powers **sched_ext**, **HID-BPF**, **bpf Qdisc**, and **FUSE** — learn it once,
+  powers **sched_ext**, **HID-BPF**, **bpf Qdisc**, and **FUSE**: learn it once,
   recognize it everywhere.
 
-Next, Chapter 56 looks at **dynptrs and BPF arenas** — the modern way BPF
+Next, Chapter 56 looks at **dynptrs and BPF arenas**: the modern way BPF
 handles variable-length data and shares large memory regions.

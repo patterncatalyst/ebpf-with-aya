@@ -6,13 +6,13 @@ description: "Close the security part by building the sensor layer of a runtime-
 duration: 40 minutes
 ---
 
-The last five chapters were single moves — confine a connection, kill a
+The last five chapters were single moves: confine a connection, kill a
 process, hide a PID, protect a file, forge a read. A real runtime-security
 tool (think Falco or Tetragon) is the *composition* of many such probes into
 one **sensor**: a stream of structured security events that something
 upstream reasons about, with the option to enforce. This chapter builds that
-shape in miniature — three attacker-relevant hooks emitting one event stream
-to Grafana — and shows where "observe" becomes "shield." It's the capstone
+shape in miniature (three attacker-relevant hooks emitting one event stream
+to Grafana) and shows where "observe" becomes "shield." It's the final project
 for the part: less a new trick than the architecture the tricks fit into.
 
 The code is in `examples/42-secsensor/`. `./demo.sh` there builds, deploys,
@@ -20,8 +20,8 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="security-sensor"
-   alt="Three kernel hooks — execve (new process), ptrace (inject or debug), and setuid (privilege change) — each emit a SecEvent (type, pid, comm) into a single RingBuf. User space reads the stream and sends it to Grafana as events by type and severity, and optionally feeds a shield that blocks via LSM. This is the sensor layer of a runtime-security tool, built in eBPF: observe many attacker-relevant operations as one stream, then optionally shield."
-   caption="Figure 42.1 — Many hooks, one event stream — the sensor layer of a runtime-security tool" %}
+   alt="Three kernel hooks, execve (new process), ptrace (inject or debug), and setuid (privilege change), each emit a SecEvent (type, pid, comm) into a single RingBuf. User space reads the stream and sends it to Grafana as events by type and severity, and optionally feeds a shield that blocks via LSM. This is the sensor layer of a runtime-security tool, built in eBPF: observe many attacker-relevant operations as one stream, then optionally shield."
+   caption="Figure 42.1: Many hooks, one event stream, the sensor layer of a runtime-security tool" %}
 
 ## What a sensor watches
 
@@ -29,12 +29,12 @@ Attacks leave fingerprints in a small set of operations. A practical sensor
 doesn't trace everything; it watches the moves that matter and turns each
 into a typed event. We pick three representative ones:
 
-- **`execve`** — every new process. The backbone of process telemetry: what
+- **`execve`**: every new process. The backbone of process telemetry: what
   ran, as whom, from where.
-- **`ptrace`** — one process attaching to another's memory. Legitimate for
+- **`ptrace`**: one process attaching to another's memory. Legitimate for
   debuggers, but also how code injection and credential theft begin; on a
   server it's almost always worth a look.
-- **`setuid`** — a process changing its UID. The signature of privilege
+- **`setuid`**: a process changing its UID. The signature of privilege
   transition, exactly what the previous chapter forged.
 
 Three tracepoints, one shared record type, one ring buffer. That uniformity
@@ -75,7 +75,7 @@ fn emit(etype: u32) {
 ```
 
 Each handler does the minimum: stamp the event type, the PID, and the
-process name, and submit. We don't even read the syscall arguments here — the
+process name, and submit. We don't even read the syscall arguments here: the
 sensor's job is breadth (catch the operation) and let user space enrich and
 score. Keeping the kernel side tiny keeps it cheap enough to run everywhere,
 which is the whole point of a sensor.
@@ -99,7 +99,7 @@ while let Some(item) = ring.next() {
 
 The user side attaches a **severity** to each type and exports
 `ebpf_sec_events_total{type,severity}`, so a Grafana panel can show a calm
-baseline of `exec` events with `ptrace`/`setuid` standing out — the
+baseline of `exec` events with `ptrace`/`setuid` standing out: the
 difference between a log and a *signal*. This is where, in a real tool, you'd
 correlate (a `ptrace` from a process that just did a suspicious `exec`), rate-
 limit, and alert.
@@ -110,8 +110,8 @@ This sensor only watches. Making it **shield** is a step you already know how
 to take: pair the detection with an LSM decision. The `ptrace` tracepoint
 tells you an attach *happened*; the LSM hook `ptrace_access_check` (Chapter
 37's pattern) lets you *deny* it. The clean architecture is exactly this
-split — a broad, cheap **observe** layer for telemetry, and a narrow
-**enforce** layer (LSM) for the operations you're willing to block — which is
+split: a broad, cheap **observe** layer for telemetry, and a narrow
+**enforce** layer (LSM) for the operations you're willing to block. That's
 how production tools keep enforcement decisions auditable and rare while
 still seeing everything.
 
@@ -124,14 +124,14 @@ cd examples/42-secsensor && ./demo.sh
 The demo attaches the sensor and then exercises each event type on the
 target: it runs commands (`exec`), strace-attaches to a process (`ptrace`),
 and runs a small setuid transition. You'll see the classified lines stream
-from the loader and three labelled series in `ebpf_sec_events_total` — the
+from the loader and three labelled series in `ebpf_sec_events_total`: the
 `exec` line busy, `ptrace`/`setuid` punctuating it.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (kind) (rate(ebpf_sec_events_total[1m]))` — the unified security stream, one line per event kind.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (kind) (rate(ebpf_sec_events_total[1m]))`: the unified security stream, one line per event kind.
 
 ## Cross-check
 
-On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
+On the target (`[vm]$`: `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 
 ```bash
 [vm]$ sudo bpftool prog show | grep tracepoint     # the three sensor programs
@@ -139,22 +139,22 @@ On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 [vm]$ id; sudo -u nobody id                          # generate exec + uid events
 ```
 
-Seeing a `ptrace` event appear the instant `strace` attaches — and the
-`exec`/`setuid` lines track the commands you run — confirms the sensor is
+Seeing a `ptrace` event appear the instant `strace` attaches, and the
+`exec`/`setuid` lines track the commands you run, confirms the sensor is
 catching the operations live.
 
 ## What you learned
 
 - A **sensor** is the composition of many probes into one structured event
-  stream — uniform `SecEvent` records from `execve`/`ptrace`/`setuid`, scored
+  stream: uniform `SecEvent` records from `execve`/`ptrace`/`setuid`, scored
   by severity and shipped to Grafana.
 - Keeping the kernel side minimal (stamp type/pid/comm, submit) is what makes
   a sensor cheap enough to run broadly.
 - **Observe vs. shield**: telemetry is broad and cheap; enforcement is narrow
-  and via LSM — the architecture behind real runtime-security tools, and the
+  and via LSM: the architecture behind real runtime-security tools, and the
   through-line of this whole part.
 
 That closes the **Security & LSM** part: confine, react, hide, protect,
 escalate, and finally compose it all into a sensor. The next part leaves
-security for a very different power — writing a CPU **scheduler** in BPF with
+security for a very different power: writing a CPU **scheduler** in BPF with
 `sched_ext`.

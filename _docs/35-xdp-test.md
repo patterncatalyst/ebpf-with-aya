@@ -2,18 +2,18 @@
 title: "Testing eBPF with BPF_PROG_TEST_RUN"
 order: 35
 part: Networking
-description: "Unit-test eBPF programs without a NIC or live traffic: feed a hand-built packet to a loaded program with BPF_PROG_TEST_RUN, get back the verdict, output buffer, and duration, and assert on them — turning a verifier-only check into a real test suite."
+description: "Unit-test eBPF programs without a NIC or live traffic: feed a hand-built packet to a loaded program with BPF_PROG_TEST_RUN, get back the verdict, output buffer, and duration, and assert on them: turning a verifier-only check into a real test suite."
 duration: 40 minutes
 ---
 
-Everything so far has been tested by *running* it — provision a peer,
+Everything so far has been tested by *running* it: provision a peer,
 generate traffic, watch Grafana. That's integration testing, and it's
 slow, flaky, and impossible in CI without a kernel and a NIC. The kernel
 offers something better for the inner loop: **`BPF_PROG_TEST_RUN`**, a
 `bpf()` command that runs a loaded program against an input *you* supply
 and hands back the return value, any modified output buffer, and how long
 it took. You build a packet as a byte array, run the program on it, and
-assert the verdict — no traffic, no second VM, just a deterministic test.
+assert the verdict: no traffic, no second VM, just a deterministic test.
 
 The code is in `examples/35-xdp-test/`. `./demo.sh` there builds, deploys,
 and runs the test binary on the target (the syscall needs privileges); its
@@ -22,13 +22,13 @@ and runs the test binary on the target (the syscall needs privileges); its
 {% include excalidraw.html
    file="xdp-test-run"
    alt="A synthetic packet built as a byte array (Ethernet + IPv4 + ICMP or TCP) is passed as data_in to BPF_PROG_TEST_RUN, which runs the loaded program. It returns the verdict (retval: XDP_DROP or XDP_PASS), an output buffer (data_out), the run duration, and any map side-effects. You assert on the verdict and map state in a test you can run anywhere with privileges."
-   caption="Figure 35.1 — Run the real program against a packet you build" %}
+   caption="Figure 35.1: Run the real program against a packet you build" %}
 
 ## What BPF_PROG_TEST_RUN does
 
 You hand the kernel a loaded program's file descriptor and a buffer of
 input bytes. For an XDP or tc program the buffer is a raw packet starting
-at the Ethernet header — exactly what the program would see on the wire.
+at the Ethernet header: exactly what the program would see on the wire.
 The kernel wraps it in the right context, runs the program (optionally many
 times, for benchmarking), and returns:
 
@@ -36,20 +36,20 @@ times, for benchmarking), and returns:
 - the **output buffer**, which for a program that *rewrites* packets (like
   the Chapter 34 load balancer) contains the modified bytes,
 - the **duration** per run, and
-- any **map side-effects** — the program really executed, so a counter it
+- any **map side-effects**: the program really executed, so a counter it
   bumped is now bumped.
 
 That covers nearly everything you'd want to assert: did the program reach
 the right verdict, did it mutate the packet correctly, and did it update
 its maps. The one thing it doesn't exercise is the *attachment* (the hook
-firing) — that still needs an integration run.
+firing), which still needs an integration run.
 
 ## How the code works
 
 ### The program under test
 
-A trimmed version of the Chapter 32 filter — drop ICMP, pass everything
-else — plus a per-protocol counter so we can also assert a side-effect:
+A trimmed version of the Chapter 32 filter (drop ICMP, pass everything
+else) plus a per-protocol counter so we can also assert a side-effect:
 
 ```rust
 #[map] static PKTS: HashMap<u32, u64> = HashMap::with_max_entries(8, 0);
@@ -113,7 +113,7 @@ for (name, pkt, expected) in &cases {
 program's file descriptor and the input bytes, issues the `bpf()` syscall
 with the test sub-command, and reads back the `retval` the kernel filled
 in. The loop is an ordinary test table: a name, an input, an expected
-verdict — the same shape you'd write for any pure function, which is
+verdict: the same shape you'd write for any pure function, which is
 exactly what a verdict-returning eBPF program *is* from the outside.
 
 Because the program really ran, its map is live too. After the cases we
@@ -126,7 +126,7 @@ assert!(pkts.get(&1, 0).unwrap_or(0) >= 1, "ICMP counter should have moved");
 
 The process exits non-zero if any case fails, so this drops straight into
 CI: build on the host, run the test binary on a kernel under `sudo`, fail
-the pipeline on a bad verdict — all without sending a single real packet.
+the pipeline on a bad verdict: all without sending a single real packet.
 
 ## Build, deploy, observe
 
@@ -135,16 +135,16 @@ cd examples/35-xdp-test && ./demo.sh
 ```
 
 The demo builds the test binary, ships it to the target, and runs it under
-`sudo` (the syscall needs `CAP_BPF`). You'll see a small table — each case
-with its got/want verdict and PASS/FAIL — and a zero exit code when all
+`sudo` (the syscall needs `CAP_BPF`). You'll see a small table (each case
+with its got/want verdict and PASS/FAIL) and a zero exit code when all
 pass. No peer VM and no traffic generation are involved; this is the fast
 inner-loop counterpart to the integration demos in the other chapters.
 
-**In Grafana:** nothing to chart here — this chapter is a one-shot correctness check (`BPF_PROG_TEST_RUN`) that prints its verdict to the terminal and exits, so it pushes no metric. The cross-check below is where you confirm the result.
+**In Grafana:** nothing to chart here: this chapter is a one-shot correctness check (`BPF_PROG_TEST_RUN`) that prints its verdict to the terminal and exits, so it pushes no metric. The cross-check below is where you confirm the result.
 
 ## Cross-check
 
-There's no separate tool to compare against here — the test *is* the
+There's no separate tool to compare against here: the test *is* the
 check. But you can sanity-check the mechanism with `bpftool`, which can
 itself run a program against a packet file:
 
@@ -161,12 +161,12 @@ read the result correctly.
 
 - **`BPF_PROG_TEST_RUN`** runs a loaded program against an input buffer you
   build, returning the verdict, the (possibly rewritten) output, the
-  duration, and real map side-effects — eBPF unit testing without a NIC.
+  duration, and real map side-effects: eBPF unit testing without a NIC.
 - Constructing **synthetic packets** byte by byte and driving a program
   through a **test table** of (input, expected verdict) pairs.
 - This is the fast inner loop; attachment still needs an integration run,
   but verdict and mutation logic can be tested deterministically in CI.
 
-Next, Chapter 36 closes the part with **`tcx`** — the modern, link-based
+Next, Chapter 36 closes the part with **`tcx`**: the modern, link-based
 way to attach tc programs that supersedes the clsact wiring from
 Chapter 31.

@@ -2,33 +2,33 @@
 title: "Syscall programs: when BPF loads BPF"
 order: 49
 part: Advanced kernel surface
-description: "A program type with no hook: BPF_PROG_TYPE_SYSCALL programs run on demand and can call the bpf() syscall themselves via bpf_sys_bpf. Understand loader programs — a 'strace of libbpf' replayed in-kernel — and the light skeletons bpftool builds from them, the path toward libbpf-free and signed program loading."
+description: "A program type with no hook: BPF_PROG_TYPE_SYSCALL programs run on demand and can call the bpf() syscall themselves via bpf_sys_bpf. Understand loader programs (a 'strace of libbpf' replayed in-kernel) and the light skeletons bpftool builds from them, the path toward libbpf-free and signed program loading."
 duration: 35 minutes
 ---
 
-Every program so far attaches to *something* — a kprobe, a tracepoint, a
+Every program so far attaches to *something*: a kprobe, a tracepoint, a
 socket, a scheduler slot. **`BPF_PROG_TYPE_SYSCALL`** is the odd one out: it
 attaches to nothing. You *run* it, once, on demand, and while it runs it can
 issue **`bpf()` syscalls itself** through the `bpf_sys_bpf()` helper. A BPF
 program that loads BPF. This chapter explains why that exists, what a *loader
 program* is, and how it underpins the **light skeletons** you've probably seen
-`bpftool` generate — the road toward loading eBPF without libbpf, and toward
+`bpftool` generate, the road toward loading eBPF without libbpf, and toward
 *signed* programs.
 
 This is a concept chapter with an inspectable artifact rather than a new Aya
-tool — see `examples/49-syscall-prog/` and its `README.md`. The reason is
-worth stating plainly: **Aya is itself the user-space loader.** The syscall
+tool; see `examples/49-syscall-prog/` and its `README.md`. The reason:
+**Aya is itself the user-space loader.** The syscall
 program type is libbpf/light-skeleton machinery, so you'll usually *meet* it,
 not write it, and the chapter reflects that.
 
 {% include excalidraw.html
    file="syscall-prog"
-   alt="Two ways to create BPF objects. The usual way: user space (libbpf or aya) issues many bpf() syscalls — map create, prog load — to build maps and programs in the kernel. The loader-program way: user space runs a syscall program once via BPF_PROG_RUN, and that program calls bpf_sys_bpf N times in the kernel to create the same maps and programs. Running once replays the load sequence in-kernel, which is the basis of light skeletons and signed loading."
-   caption="Figure 49.1 — A loader program issues the bpf() commands itself, in-kernel" %}
+   alt="Two ways to create BPF objects. The usual way: user space (libbpf or aya) issues many bpf() syscalls (map create, prog load) to build maps and programs in the kernel. The loader-program way: user space runs a syscall program once via BPF_PROG_RUN, and that program calls bpf_sys_bpf N times in the kernel to create the same maps and programs. Running once replays the load sequence in-kernel, which is the basis of light skeletons and signed loading."
+   caption="Figure 49.1. A loader program issues the bpf() commands itself, in-kernel" %}
 
 ## The usual way, and its cost
 
-When any loader — libbpf, or Aya — brings up a BPF object file, it performs a
+When any loader (libbpf, or Aya) brings up a BPF object file, it performs a
 *sequence* of `bpf()` syscalls: load BTF, create each map, populate read-only
 data, then load each program with its relocations applied. To do that, the
 loader must parse ELF, understand BTF, and carry a lot of code: libbpf plus
@@ -40,10 +40,10 @@ in a kernel module.
 
 The syscall program type inverts this. Instead of *performing* the load
 sequence from user space, you capture it as a **loader program**: a single BPF
-program — of type `BPF_PROG_TYPE_SYSCALL` — whose body is essentially "a strace
+program (of type `BPF_PROG_TYPE_SYSCALL`) whose body is essentially "a strace
 of libbpf." When executed via **`BPF_PROG_RUN`** (the same test-run mechanism
 from Chapter 35, here used to *do work* rather than test), it calls
-`bpf_sys_bpf()` for each step — create this map, load that program — and ends
+`bpf_sys_bpf()` for each step (create this map, load that program), and ends
 with the same maps and programs created as if libbpf had done it. A couple of
 properties fall out of running inside the kernel:
 
@@ -55,7 +55,7 @@ properties fall out of running inside the kernel:
   lookups.
 
 Illustratively, the body looks like a series of `bpf_sys_bpf` calls (this is a
-sketch — syscall-program support in aya-ebpf is experimental, and you'd
+sketch; syscall-program support in aya-ebpf is experimental, and you'd
 normally generate, not hand-write, this):
 
 ```rust
@@ -77,7 +77,7 @@ embedded as data alongside it. Run it once and the kernel has everything.
 
 ## Light skeletons
 
-This is not a thing you typically write by hand — `bpftool` generates it. Take
+This is not a thing you typically write by hand; `bpftool` generates it. Take
 any compiled BPF object and ask for a *light* skeleton:
 
 ```bash
@@ -87,25 +87,25 @@ any compiled BPF object and ask for a *light* skeleton:
 The normal `gen skeleton` embeds the whole ELF and relies on libbpf to parse
 it later. The **light** skeleton (`-L`) instead embeds a generated
 **`BPF_PROG_TYPE_SYSCALL` loader program** plus the data it needs, and exposes
-open/load/attach functions that only need a few thin `bpf()` wrappers — **no
+open/load/attach functions that only need a few thin `bpf()` wrappers, **no
 libelf, no libbpf** at load time. That's how BPF programs get embedded in
 places that can't carry libbpf: tiny static binaries, early init, even kernel
 modules.
 
 And because the entire load is now *one program plus its data*, it becomes a
-single object you can **sign** and have the kernel verify before it runs — the
+single object you can **sign** and have the kernel verify before it runs, the
 long-stated goal this machinery was built toward, and a real ingredient of
 trusted BPF deployment.
 
 ## Where Aya fits
 
 Be clear-eyed about this one: Aya already does in user space, robustly, what a
-loader program does in the kernel — it *is* the loader. So you won't reach for
+loader program does in the kernel; it *is* the loader. So you won't reach for
 `BPF_PROG_TYPE_SYSCALL` to replace your Aya loader. It matters for three
 reasons, all of which this chapter is really about: understanding what a
 **light skeleton** contains when you see one; understanding the path to
 **signed** program loading; and recognizing the broader idea that a BPF
-program can drive the `bpf()` API itself — useful for niche tasks like batched
+program can drive the `bpf()` API itself, useful for niche tasks like batched
 fd cleanup, not just loading. Writing these in aya-ebpf is experimental
 territory today.
 
@@ -117,7 +117,7 @@ cd examples/49-syscall-prog && ./demo.sh
 
 The demo takes a BPF object built by an earlier example and runs `bpftool gen
 skeleton -L` on it, so you can *see* the generated syscall/loader program and
-its embedded data in the light skeleton — the abstract idea made concrete. The
+its embedded data in the light skeleton: the abstract idea made concrete. The
 `illustrative/` directory holds the loader-program sketch above for reading.
 
 ## Cross-check
@@ -144,5 +144,5 @@ program plus data, with libbpf no longer in the loading path.
   loading possible. Aya is itself the loader, so this is mechanism to
   recognize more than a tool to wield.
 
-Next, Chapter 50 looks at the **user ring buffer** — a channel that runs the
+Next, Chapter 50 looks at the **user ring buffer**, a channel that runs the
 other direction, from user space into a BPF program.

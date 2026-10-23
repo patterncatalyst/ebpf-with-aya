@@ -2,12 +2,12 @@
 title: "L7 tracing: HTTP"
 order: 29
 part: Networking
-description: "Parse application-layer HTTP out of raw packets with a socket-filter program — walking Ethernet, IPv4, and TCP headers to the payload — and weigh it against the syscall/uprobe approach for encrypted or buffer-level L7."
+description: "Parse application-layer HTTP out of raw packets with a socket-filter program (walking Ethernet, IPv4, and TCP headers to the payload) and weigh it against the syscall/uprobe approach for encrypted or buffer-level L7."
 duration: 30 minutes
 ---
 
 Connection-level tools (Ch 27–28) tell you *that* a connection happened;
-**L7** tracing tells you *what was said* on it — the HTTP method and
+**L7** tracing tells you *what was said* on it: the HTTP method and
 path, the response status. This chapter does it with a **socket
 filter**, the first program type that inspects packet *contents*, and
 then weighs it against the syscall/uprobe route for the cases a socket
@@ -19,13 +19,13 @@ The code is in `examples/29-http-l7/`. `./demo.sh` there builds, deploys, and ru
 
 A `socket_filter` program is attached to a socket and runs on every
 packet delivered to it. Point it at a raw `AF_PACKET` socket bound to an
-interface and it sees *all* traffic on that interface — at the byte
+interface and it sees *all* traffic on that interface, at the byte
 level. The work is parsing down to the payload and recognizing HTTP:
 
 {% include excalidraw.html
    file="l7-socketfilter"
    alt="A socket filter receives each packet, walks the Ethernet, IPv4, and TCP headers to find the TCP payload, checks whether it begins with an HTTP method or HTTP/ response, captures the first line, and emits it to user space via a ring buffer."
-   caption="Figure 29.1 — parsing HTTP out of packets with a socket filter" %}
+   caption="Figure 29.1. Parsing HTTP out of packets with a socket filter" %}
 
 ```rust
 let ethertype = u16::from_be(ctx.load::<u16>(12)?);   // IPv4?
@@ -39,9 +39,9 @@ if looks_http(&ctx.load::<[u8;5]>(payload)?) { /* capture first line */ }
 Two simplifications keep the verifier happy and the code readable: we
 handle **IPv4 with no options** (IHL == 5, so the IP header is exactly
 20 bytes) and we parse the **TCP data offset** to skip TCP options. Both
-are flagged — real-world parsers handle options and IPv6.
+are flagged; real-world parsers handle options and IPv6.
 
-Each `ctx.load::<T>(offset)` is a **bounded** read into the packet — the
+Each `ctx.load::<T>(offset)` is a **bounded** read into the packet: the
 socket-filter analogue of `read_at`, with the kernel checking the offset
 is in range. That bounds requirement is also *why* we special-case
 IPv4-without-options: a variable-length IP header would make the payload
@@ -69,7 +69,7 @@ if looks_http(&ctx.load::<[u8; 5]>(payload)?) {
 ## Attaching to a raw socket
 
 Here's what makes a socket filter different from every program so far:
-it's not attached to a named hook — it's attached to an actual **socket
+it's not attached to a named hook; it's attached to an actual **socket
 file descriptor**. So user space first opens a raw `AF_PACKET` socket
 bound to the interface, then hands its fd to `SocketFilter::attach`:
 
@@ -81,7 +81,7 @@ prog.attach(sock.as_fd())?;                // the filter now sees every frame on
 ```
 
 `AF_PACKET` + `SOCK_RAW` is what delivers *raw frames including the
-Ethernet header* to the socket — which is why the parser starts at
+Ethernet header* to the socket, which is why the parser starts at
 offset 0 with a 14-byte `ETH_HLEN`. Binding to one interface scopes the
 capture to that NIC. After that it's the familiar `RingBuf` drain:
 decode each `HttpEvent`, print the flow and request line, and count by
@@ -92,16 +92,16 @@ method (`ebpf_http_lines_total{method}`).
 A socket filter sees the **wire**, which has one hard limit: **HTTPS is
 ciphertext**. You will never parse an HTTP line out of an encrypted
 packet. The complementary L7 technique traces the **syscalls** that move
-the data — `sys_enter_write`/`sys_enter_read`, or `sendto`/`recvfrom` —
+the data (`sys_enter_write`/`sys_enter_read`, or `sendto`/`recvfrom`),
 and inspects the *buffer*, which holds plaintext regardless of whether
 TLS encrypts it on the way out. (That's the same boundary `sslsniff`
 tapped in Chapter 17, just at the syscall rather than the library.)
 
 So the choice:
 
-- **Socket filter (this chapter)** — cleartext L7 across all connections
+- **Socket filter (this chapter)**: cleartext L7 across all connections
   on an interface, with full packet context. Blind to TLS.
-- **Syscall tracepoint / uprobe** — buffer-level L7 that survives
+- **Syscall tracepoint / uprobe**: buffer-level L7 that survives
   encryption, but you see every read/write and must attribute it to a
   connection yourself.
 
@@ -123,9 +123,9 @@ FLOW                                     REQUEST / RESPONSE LINE
 ```
 
 `ebpf_http_lines_total{method}` in Grafana breaks requests down by
-method — the start of an L7 dashboard.
+method: the start of an L7 dashboard.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_http_lines_total[1m])` — HTTP request lines per second.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_http_lines_total[1m])`: HTTP request lines per second.
 
 ## Cross-check
 
@@ -144,5 +144,5 @@ method — the start of an L7 dashboard.
 - Socket filters are blind to **TLS**; syscall/uprobe L7 is the
   encrypted-traffic complement.
 
-Next: **`sockops`** — reacting to TCP connection lifecycle from a
+Next: **`sockops`**: reacting to TCP connection lifecycle from a
 cgroup.
