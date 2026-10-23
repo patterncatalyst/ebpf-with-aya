@@ -2,17 +2,17 @@
 title: "XDP load balancer: rewriting packets"
 order: 34
 part: Networking
-description: "Make XDP forward, not just observe: a UDP load balancer that rewrites the destination port of packets aimed at a virtual port, round-robins them across backends through a map, and passes them on — the packet-mutation and backend-selection core of an XDP load balancer."
+description: "Make XDP forward, not just observe: a UDP load balancer that rewrites the destination port of packets aimed at a virtual port, round-robins them across backends through a map, and passes them on: the packet-mutation and backend-selection core of an XDP load balancer."
 duration: 45 minutes
 ---
 
 So far XDP has dropped (Chapter 32) and observed (Chapter 33). Its third
-power is to **rewrite and forward** — change bytes in the packet and send it
+power is to **rewrite and forward**: change bytes in the packet and send it
 on its way. That is the heart of an XDP load balancer like Katran: a virtual
 address out front, a set of backends behind it, and an XDP program that
 rewrites each incoming packet to a chosen backend at line rate. This chapter
-builds a deliberately small one — a **UDP port load balancer** — so the two
-genuinely new skills stand out: **mutating the packet** (with the verifier
+builds a small one (a **UDP port load balancer**) so the two
+new skills stand out: **mutating the packet** (with the verifier
 still watching every access) and **selecting a backend** from a map.
 
 The code is in `examples/34-xdp-lb/`. `./demo.sh` there builds, deploys, and
@@ -21,20 +21,20 @@ runs it; its `README.md` covers what it does and how to drive it.
 {% include excalidraw.html
    file="xdp-lb"
    alt="A client on the peer sends UDP datagrams to a virtual port (VIP:8080) on the target. The XDP load balancer rewrites the destination port round-robin using BACKENDS[idx % N], sending roughly one third each to backend :9001, :9002, and :9003. XDP_PASS delivers locally; XDP_REDIRECT would forward to backends on other hosts."
-   caption="Figure 34.1 — One virtual port fanned out across backends by rewriting the UDP dest port" %}
+   caption="Figure 34.1: One virtual port fanned out across backends by rewriting the UDP dest port" %}
 
 ## Why UDP, and why a port
 
 A real load balancer has to solve the *return path*: once you send a
 client's packet to a backend, the backend's reply must look like it came
 from the virtual address, or the client rejects it. Production XDP balancers
-handle this with Direct Server Return or a connection-tracking map — real,
-and a chapter of their own later. To keep *this* chapter about packet
+handle this with Direct Server Return or a connection-tracking map (real,
+and a chapter of their own later). To keep *this* chapter about packet
 mutation and backend selection, we use **UDP** (connectionless, so
 per-packet balancing is correct) and rewrite only the **destination port**,
 fanning a single virtual port across several local backend listeners. The
-production shape — rewriting addresses and using `XDP_REDIRECT` to backends
-on other hosts — is called out at the end.
+production shape (rewriting addresses and using `XDP_REDIRECT` to backends
+on other hosts) is called out at the end.
 
 ## How the code works
 
@@ -88,7 +88,7 @@ The new moves:
 
 - **`ptr_at_mut`** is `ptr_at` returning a `*mut T`: the same bounds proof,
   then a writable pointer. The verifier requires the in-window check before a
-  **write** just as for a read — you cannot scribble past `data_end`.
+  **write** just as for a read: you cannot scribble past `data_end`.
 - **Backend selection** reads the count and cursor from single-entry
   `Array` maps, indexes `BACKENDS[cur % n]`, and advances the cursor with
   `IDX.get_ptr_mut(0)` (a writable pointer into the map value). Round-robin
@@ -98,7 +98,7 @@ The new moves:
   is optional, and `0` means "not computed," so we sidestep checksum math for
   the demo. **For TCP, or to keep the UDP checksum valid, you must do an
   incremental update** (RFC 1624: subtract the old port, add the new) rather
-  than recompute from scratch — the standard XDP technique, noted here and
+  than recompute from scratch: the standard XDP technique, noted here and
   used in the production version.
 - We `XDP_PASS`, so the local network stack delivers the now-rewritten
   datagram to whichever backend is listening on the chosen port.
@@ -119,7 +119,7 @@ let backends: Vec<u16> = vec![9001, 9002, 9003];
 The loader writes the backend ports and count into the maps *before*
 attaching, then drains `HITS` on a timer into
 `ebpf_xdp_lb_dispatch_total{backend}` and prints a per-backend table. Change
-the `backends` vector and rerun — no recompile, because the set lives in maps.
+the `backends` vector and rerun: no recompile, because the set lives in maps.
 
 ## Build, deploy, observe
 
@@ -130,15 +130,15 @@ cd examples/34-xdp-lb && ./demo.sh
 The demo starts three UDP listeners on the target (ports 9001–9003), attaches
 the balancer, then fires a stream of UDP datagrams from the peer at the
 target's `VIP:8080`. Each datagram is rewritten to one of the three backends
-in turn, so all three listeners receive roughly a third — visible both in the
+in turn, so all three listeners receive roughly a third: visible both in the
 listeners' output and as three roughly-equal `ebpf_xdp_lb_dispatch_total`
 series in Grafana.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (backend) (rate(ebpf_xdp_lb_dispatch_total[1m]))` — dispatch rate per backend — the load balance made visible.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (backend) (rate(ebpf_xdp_lb_dispatch_total[1m]))`: dispatch rate per backend, the load balance made visible.
 
 ## Cross-check
 
-On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
+On the target (`[vm]$`: `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 
 ```bash
 [vm]$ ip -br link                 # find the NIC (e.g. enp1s0)
@@ -146,7 +146,7 @@ On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 [vm]$ sudo ss -ulnp | grep -E '9001|9002|9003'   # the three backend listeners are up
 ```
 
-While traffic flows, watch a backend actually receive rewritten datagrams —
+While traffic flows, watch a backend actually receive rewritten datagrams:
 e.g. point `tcpdump` at one backend port and confirm packets the client sent
 to `8080` arrive on `9001`:
 
@@ -160,13 +160,13 @@ round-robin.
 
 ## What you learned
 
-- XDP can **rewrite and forward**, not just drop or observe — the third
+- XDP can **rewrite and forward**, not just drop or observe: the third
   verdict family, and the basis of XDP load balancers.
 - **`ptr_at_mut`**: writing into the packet needs the same verifier bounds
   proof as reading, and the UDP checksum can be zeroed in IPv4 (but TCP /
   valid UDP need an **incremental checksum update**).
 - **Map-driven backend selection**: ports and count in `Array` maps, a
-  round-robin cursor advanced with `get_ptr_mut`, per-backend counters —
+  round-robin cursor advanced with `get_ptr_mut`, per-backend counters,
   reconfigurable without recompiling.
 
 That closes the **Networking** part. We built up from timing a connection to

@@ -9,9 +9,9 @@ duration: 40 minutes
 Every loader so far has ended the same way: it attaches a program, loops while
 holding a file descriptor, and when you press Ctrl-C the program detaches and
 vanishes. That's the right shape for a tool you run interactively, but it
-hides a question that matters the moment you operate eBPF for real: **what
+hides a question that matters once you run eBPF in production: **what
 keeps a program alive, and how do you make it outlive the process that loaded
-it?** The answer — reference counting and **pinning to bpffs** — is the
+it?** The answer, reference counting and **pinning to bpffs**, is the
 foundation the rest of this part and the operating chapters build on, so we
 start here.
 
@@ -22,12 +22,12 @@ the details.
 {% include excalidraw.html
    file="pinning"
    alt="A loader loads a tracepoint program, an exec-count map, and a link (attachment), then pins all three to /sys/fs/bpf (bpffs), where the pins hold references, and the loader exits. Because the pins hold references, the program, map, and link outlive the loader until the pin is removed. Any reader process can open the pinned map to read results; removing the pin (rm) drops the reference and detaches."
-   caption="Figure 48.1 — Pins in bpffs hold references, so objects outlive the loader" %}
+   caption="Figure 48.1: Pins in bpffs hold references, so objects outlive the loader" %}
 
 ## Reference counting, briefly
 
-Every BPF object — a program, a map, a **link** (the handle representing one
-attachment) — lives as long as something holds a reference to it. The usual
+Every BPF object (a program, a map, a **link**, the handle representing one
+attachment) lives as long as something holds a reference to it. The usual
 reference is a **file descriptor** in your loader. When the loader exits, the
 kernel closes its fds, the reference counts drop to zero, and the objects are
 freed: the program detaches and the map's data is gone. That's why Ctrl-C ends
@@ -51,7 +51,7 @@ even with no process holding it; remove the pin and the reference drops.
 Three things are worth pinning, and Aya pins each:
 
 - **The map**, so its data survives and other processes can open it.
-- **The link**, so the *attachment* survives — without this the program would
+- **The link**, so the *attachment* survives: without this the program would
   detach even if the program object itself were pinned.
 - **The program** (optional once the link is pinned, but handy for
   inspection).
@@ -82,7 +82,7 @@ Reading the key moves:
 ### Reading a pinned map from elsewhere
 
 Because the map is a named object on bpffs, *any* process with access can open
-it — the loader doesn't need to be running:
+it: the loader doesn't need to be running:
 
 ```rust
 let map = MapData::from_pin("/sys/fs/bpf/ebpf-aya/EXECS")?;
@@ -91,7 +91,7 @@ println!("execs so far: {}", execs.get(&0, 0)?);
 ```
 
 This decoupling is the whole point: one process installs and pins, a different
-process (or many, over time) reads — the lifecycle of the eBPF program is no
+process (or many, over time) reads: the lifecycle of the eBPF program is no
 longer tied to any single program. That is exactly how zero-downtime managers
 operate, a thread Part 9 picks up.
 
@@ -106,7 +106,7 @@ shows the pins in `/sys/fs/bpf` with the loader gone, runs `pinctl read` from a
 fresh process a couple of times so you can watch the exec counter climb with no
 loader running, and finally `pinctl detach` to remove the pins.
 
-**In the terminal** you'll see the count rise between reads — proof the program
+**In the terminal** you'll see the count rise between reads: proof the program
 kept working after its loader exited. **In Grafana** (`127.0.0.1:3000`), the
 `read` step exports `ebpf_pinned_execs_total`, so you can graph the persisted
 counter that any reader can pick up.
@@ -124,14 +124,14 @@ counter that any reader can pick up.
 `bpftool prog show` listing the program while no loader runs is the proof that
 the pin holds it; `bpftool map dump pinned` reads the same counter your `read`
 command does. Removing the pins (`pinctl detach` or `rm`) and re-running
-`bpftool prog show` shows it gone — the reference is what kept it alive.
+`bpftool prog show` shows it gone: the reference is what kept it alive.
 
 ## What you learned
 
 - BPF programs, maps, and links are **reference-counted**; when the loader's
   file descriptors close, the objects are freed and the program detaches.
 - **Pinning to bpffs** (`/sys/fs/bpf`) creates a named reference that keeps an
-  object alive past the loader — pin the **link** to keep the attachment, the
+  object alive past the loader: pin the **link** to keep the attachment, the
   **map** to keep (and share) the data.
 - A pinned map can be opened by **any** process, decoupling the program's
   lifecycle from its loader; **removing the pin** drops the reference and

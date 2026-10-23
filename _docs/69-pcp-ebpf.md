@@ -2,13 +2,13 @@
 title: "Appendix: eBPF metrics with Performance Co-Pilot (PCP)"
 order: 69
 part: Addenda
-description: "Performance Co-Pilot is the other major metrics model — pull-and-record rather than push-and-stream, host-centric, decades old, and shipped in Fedora. It has a first-class eBPF on-ramp: pmdabpf runs BPF CO-RE modules and pmdabpftrace runs bpftrace scripts, both surfaced as ordinary PCP metrics with archives, alerting, and a Grafana plugin. This appendix covers what PCP is, how it's used and extended, and how it meets eBPF — and how it complements the OTLP stack the rest of the book uses."
+description: "Performance Co-Pilot is the other major metrics model: pull-and-record rather than push-and-stream, host-centric, decades old, and shipped in Fedora. It has a first-class eBPF on-ramp: pmdabpf runs BPF CO-RE modules and pmdabpftrace runs bpftrace scripts, both surfaced as ordinary PCP metrics with archives, alerting, and a Grafana plugin. This appendix covers what PCP is, how it's used and extended, how it meets eBPF, and how it complements the book's OTLP stack."
 duration: 35 minutes
 ---
 
 The whole book pushes metrics: an Aya loader exports OTLP to a collector, and
 Grafana reads it. **Performance Co-Pilot (PCP)** is the other major model in Linux
-performance monitoring, and it works the other way around — a daemon on each host
+performance monitoring, and it works the other way around: a daemon on each host
 *collects* metrics from pluggable agents, clients *pull* from that daemon, and a
 logger *records* everything to disk for later replay. It is decades old (born at
 SGI, now maintained by Red Hat), ships in Fedora, and matters here for one
@@ -18,44 +18,44 @@ eBPF.
 
 {% include excalidraw.html
    file="pcp-ebpf"
-   alt="Performance Co-Pilot architecture and its eBPF intersection. On the left, pluggable agents called PMDAs feed a collector daemon, pmcd: pmdalinux (kernel, /proc, cgroups); pmdabpf (eBPF CO-RE ELF modules); pmdabpftrace (bpftrace scripts); and pmdaopenmetrics (scrapes an Aya loader's Prometheus /metrics endpoint). pmdabpf and pmdabpftrace are highlighted as the eBPF intersection, and pmdaopenmetrics bridges the book's Aya loaders. On the right, consumers read from pmcd: pminfo, pmrep, pmstat, and pmchart for live query and reporting; pmlogger to record archives for later replay; pmie, the inference engine, for alerts; and pmproxy with pmseries for a REST API and time series stored in Redis. Below that, grafana-pcp brings PCP metrics into the same Grafana dashboards as the OTel stack. The model is pull-and-record — archives and alerts — which complements the book's push-based OTLP stream; both land in the same Grafana."
-   caption="Figure 69.1 — PCP collects from PMDAs into pmcd; pmdabpf and pmdabpftrace are the eBPF on-ramp" %}
+   alt="Performance Co-Pilot architecture and its eBPF intersection. On the left, pluggable agents called PMDAs feed a collector daemon, pmcd: pmdalinux (kernel, /proc, cgroups); pmdabpf (eBPF CO-RE ELF modules); pmdabpftrace (bpftrace scripts); and pmdaopenmetrics (scrapes an Aya loader's Prometheus /metrics endpoint). pmdabpf and pmdabpftrace are highlighted as the eBPF intersection, and pmdaopenmetrics bridges the book's Aya loaders. On the right, consumers read from pmcd: pminfo, pmrep, pmstat, and pmchart for live query and reporting; pmlogger to record archives for later replay; pmie, the inference engine, for alerts; and pmproxy with pmseries for a REST API and time series stored in Redis. Below that, grafana-pcp brings PCP metrics into the same Grafana dashboards as the OTel stack. The model is pull-and-record (archives and alerts), which complements the book's push-based OTLP stream; both land in the same Grafana."
+   caption="Figure 69.1: PCP collects from PMDAs into pmcd; pmdabpf and pmdabpftrace are the eBPF on-ramp" %}
 
 ## What PCP is
 
 PCP is a toolkit, not a single program, built in the Unix tradition of small
 components that compose. At the centre of each host runs **pmcd**, the
 Performance Metrics Collector Daemon. pmcd itself knows nothing about any
-particular metric; it delegates to **PMDAs** — Performance Metrics Domain Agents,
+particular metric; it delegates to **PMDAs**, Performance Metrics Domain Agents,
 one per "domain" of metrics. `pmdalinux` exposes the kernel's `/proc` and cgroup
-counters; other PMDAs cover databases, web servers, GPUs, and — the point of this
-appendix — eBPF.
+counters; other PMDAs cover databases, web servers, GPUs, and (the point of this
+appendix) eBPF.
 
 What sets PCP apart from a bag of counters is that every metric carries rich,
 self-describing metadata. Each has a place in the **Performance Metrics Name
-Space** (PMNS) — a dotted hierarchy like `kernel.all.load` or `bpf.runqlat` — a
+Space** (PMNS), a dotted hierarchy like `kernel.all.load` or `bpf.runqlat`, with a
 unique identifier (PMID), a data type, **units** and a **semantic** (is this a
 counter, an instantaneous gauge, a discrete value?), and where it has multiple
 instances (per-CPU, per-disk, per-process) an **instance domain** describing them.
 A client never has to guess what a number means or how to rate-convert it; the
 metadata says. And because pmcd speaks a network protocol, a client on one machine
-can read metrics from pmcd on another — monitoring is local or remote with the
+can read metrics from pmcd on another: monitoring is local or remote with the
 same tools.
 
 ## How you use it
 
 The everyday tools all talk to pmcd:
 
-- **`pminfo`** — the metadata-and-values workhorse: `pminfo -f kernel.all.load`
+- **`pminfo`**: the metadata-and-values workhorse. `pminfo -f kernel.all.load`
   fetches a metric with its description and current value; `pminfo -t` shows its
   help text.
-- **`pmrep`**, **`pmstat`**, **`pmval`** — tabular reporting and sampling over
+- **`pmrep`**, **`pmstat`**, **`pmval`**: tabular reporting and sampling over
   time, the command-line equivalents of a dashboard row.
-- **`pmchart`** and **`pcp atop`** — graphical and `top`-like live views.
+- **`pmchart`** and **`pcp atop`**: graphical and `top`-like live views.
 
 The feature that distinguishes PCP from most metrics systems is **`pmlogger`**:
 it records selected metrics to an on-disk **archive**, and every one of the tools
-above can replay an archive instead of reading live — `pmrep --archive
+above can replay an archive instead of reading live: `pmrep --archive
 20260601 kernel.all.load` reports last week's load exactly as if you were there.
 That is retrospective analysis: when something broke at 03:00, you open the
 archive and look, rather than wishing you'd been watching. Rounding out the set,
@@ -77,19 +77,19 @@ fleet: you get retrospective root-cause ("what did the run queue look like durin
 the incident?") without having had a tracer attached at the time. It is host- and
 system-centric rather than request-centric, it scales across machines through
 pmcd and `pmlogger` farms, and it complements ad-hoc tracing rather than replacing
-it — you reach for `bpftrace` to investigate a hypothesis, and for PCP to have
+it: you reach for `bpftrace` to investigate a hypothesis, and for PCP to have
 been recording the evidence all along.
 
 ## How you extend it
 
 The extension seam is the PMDA. Anything you can express as a PMDA becomes a set
-of first-class PCP metrics — archived, alertable, and graphable like any other.
+of first-class PCP metrics: archived, alertable, and graphable like any other.
 PMDAs can be written in C for speed, or in Python or Perl for convenience, and
 the interface is small: describe your metrics' metadata and answer "fetch"
 requests for their values. You don't always have to write one, though:
 **`pmdaopenmetrics`** scrapes any Prometheus/OpenMetrics HTTP endpoint and turns
 those metrics into PCP metrics. That single agent is the bridge that lets PCP
-ingest things it was never written for — including, as we'll see, the `ebpf_*`
+ingest things it was never written for, including, as we'll see, the `ebpf_*`
 metrics this book's loaders already export.
 
 ## eBPF with PCP
@@ -97,7 +97,7 @@ metrics this book's loaders already export.
 This is the intersection. PCP has three ways to source metrics from eBPF, plus a
 bridge for your own Aya tools.
 
-**`pmdabpf` — BPF CO-RE modules as metrics.** The modern agent (`pcp-pmda-bpf`)
+**`pmdabpf`: BPF CO-RE modules as metrics.** The modern agent (`pcp-pmda-bpf`)
 loads eBPF programs built with libbpf and BTF (the same CO-RE approach as Chapter
 58) and exposes their output as PCP metrics. It reads an ini-style config at
 `$PCP_PMDAS_DIR/bpf/bpf.conf` (default `/var/lib/pcp/pmdas/bpf/bpf.conf`), one
@@ -114,16 +114,16 @@ live under `.../bpf/modules/`. Enable a couple and install the agent:
 
 `pmdabpf` is launched by pmcd and never run directly; the `./Install` script
 registers it. From then on `bpf.runqlat`, `bpf.biolatency`, and friends are just
-PCP metrics — `pmrep`, `pmlogger`, `pmie`, and Grafana treat them like any other.
+PCP metrics: `pmrep`, `pmlogger`, `pmie`, and Grafana treat them like any other.
 
-**`pmdabpftrace` — bpftrace scripts as metrics.** The bpftrace PMDA
+**`pmdabpftrace`: bpftrace scripts as metrics.** The bpftrace PMDA
 (`pcp-pmda-bpftrace`) runs bpftrace scripts and exports their maps as PCP metrics,
 including histograms. Scripts can be started on demand, or placed (root-writable,
-for safety) in an autostart directory so they run from PMDA startup — the
+for safety) in an autostart directory so they run from PMDA startup, the
 production-safe pattern. With the Grafana plugin this becomes on-demand live eBPF
 analysis from a dashboard.
 
-**`pmdabcc` — the predecessor.** Before CO-RE, the BCC PMDA ran BPF through the
+**`pmdabcc`: the predecessor.** Before CO-RE, the BCC PMDA ran BPF through the
 BCC Python frontend (runtime-compiled with Clang, needing kernel headers). It
 still exists and works, but `pmdabpf` is the direction of travel for the same
 reasons Chapter 66 gave: precompiled CO-RE modules avoid shipping a compiler to
@@ -131,30 +131,30 @@ every host.
 
 **Bridging your own Aya tools into PCP.** Everything in this book exports `ebpf_*`
 metrics over OTLP. Two paths bring those into PCP. The direct one: point
-`pmdaopenmetrics` at a Prometheus endpoint that carries them — either the
+`pmdaopenmetrics` at a Prometheus endpoint that carries them: either the
 otel-lgtm stack's bundled Prometheus, or a loader extended to expose a
-`/metrics` endpoint — by dropping a `.url` file in the OpenMetrics PMDA's config
+`/metrics` endpoint, by dropping a `.url` file in the OpenMetrics PMDA's config
 directory, after which your `ebpf_he_op_latency_seconds` (Chapter 68) or
 `ebpf_runqlat` lands in the `openmetrics.*` tree, gets archived by pmlogger, and
 can trigger a pmie alert. The thorough one: write a small Python PMDA that reads
 your Aya program's map or output directly and presents it with proper PCP
-metadata. Either way your bespoke eBPF metric gains PCP's archive and alerting for
-free.
+metadata. Either way your bespoke eBPF metric picks up PCP's archive and
+alerting without extra code.
 
 **Grafana ties it together.** The **grafana-pcp** plugin adds PCP as a Grafana
-data source — live through pmproxy, historical through pmseries/Redis. Install it
+data source: live through pmproxy, historical through pmseries/Redis. Install it
 and your `bpf.*` and `openmetrics.*` metrics appear on dashboards alongside the
-OTel `ebpf_*` metrics the rest of the book produces, in the same Grafana.
+OTel `ebpf_*` metrics the book's other chapters produce, in the same Grafana.
 
 ## PCP or the book's stack?
 
 They are different philosophies, and the answer is "both, for different
-jobs." The book's approach — a bespoke Aya program
-pushing OTLP — wins when you need a *custom* probe and request-level correlation:
+jobs." The book's approach (a bespoke Aya program
+pushing OTLP) wins when you need a *custom* probe and request-level correlation:
 your own metric, joined to traces and logs on a `trace_id`, as in the Chapter 63
-capstone. PCP wins when you want *standard* eBPF tooling running 24/7 with
+final project. PCP wins when you want *standard* eBPF tooling running 24/7 with
 low overhead, recorded to archives for retrospective analysis and wired to alerts,
-without writing or operating a loader at all — enable a `pmdabpf` module and it is
+without writing or operating a loader at all: enable a `pmdabpf` module and it is
 collecting forever. The two interoperate cleanly through grafana-pcp and
 `pmdaopenmetrics`, so the choice is never exclusive: write Aya where you need
 bespoke insight, lean on PCP where you need durable, always-on host recording, and
@@ -178,7 +178,7 @@ details and the grafana-pcp data-source steps.
   clients (`pminfo`, `pmrep`, `pmchart`) read it live, `pmlogger` archives it for
   retrospective replay, `pmie` alerts on it, and `pmproxy`/`pmseries` expose REST
   and time series. Every metric is self-describing (PMNS, units, semantics).
-- Its strength is **always-on, low-overhead, system-wide recording** — the flight
+- Its strength is **always-on, low-overhead, system-wide recording**: the flight
   recorder that complements the hypothesis-driven tracing you do with `bpftrace`.
 - It is **extended through PMDAs** (C/Python/Perl), and `pmdaopenmetrics` ingests
   any Prometheus/OpenMetrics endpoint without writing one.

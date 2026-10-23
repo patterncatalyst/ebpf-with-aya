@@ -8,16 +8,16 @@ duration: 6 minutes
 
 This tutorial takes a developer who already knows Rust (you have read
 *The Rust Programming Language*) and teaches them to write **eBPF
-programs in Rust with [Aya](https://aya-rs.dev/)** — from a first
+programs in Rust with [Aya](https://aya-rs.dev/)**: from a first
 "hello world" probe through XDP load balancers, `sched_ext`
 schedulers, LSM security programs, and the newest kernel surfaces
 like `struct_ops`, kfuncs, BPF arenas, and BPF tokens.
 
-It is deliberately structured as a **lab**. You write code on a
+It is structured as a **lab**. You write code on a
 Fedora 44 laptop, but you *never load eBPF into your laptop's
 kernel*. Instead you deploy each program to a disposable Fedora 44
 virtual machine running under KVM/QEMU, so a program that panics the
-verifier — or worse, the kernel — costs you a `virsh destroy` and a
+verifier (or worse, the kernel) costs you a `virsh destroy` and a
 re-provision, not your working machine. Client load comes from
 Python 3.14 drivers in Podman, and every program's output is wired
 into Grafana through OpenTelemetry so you can *see* what your probe
@@ -42,7 +42,7 @@ own once the lab exists.
 | **Schedulers (`sched_ext`)** | writing BPF schedulers | 43–44 |
 | **Application targets** | real workloads | 45–47 |
 | **Advanced kernel surface** | the 2024–2026 BPF feature set | 48–57 |
-| **Operating eBPF** | CO-RE, zero-downtime, offload, power, signal correlation, capstone | 58–63 |
+| **Operating eBPF** | CO-RE, zero-downtime, offload, power, signal correlation, final project | 58–63 |
 | **Field guide** *(optional)* | `bpftrace`, `bpftool`, and the BCC tools, driven from Python | 64–66 |
 | **Retrospective** | the whole arc, and where eBPF &amp; Aya go next | 67 |
 | **Addenda** *(optional)* | HE workload observability; eBPF metrics with Performance Co-Pilot | 68–69 |
@@ -66,9 +66,9 @@ until you have a lab that builds, deploys, and reports.
 Each later chapter follows the same shape: a short concept section, a
 runnable Aya project under `examples/`, a `demo.sh` that builds it,
 ships it to the target VM, runs it, drives load, and shows where the
-output appears in Grafana. The full chapter list — including the
+output appears in Grafana. The full chapter list, including the
 exact programs (`opensnoop`, `execsnoop`, `tcpconnlat`, `xdp`
-load balancer, `scx_nest`, `sslsniff`, `struct_ops`, and the rest) unfolds across the parts ahead.
+load balancer, `scx_nest`, `sslsniff`, `struct_ops`, and the rest), unfolds across the parts ahead.
 
 We start the eBPF work with **libbpf and libbpf-rs** for a single
 chapter so the C-and-CO-RE mental model is concrete, then move to
@@ -85,24 +85,23 @@ chapter so the C-and-CO-RE mental model is concrete, then move to
   pastes misbehave in zsh with bracketed-paste and autosuggest. Any
   multi-step procedure ships as a **script in the iteration tarball**,
   not as a block to paste by hand.
-- Test scripts use **`127.0.0.1`**, never `localhost` — modern `curl`
+- Test scripts use **`127.0.0.1`**, never `localhost`: modern `curl`
   prefers IPv6 `::1` and many runtimes bind IPv4 only.
 - Bind mounts carry the **`:Z`** SELinux relabel suffix. It is correct
   on Fedora and a harmless no-op elsewhere.
 - Container images are **UBI-based** (`registry.access.redhat.com/ubi9/...`)
   and pull without a Red Hat subscription.
-- Kernel tooling — `bpftool`, `bpftrace`, `bcc`, `perf` — is installed
+- Kernel tooling (`bpftool`, `bpftrace`, `bcc`, `perf`) is installed
   from **Fedora/Red Hat repositories** via `dnf`, never from third-party
   binaries.
 - Every technical claim is <span class="status status--verified">verified (Fedora 44, kernel 7.1.3)</span>:
-  run end-to-end on the real KVM lab and tracked in the
-  [reconciliation plan]({{ "/plans/reconciliation-plan/" | relative_url }}).
-  Your own hardware is the final check. If a chapter
-  hasn't been verified yet, its claims are marked as such.
+  run end-to-end on the real KVM lab. Your own hardware is the final
+  check. If a chapter hasn't been verified yet, its claims are marked
+  as such.
 
 ## Prerequisite knowledge (not taught here)
 
-- **Rust** at the level of *The Rust Programming Language* — ownership,
+- **Rust** at the level of *The Rust Programming Language*: ownership,
   traits, `Result`, `async`/`await`, Cargo. This is not a Rust course.
 - Comfort with the **Linux command line** and a shell (the tutorial
   assumes zsh, but bash is fine).
@@ -114,9 +113,9 @@ chapter so the C-and-CO-RE mental model is concrete, then move to
 
 The tutorial leans on, and frequently points at, this canonical set:
 
-- *Learning eBPF* — Liz Rice
+- *Learning eBPF* by Liz Rice
 - [ebpf.io/get-started](https://ebpf.io/get-started)
-- *BPF Performance Tools* — Brendan Gregg
+- *BPF Performance Tools* by Brendan Gregg
 - The **Aya Book** and Aya API docs
 - Articles by **Luca Palmieri** and the *Zero To Production in Rust*
   book ([zero2prod.com](https://www.zero2prod.com)) for Rust
@@ -124,7 +123,7 @@ The tutorial leans on, and frequently points at, this canonical set:
 - Material from **Isovalent/Cilium** and the broader *Oxidizing eBPF*
   community
 
-> **A note on sources** — We take *insight* freely from the whole eBPF
+> **A note on sources:** We take *insight* freely from the whole eBPF
 > community, but the code we ship is our own: we don't copy or port
 > code line-for-line from other repositories, and anything borrowed
 > carries a clearly compatible license. See

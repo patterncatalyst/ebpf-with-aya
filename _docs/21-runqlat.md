@@ -2,13 +2,13 @@
 title: "runqlat"
 order: 21
 part: Performance & resources
-description: "Measure scheduler run-queue latency — how long tasks wait runnable-but-not-running — by stitching together the sched tracepoints, and meet the technique that hot paths demand: aggregating a histogram in the kernel instead of emitting per-event."
+description: "Measure scheduler run-queue latency (how long tasks wait runnable-but-not-running) by stitching together the sched tracepoints, and meet the technique that hot paths demand: aggregating a histogram in the kernel instead of emitting per-event."
 duration: 30 minutes
 ---
 
 The *Performance & resources* part opens with a question every busy
 system eventually raises: "my CPU isn't pegged, so why is everything
-slow?" Often the answer is **run-queue latency** — tasks are *ready* to
+slow?" Often the answer is **run-queue latency**: tasks are *ready* to
 run but stuck waiting for a CPU to free up. `runqlat` measures exactly
 that wait, and building it teaches the technique that separates toy
 tracers from production ones: **aggregating in the kernel**.
@@ -18,14 +18,14 @@ The code is in `examples/21-runqlat/`. `./demo.sh` there builds, deploys, and ru
 {% include excalidraw.html
    file="runqlat-timeline"
    alt="Run-queue latency: sched_wakeup stamps when a task becomes runnable; it waits on the run queue; sched_switch records the wait when it comes on-CPU, bucketed into an in-kernel log2 histogram."
-   caption="Figure 21.1 — measuring run-queue latency across the sched tracepoints" %}
+   caption="Figure 21.1. Measuring run-queue latency across the sched tracepoints" %}
 
 ## What run-queue latency is
 
 A task's life cycle on the scheduler: it sleeps, something **wakes** it
 (it becomes *runnable*), it sits on a CPU's run queue, and eventually the
 scheduler **switches** it onto a CPU (it becomes *running*). The gap
-between "became runnable" and "started running" is run-queue latency —
+between "became runnable" and "started running" is run-queue latency:
 pure waiting for a CPU. When more tasks want to run than you have CPUs,
 this number climbs even while utilization looks fine. It's the
 single best signal for CPU saturation.
@@ -35,9 +35,9 @@ single best signal for CPU saturation.
 No single tracepoint gives you the wait, so we combine three from the
 `sched` subsystem:
 
-- **`sched_wakeup`** and **`sched_wakeup_new`** — a task became runnable.
+- **`sched_wakeup`** and **`sched_wakeup_new`**: a task became runnable.
   Stamp the current time against its pid (`START[pid] = now`).
-- **`sched_switch`** — a context switch. Two things to do:
+- **`sched_switch`**: a context switch. Two things to do:
   - The task coming **on** the CPU (`next_pid`): its wait just ended, so
     `delta = now - START[next_pid]`, bucket it, clear the stamp.
   - The task going **off** the CPU but still runnable (`prev_state ==
@@ -54,13 +54,13 @@ No single tracepoint gives you the wait, so we combine three from the
 
 The field offsets (`prev_pid` @ 24, `prev_state` @ 32, `next_pid` @ 56,
 wakeup `pid` @ 24) come from the tracepoint format files, the same way
-as Chapters 9–12 — and they're the first thing to verify.
+as Chapters 9–12, and they're the first thing to verify.
 
 ## The real lesson: aggregate in the kernel
 
 Back in Chapter 18 we emitted one ring-buffer event per function call
 and noted: *fine at modest rates, but for hot paths aggregate in the
-kernel instead.* `sched_switch` is the definitive hot path — it fires on
+kernel instead.* `sched_switch` is the definitive hot path: it fires on
 **every context switch on every CPU**, thousands of times a second on a
 busy box. Shipping an event each time would drown user space and perturb
 the very scheduling you're measuring.
@@ -76,7 +76,7 @@ if let Some(slot) = HIST.get_ptr_mut(bucket) { unsafe { *slot += 1; } }
 ```
 
 That's the entire per-event cost: a subtraction, a `leading_zeros`, and
-one increment — no allocation, no copy to user space. User space reads
+one increment, no allocation, no copy to user space. User space reads
 the 27 bucket counters whenever it likes (every two seconds here). This
 is how the real `runqlat`, `biolatency`, and friends are built.
 
@@ -110,7 +110,7 @@ let _gauge = meter.f64_observable_gauge("runqueue_latency_us")
 
 The observable gauge is the right OTLP instrument here: it's
 **registered once**, and the SDK invokes the callback at each export to
-read the latest snapshot — no per-event recording. Point a Grafana graph
+read the latest snapshot, no per-event recording. Point a Grafana graph
 at `runqueue_latency_us{quantile="p99"}` and you have a live p99
 run-queue-latency line that jumps the moment the box runs out of CPU.
 
@@ -120,7 +120,7 @@ run-queue-latency line that jumps the moment the box runs out of CPU.
 cd examples/21-runqlat && ./demo.sh
 ```
 
-Then make some scheduling pressure on the VM — more busy tasks than CPUs:
+Then make some scheduling pressure on the VM: more busy tasks than CPUs:
 
 ```bash
 ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 $(( $(nproc) * 4 ))); do (yes >/dev/null &); done; sleep 30; pkill yes'
@@ -129,7 +129,7 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 $(( $(nproc) 
 Watch the histogram shift right and p99 climb while the `yes` storm
 runs, then settle when it stops.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_runqueue_latency_us` (a gauge — no `rate()`) — how long tasks wait on the run queue before getting a CPU.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_runqueue_latency_us` (a gauge, no `rate()`): how long tasks wait on the run queue before getting a CPU.
 
 ## Cross-check
 
@@ -147,7 +147,7 @@ match yours.
 - Measure it by stitching `sched_wakeup`/`_new` (stamp) and
   `sched_switch` (record on-CPU, re-stamp preempted).
 - For hot paths, **aggregate a histogram in the kernel** (`Array` +
-  `get_ptr_mut`) instead of emitting per-event — the technique behind
+  `get_ptr_mut`) instead of emitting per-event, the technique behind
   every production `*lat` tool.
 - Export histogram percentiles with an OTLP **observable gauge**.
 

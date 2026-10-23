@@ -8,9 +8,9 @@ duration: 30 minutes
 
 This chapter builds the place your eBPF programs actually run. You
 provision a Fedora 44 guest from a single script, confirm it has the
-kernel BTF and tooling eBPF needs, and rehearse the deploy loop —
-copy a binary in, run it under `sudo`, watch output come back — that
-every later chapter uses. Then you add an optional second guest and
+kernel BTF and tooling eBPF needs, and rehearse the deploy loop:
+copy a binary in, run it under `sudo`, watch output come back. That
+sequence runs in every later chapter. Then you add an optional second guest and
 wire up the network between the two for the chapters that need real
 host-to-host traffic.
 
@@ -22,17 +22,17 @@ All the scripts referenced here ship in the iteration tarball under
   <p>From here on, a prefix on the prompt tells you <em>where</em> to run a
   command, and angle brackets mark a value you substitute:</p>
   <ul>
-    <li><code>[host]$</code> — your laptop / dev machine, where you build.
+    <li><code>[host]$</code>: your laptop / dev machine, where you build.
     (Unprefixed commands and the <code>scripts/lab</code> scripts also run
     here.)</li>
-    <li><code>[vm]$</code> — inside the <code>ebpf-target</code> guest (over
+    <li><code>[vm]$</code>: inside the <code>ebpf-target</code> guest (over
     SSH). This is the single guest used by most chapters.</li>
-    <li><code>[peer]$</code> — inside the second guest,
+    <li><code>[peer]$</code>: inside the second guest,
     <code>ebpf-peer</code> (networking chapters only).</li>
     <li><code>&lt;iface&gt;</code>, <code>&lt;target-ip&gt;</code>,
-    <code>&lt;pid&gt;</code>, … — a placeholder: replace it (brackets and
+    <code>&lt;pid&gt;</code>, … denote a placeholder: replace it (brackets and
     all) with your real value. <code>&lt;iface&gt;</code> is the target's
-    network interface, almost always <code>enp1s0</code> — see
+    network interface, almost always <code>enp1s0</code>; see
     <a href="#finding-the-interface-to-attach-to">Finding the interface</a>
     below.</li>
   </ul>
@@ -42,7 +42,7 @@ All the scripts referenced here ship in the iteration tarball under
   something by hand.</p>
   <p><strong>Credentials:</strong> there is no password to remember. The
   guest user is <code>fedora</code>, login is <em>SSH-key only</em> (the key
-  you create in the next section — the account password is locked), and
+  you create in the next section; the account password is locked), and
   <code>sudo</code> is passwordless, which is why every <code>[vm]$ sudo
   …</code> in these chapters runs without prompting. This is a throwaway lab
   VM reachable only from your host on the libvirt network; if you ever need a
@@ -52,7 +52,7 @@ All the scripts referenced here ship in the iteration tarball under
 {% include excalidraw.html
    file="lab-topology"
    alt="The lab: a Fedora 44 host laptop running the Aya build plus Podman containers (the otel-lgtm stack, Python clients, and Java/Python app targets), a target KVM VM where eBPF loads and attaches, and an optional peer KVM VM for two-host networking tests. The host scp's the built binary to the target and runs it under sudo; the target exports OTLP back to the stack; the target and peer exchange test traffic over the libvirt network."
-   caption="Figure 2.1 — The lab at a glance: what runs where" %}
+   caption="Figure 2.1. The lab at a glance: what runs where" %}
 
 ## One SSH key for the lab
 
@@ -78,7 +78,7 @@ cheap and the base stays pristine), renders a cloud-init seed with
 your hostname and SSH key, and boots the domain with `virt-install
 --import` attached to libvirt's `default` NAT network.
 
-> **One thing to verify before first run** — Fedora rotates the exact
+> **One thing to verify before first run.** Fedora rotates the exact
 > Cloud Base filename each release (the `-1.5` build suffix changes).
 > Open the `BASE_URL` printed by the script in a browser, copy the
 > real `Fedora-Cloud-Base-Generic-44-*.x86_64.qcow2` name, and set it
@@ -87,7 +87,7 @@ your hostname and SSH key, and boots the domain with `virt-install
 
 cloud-init takes about a minute to install packages on first boot.
 The seed (`scripts/lab/cloud-init/user-data.tmpl`) installs everything
-the target needs — all from Fedora repositories — including
+the target needs (all from Fedora repositories), including
 `kernel-devel`, `clang`/`llvm`, `bpftool`, `libbpf-devel`, `bpftrace`,
 `bcc-tools`, and `perf`, and it writes a readiness marker once BTF is
 confirmed.
@@ -95,19 +95,19 @@ confirmed.
 ### What the lab's tooling is for
 
 You won't touch most of these by hand for a while, but it's worth knowing what's
-on the box and why — and which side of the lab each lives on. The **guest VM**
+on the box and why, and which side of the lab each lives on. The **guest VM**
 gets the kernel-side toolchain (installed by cloud-init above); the **laptop**
-gets the Rust build chain (Chapter 4, via `rustup` — *not* `dnf`). All of it
+gets the Rust build chain (Chapter 4, via `rustup`, *not* `dnf`). All of it
 comes from Fedora repositories or `rustup`, never third-party binaries.
 
 | Tool | Package / source | Where | What it's for |
 |---|---|---|---|
-| `bpftool` | `bpftool` | VM | inspect/manage loaded programs, maps, links — the ground-truth cross-check (Ch 5, 65) |
+| `bpftool` | `bpftool` | VM | inspect/manage loaded programs, maps, links; the ground-truth cross-check (Ch 5, 65) |
 | `bpftrace` | `bpftrace` | VM | quick one-liner tracing to confirm an event fires before writing Aya (Ch 5, 64) |
 | `bcc-tools` | `bcc-tools` | VM | the ready-made `*snoop`/`*latency` tracers used as cross-checks (Ch 66) |
-| `libbpf-tools` | `libbpf-tools` | VM | precompiled CO-RE builds of the bcc tools — no runtime clang/headers (Ch 66) |
+| `libbpf-tools` | `libbpf-tools` | VM | precompiled CO-RE builds of the bcc tools; no runtime clang/headers (Ch 66) |
 | `perf` | `perf` | VM | sampling, PMU counters, `perf stat` energy/cycles cross-checks (Ch 23, 61) |
-| `turbostat` | `kernel-tools` | VM | per-package power/frequency/idle stats — the RAPL cross-check (Ch 61) |
+| `turbostat` | `kernel-tools` | VM | per-package power/frequency/idle stats; the RAPL cross-check (Ch 61) |
 | `clang` / `llvm` | `clang`, `llvm` | VM | compile reference `.bpf.c`, generate `vmlinux.h`, run classic bcc (Ch 4, 55–58, 66) |
 | `libbpf-devel` | `libbpf-devel` | VM | `bpf/bpf_helpers.h` etc. to compile the reference `.bpf.c` and gen skeletons (Ch 49, 55, 57) |
 | `dwarves` (`pahole`) | `dwarves` | VM | inspect BTF / struct layout from DWARF (Ch 5, 15) |
@@ -116,7 +116,7 @@ comes from Fedora repositories or `rustup`, never third-party binaries.
 | `openssl` | `openssl` | VM | generate `traceparent` ids; a TLS target for `sslsniff` (Ch 14, 62, 63) |
 | `podman` / `podman-compose` / `crun` | same | VM | run the observed Quarkus/FastAPI targets so the VM kernel sees them (Ch 16, 45–47, 63) |
 | `iproute` (`ss`/`ip`), `tcpdump`, `nmap-ncat`, `socat` | same | VM | traffic generation + inspection for the networking part (Ch 27–36) |
-| `rustup` → Rust 1.96.0, BPF target | `rustup` | laptop | compile your Aya programs (Chapter 4) — never installed via `dnf` |
+| `rustup` → Rust 1.96.0, BPF target | `rustup` | laptop | compile your Aya programs (Chapter 4); never installed via `dnf` |
 | `bpf-linker`, `cargo-generate`, `aya-tool` | `cargo install` | laptop | link BPF objects, scaffold projects, generate `vmlinux` bindings (Ch 4) |
 
 If a later chapter reaches for a tool that isn't here, it says so and how to
@@ -128,7 +128,7 @@ Find the guest's leased IP and connect:
 ./vm-ip.sh ebpf-target && ssh fedora@"$(./vm-ip.sh ebpf-target)"
 ```
 
-If `vm-ip.sh` says "no lease yet", cloud-init is still booting — wait
+If `vm-ip.sh` says "no lease yet", cloud-init is still booting; wait
 twenty seconds and retry.
 
 ## Confirm the guest is eBPF-ready
@@ -145,11 +145,11 @@ inside the guest:
 You want to see `BTF: present`, a `vmlinux` file of a few megabytes,
 and a `bpftool` version string. A stock Fedora 44 cloud kernel ships
 BTF by default, so this should just pass. If `BTF: MISSING` appears,
-you are on an unusual kernel build — note it in the reconciliation
+you are on an unusual kernel build; note it in the reconciliation
 plan and switch to a stock Fedora kernel before continuing.
 
 While you're in the guest, confirm it can load *any* BPF program at
-all — `bpftool` listing programs is a harmless probe:
+all. `bpftool` listing programs is a harmless probe:
 
 ```bash
 [vm]$ sudo bpftool prog list | head
@@ -166,7 +166,7 @@ one command: it resolves the guest IP, `scp`s the binary in, and runs
 it over SSH under `sudo` (eBPF loading needs `CAP_BPF` /
 `CAP_SYS_ADMIN`, and the lab user has passwordless sudo).
 
-You don't have an Aya binary yet — that's Chapter 6 — so rehearse with
+You don't have an Aya binary yet (that's Chapter 6), so rehearse with
 something trivial that proves the path works end to end. Build a
 two-line "binary" on the host and ship it:
 
@@ -180,13 +180,13 @@ cd scripts/lab && ./deploy-to-target.sh ebpf-target /tmp/hello-deploy
 
 You should see `deploy loop OK on ebpf-target, kernel 6.x…` printed
 back from the guest. That is the exact mechanism Chapter 6 will use
-with a real Aya program — only the binary changes.
+with a real Aya program; only the binary changes.
 
 > **Why deploy a binary instead of building on the guest?** Aya
 > produces a single self-contained user-space binary that embeds the
 > eBPF object. You build once on the laptop (fast CPU, RustRover,
 > caches warm) and ship the artifact. The guest never needs the Rust
-> toolchain — only a kernel. This is the same "build once, deploy the
+> toolchain, only a kernel. This is the same "build once, deploy the
 > artifact" story that makes Aya's musl + CO-RE combination so
 > portable, and it's covered properly in Chapter 4.
 
@@ -230,8 +230,8 @@ telemetry path. They're environment, not code, so they're easy to miss:
 
 ## Add the second guest (for two-host chapters)
 
-Several networking chapters — `tcpconnlat`, `tcpstates`, the XDP load
-balancer, TC traffic control — are only interesting with traffic
+Several networking chapters (`tcpconnlat`, `tcpstates`, the XDP load
+balancer, TC traffic control) are only interesting with traffic
 flowing between two real hosts. Provision a peer the same way:
 
 ```bash
@@ -239,7 +239,7 @@ cd scripts/lab && ./provision-vm.sh ebpf-peer
 ```
 
 Because both guests attach to the same libvirt `default` network, they
-are on the same subnet and can already reach each other. Confirm it —
+are on the same subnet and can already reach each other. Confirm it:
 get both IPs on the host, then ping the peer *from* the target:
 
 ```bash
@@ -258,7 +258,7 @@ traffic in Grafana.
 
 ### What the networking part needs
 
-This two-VM lab *is* the setup for the whole Networking part — there's no
+This two-VM lab *is* the setup for the whole Networking part; there's no
 separate networking install step. The chapters lean on it in three ways,
 and each chapter's intro says which it uses:
 
@@ -268,15 +268,15 @@ and each chapter's intro says which it uses:
 | **Interface name** on the target | XDP/TC/socket-filter programs attach to a NIC | http-l7, XDP, TC |
 | **cgroup-v2** at `/sys/fs/cgroup` | `sock_ops` attaches to a cgroup | sockops |
 
-All three come for free with a stock pair of guests: Fedora mounts
+All three come included with a stock pair of guests: Fedora mounts
 unified cgroup-v2 by default, `provision-vm.sh` installs the traffic
 tools (`ncat`, `curl`, `socat`, `tcpdump`, `iproute`), and both guests
 share the `default` NAT subnet. The only step beyond the single-VM setup
-is provisioning the peer — so when a networking chapter says "bring up
+is provisioning the peer, so when a networking chapter says "bring up
 the peer," it means exactly the one command above.
 
 **Resource note:** two guests at the default 2 vCPU / 2 GB each want a
-host with headroom — 8 GB RAM and 4 cores is comfortable. On a tight
+host with headroom: 8 GB RAM and 4 cores is comfortable. On a tight
 laptop, shrink the peer (`VCPUS=1 RAM_MB=1536 ./provision-vm.sh
 ebpf-peer`); the networking demos are not CPU-bound.
 
@@ -307,8 +307,8 @@ baseline until then.
 
 ## Daily lifecycle: snapshot, shut down, restart
 
-Once a guest is provisioned and tooled, you don't rebuild it every day —
-you **snapshot it, shut it down when you're done, and start it back up**.
+Once a guest is provisioned and tooled, you don't rebuild it every day.
+You **snapshot it, shut it down when you're done, and start it back up**.
 Four scripts wrap this so nothing gets left running:
 
 ```bash
@@ -320,18 +320,18 @@ cd scripts/lab
 ./revert-vm.sh ebpf-target          # roll back to "lab-ready" (undo a wedged run)
 ```
 
-- **`snapshot-vm.sh <vm> [name]`** — take a named snapshot (default
+- **`snapshot-vm.sh <vm> [name]`**: take a named snapshot (default
   `lab-ready`) once the guest is fully set up (cloud-init done,
   `libbpf-devel`/`gdbserver`/JDK installed). Reverting to it is seconds,
   versus minutes to re-provision. Re-running replaces the same-named snapshot.
-- **`revert-vm.sh <vm> [name]`** — restore a snapshot. This is your undo for
+- **`revert-vm.sh <vm> [name]`**: restore a snapshot. This is your undo for
   the destructive/offensive security chapters (37–42) and for anything that
   wedges the kernel.
-- **`lab-down.sh`** — ACPI-shutdown `ebpf-target` and `ebpf-peer` so the lab
+- **`lab-down.sh`**: ACPI-shutdown `ebpf-target` and `ebpf-peer` so the lab
   isn't left burning host CPU/RAM. Nothing is deleted; `FORCE=1 ./lab-down.sh`
   hard-powers-off a guest that ignores the shutdown request. It reminds you the
   observability stack is a *separate* container (`podman rm -f ebpf-lgtm`).
-- **`lab-up.sh`** — start whatever is defined-but-stopped and wait for DHCP
+- **`lab-up.sh`**: start whatever is defined-but-stopped and wait for DHCP
   leases; `eval "$(./lab-up.sh --export)"` also exports `TARGET_IP`/`PEER_IP`.
 
 All four force `LIBVIRT_DEFAULT_URI=qemu:///system`; if your shell isn't in the
@@ -339,7 +339,7 @@ All four force `LIBVIRT_DEFAULT_URI=qemu:///system`; if your shell isn't in the
 
 ## Tearing down and rebuilding
 
-When you wedge a guest beyond what a snapshot revert fixes — destroy and
+When you wedge a guest beyond what a snapshot revert fixes, destroy and
 re-provision from scratch:
 
 ```bash
@@ -347,7 +347,7 @@ cd scripts/lab && ./destroy-vm.sh ebpf-target && ./provision-vm.sh ebpf-target
 ```
 
 `destroy-vm.sh` removes the domain *and* its overlay disk and seed, so
-the rebuild is genuinely clean. The cached base image stays, so the
+the rebuild is fully clean. The cached base image stays, so the
 rebuild is fast.
 
 ## What you should have now
@@ -358,4 +358,4 @@ rebuild is fast.
 - [x] (Optional) `ebpf-peer` running and reachable from the target
 - [x] The guest interface name noted for the networking chapters
 
-[Next: Chapter 3 — The observability stack →]({{ "/docs/03-observability-stack/" | relative_url }})
+[Next: Chapter 3: The observability stack →]({{ "/docs/03-observability-stack/" | relative_url }})

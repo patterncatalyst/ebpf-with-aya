@@ -2,14 +2,14 @@
 title: "fentry + unlink"
 order: 8
 part: Tracing the kernel
-description: Revisit the unlink target with fentry/fexit — BTF-trampoline probes that are lower overhead than kprobes, give typed argument access, and let fexit read the function's return value, so we can report whether each unlink actually succeeded.
+description: Revisit the unlink target with fentry/fexit, BTF-trampoline probes that are lower overhead than kprobes, give typed argument access, and let fexit read the function's return value, so we can report whether each unlink actually succeeded.
 duration: 30 minutes
 ---
 
 Chapter 7's kprobe told you an unlink was *attempted* and dredged the
 filename out of a raw pointer. This chapter attaches to the same
-target — `vfs_unlink` (Chapter 7 explains why it isn't `do_unlinkat`
-anymore) — with **fentry** and **fexit**, and gets two
+target, `vfs_unlink` (Chapter 7 explains why it isn't `do_unlinkat`
+anymore), with **fentry** and **fexit**, and gets two
 things the kprobe couldn't: lower overhead with typed arguments, and
 the function's **return value**, so we can report whether each delete
 actually *succeeded*. The program, `fentrysnoop`, is the kprobe chapter
@@ -20,7 +20,7 @@ The code is in `examples/08-fentry-unlink/`. `./demo.sh` there builds, deploys, 
 {% include excalidraw.html
    file="entry-exit"
    alt="Entry/exit correlation: a probe at function entry stashes an argument or timestamp in a HashMap keyed by pid_tgid; a probe at return reads it back to pair the two events."
-   caption="Figure 8.1 — the entry/exit correlation pattern (reused throughout the book)" %}
+   caption="Figure 8.1. The entry/exit correlation pattern (reused throughout the book)" %}
 
 ## What fentry/fexit are
 
@@ -33,10 +33,10 @@ universal but comparatively heavy, and the arguments arrive as raw
 the kernel knows the target function's type signature (from BTF), so it
 can hand your program **typed arguments** directly, with far less
 overhead than a trap. **fexit** runs at function *return* and can read
-the **return value** — which a kprobe entry simply cannot see (you'd
+the **return value**, which a kprobe entry cannot see (you'd
 attach a second `kretprobe` for that). The cost: fentry/fexit require
 the kernel to have BTF (the `/sys/kernel/btf/vmlinux` you confirmed in
-Chapter 2) and a reasonably recent kernel — both true on Fedora 44.
+Chapter 2) and a reasonably recent kernel, both true on Fedora 44.
 
 | | kprobe (Ch 7) | fentry/fexit (Ch 8) |
 |---|---|---|
@@ -50,13 +50,13 @@ Chapter 2) and a reasonably recent kernel — both true on Fedora 44.
 A function's arguments are available at *entry*; its return value at
 *exit*. To report both for the same call, we record the entry data,
 then look it up at exit and attach the return value. The bridge is a
-`HashMap` keyed by `pid_tgid` — the same value `bpf_get_current_pid_tgid()`
+`HashMap` keyed by `pid_tgid`: the same value `bpf_get_current_pid_tgid()`
 returns in both probes for the same call:
 
 {% include excalidraw.html
    file="fentry-fexit-flow"
    alt="Correlating two probes: an fentry program on vfs_unlink captures pid/uid/comm/filename at entry and stores it in an INFLIGHT HashMap keyed by pid_tgid; the paired fexit program looks that entry up at return, attaches the return value, emits the completed UnlinkEvent to a ring buffer, and clears the entry."
-   caption="Figure 8.1 — fentry captures arguments, fexit captures the return; a pid_tgid-keyed map bridges them" %}
+   caption="Figure 8.1. fentry captures arguments, fexit captures the return; a pid_tgid-keyed map bridges them" %}
 
 This correlate-two-probes pattern recurs constantly (it's exactly how
 latency tools like `runqlat` in Chapter 21 pair a start and end
@@ -92,15 +92,15 @@ pub fn vfs_unlink_exit(ctx: FExitContext) -> u32 {
 }
 ```
 
-The one genuinely new idea is `ctx.arg::<i64>(2)`. In an fexit program,
-the return value is exposed *after* the function's arguments —
+The one new idea here is `ctx.arg::<i64>(2)`. In an fexit program,
+the return value is exposed *after* the function's arguments:
 `vfs_unlink` takes four, so index `4` is the return. A `0` means the
 unlink succeeded; a negative value is a `-errno` (e.g. `-2` is
 `ENOENT`, "no such file"). This is the bit most likely to need a tweak
 on your kernel/aya version, so it's flagged in the reconciliation plan.
 
-The filename read is the same technique as Chapter 7 — reading
-`dentry->d_name.name` at a fixed offset — and carries the same version caveat. fentry gives you *typed
+The filename read is the same technique as Chapter 7: reading
+`dentry->d_name.name` at a fixed offset, and it carries the same version caveat. fentry gives you *typed
 arguments*, which makes the pointer's type trustworthy, but following a
 nested pointer to a string still goes through `bpf_probe_read_kernel`.
 The fully robust version uses BTF-generated kernel types (via
@@ -127,7 +127,7 @@ exit.attach()?;
 ```
 
 `Btf::from_sys_fs()` is why Chapter 2 made you confirm
-`/sys/kernel/btf/vmlinux` exists — without it, fentry/fexit can't
+`/sys/kernel/btf/vmlinux` exists; without it, fentry/fexit can't
 load. Draining the ring buffer is identical to Chapter 7; the only
 addition is a `result="ok"|"fail"` label on the exported counter so you
 can chart success versus failure:
@@ -152,10 +152,10 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 10); do t=$(m
 
 The table shows a `RET` column; the successful `mktemp`/`rm` pairs
 report `0`, the bogus removal reports a negative errno. In Grafana, the
-`result` label splits `ebpf_events_total` into ok versus fail — a
+`result` label splits `ebpf_events_total` into ok versus fail, a
 distinction the Chapter 7 kprobe couldn't make.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-fentrysnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — delete attempts seen via fentry as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-fentrysnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: delete attempts seen via fentry as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check against the kernel
 
@@ -173,7 +173,7 @@ return-value read and your entry/exit correlation are correct.
 - fentry/fexit are BTF-trampoline probes: lighter than kprobes, typed
   arguments, and fexit can read return values.
 - A `HashMap` keyed by `pid_tgid` bridges an entry probe to an exit
-  probe — the foundation of every latency-measuring tool to come.
+  probe: the foundation of every latency-measuring tool to come.
 - The same program now reports *outcomes*, not just attempts.
 
 Next we move from unlink to the file-open path with **`opensnoop`**,

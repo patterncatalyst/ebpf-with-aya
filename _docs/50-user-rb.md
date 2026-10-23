@@ -7,33 +7,33 @@ duration: 40 minutes
 ---
 
 Ring buffers have appeared all through this book as the kernel's way to stream
-events *up* to user space — opensnoop, the L7 probes, the capstone all use one
+events *up* to user space: opensnoop, the L7 probes, the final project all use one
 in that direction. The **user ring buffer** (`BPF_MAP_TYPE_USER_RINGBUF`,
 kernel 6.1) is the mirror image: **user space is the producer, and a BPF
 program is the consumer.** It's the clean way to feed a *stream* of data into a
-running program — and a good lens on a couple of newer primitives, the
+running program, and a good lens on a couple of newer primitives, the
 `drain`-with-callback pattern and the **dynptr** each sample arrives as.
 
-This is a genuine frontier chapter. Aya recognizes the map type, but the
-ergonomic pieces — a user-space producer and the kernel-side drain helper —
+This is a frontier chapter. Aya recognizes the map type, but the
+ergonomic pieces (a user-space producer and the kernel-side drain helper)
 are still emerging, and the sample callback uses **dynptr**, which this part
 covers in its own chapter later. So the canonical C is in
 `examples/50-user-rb/reference/`, with an Aya-flavored sketch alongside it; the
-`README.md` is candid about what runs today.
+`README.md` states exactly what runs today.
 
 {% include excalidraw.html
    file="user-ringbuf"
    alt="User space is the producer: it reserves and submits samples into a user ring buffer (BPF_MAP_TYPE_USER_RINGBUF), the channel running user-to-BPF. A BPF program is the consumer: whenever it runs, it calls bpf_user_ringbuf_drain with a callback, which receives each pending sample and updates an aggregate map (count and sum). The program drains pending samples whenever it runs, and each sample arrives as a dynptr, covered in the dynptr chapter later in this part."
-   caption="Figure 50.1 — The ring buffer that runs backwards: user space produces, BPF consumes" %}
+   caption="Figure 50.1: The ring buffer that runs backwards: user space produces, BPF consumes" %}
 
 ## Why not just write a map?
 
 The fair question: user space can already write a regular BPF map that a
 program reads, so why a whole new map type? Because that pattern fits a few
 *values*, not a *stream*. If user space needs to hand the program an ordered
-sequence of variable-length messages — work items, a batch of records,
-commands — a shared map turns into a hand-rolled queue with its own locking and
-overrun problems. The user ring buffer gives you that queue for free, with the
+sequence of variable-length messages (work items, a batch of records,
+commands), a shared map turns into a hand-rolled queue with its own locking and
+overrun problems. The user ring buffer gives you that queue already built, with the
 same reserve/submit discipline as the kernel-to-user ring buffer, and lets the
 program consume a whole batch **atomically in its own context** via one drain
 call. Rule of thumb: a setting → write a map; a stream → user ring buffer.
@@ -42,7 +42,7 @@ call. Rule of thumb: a setting → write a map; a stream → user ring buffer.
 
 Two halves, mirror images of the ordinary ring buffer:
 
-- **User space (producer)** reserves space, writes a sample, and submits it —
+- **User space (producer)** reserves space, writes a sample, and submits it:
   `user_ring_buffer__reserve` / `__submit` in libbpf terms. Submitting makes
   the sample visible to the kernel consumer.
 - **BPF (consumer)** calls **`bpf_user_ringbuf_drain(&map, callback, ctx,
@@ -73,20 +73,20 @@ int drain_it(void *ctx) {
 
 Reading it:
 
-- The program is attached to **some event** — here `getpid`, so the loader can
+- The program is attached to **some event**: here `getpid`, so the loader can
   trigger draining on demand by calling `getpid()`. In production you'd drain
   on whatever event is relevant; the key idea is that **draining happens when
   the program runs**, not on a timer of its own.
 - **`bpf_user_ringbuf_drain`** consumes everything pending in one call,
   invoking `on_sample` per sample. Returning `0` keeps going; returning `1`
   stops early (useful for backpressure).
-- Each sample is a **`bpf_dynptr`** — you don't get a raw pointer, you get a
+- Each sample is a **`bpf_dynptr`**: you don't get a raw pointer, you get a
   handle the verifier can bounds-check, and `bpf_dynptr_data` hands you a
   typed, length-checked view. That indirection is what makes variable-length
   user input safe to touch in the kernel.
 
-The Aya rendering follows the same shape — a `UserRingBuf` map, a `drain` call,
-a callback — but treat it as a sketch: the producer and drain wrappers are
+The Aya rendering follows the same shape (a `UserRingBuf` map, a `drain` call,
+a callback) but treat it as a sketch: the producer and drain wrappers are
 still settling, and the dynptr accessor is the subject of a later chapter.
 
 ## Build, deploy, observe
@@ -100,7 +100,7 @@ triggers the program to drain them (by calling `getpid` in a loop), and reads
 back the aggregate the callback built. **In the terminal** you'll see the count
 and sum climb as samples are consumed. **In Grafana** (`127.0.0.1:3000` →
 Explore), graph `rate(ebpf_userrb_messages_total[1m])` to watch the consume
-rate — user-space-produced data, counted by a kernel program.
+rate: user-space-produced data, counted by a kernel program.
 
 ## Cross-check
 
@@ -119,11 +119,11 @@ user-space sample reached the kernel consumer.
   BPF program consumes**, draining submitted samples with
   `bpf_user_ringbuf_drain` and a per-sample callback.
 - Reach for it over a plain map when you're feeding a **stream** of
-  variable-length messages, not a few settings — you get an ordered queue and
-  atomic batch consumption for free.
-- Each sample arrives as a **`bpf_dynptr`**, a bounds-checked handle — the safe
+  variable-length messages, not a few settings: you get an ordered queue and
+  atomic batch consumption built in.
+- Each sample arrives as a **`bpf_dynptr`**, a bounds-checked handle: the safe
   way to touch variable-length user input, and a primitive this part returns
   to.
 
-Next, Chapter 51 looks at running eBPF logic in **user space** — turning the
+Next, Chapter 51 looks at running eBPF logic in **user space**: turning the
 model inside out once more.

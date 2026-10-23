@@ -2,15 +2,15 @@
 title: "kprobe + unlink"
 order: 7
 part: Tracing the kernel
-description: Your first kprobe — attach to the kernel function behind file deletion, read the calling process's identity, attempt to read the filename argument, and stream per-event records to user space via a ring buffer.
+description: "Your first kprobe: attach to the kernel function behind file deletion, read the calling process's identity, attempt to read the filename argument, and stream per-event records to user space via a ring buffer."
 duration: 30 minutes
 ---
 
 Chapter 6's tracepoint fired on a *stable* kernel trace event. A
 **kprobe** is more powerful and more dangerous: it attaches to (almost)
 any kernel function by name, at its entry, giving you the function's
-arguments. This chapter builds `unlinksnoop` — a kprobe on
-`vfs_unlink()`, the VFS-layer function behind `unlink()`/`unlinkat()` — that
+arguments. This chapter builds `unlinksnoop`, a kprobe on
+`vfs_unlink()`, the VFS-layer function behind `unlink()`/`unlinkat()`, that
 reports who deleted what. Along the way you meet ring buffers (the
 modern way to stream events to user space) and the reality that reading
 kernel struct fields is where eBPF gets version-sensitive.
@@ -20,29 +20,29 @@ The code is in `examples/07-kprobe-unlink/`. `./demo.sh` there builds, deploys, 
 ## kprobe vs tracepoint
 
 A **tracepoint** is a stable instrumentation point the kernel
-developers placed and promised not to break — it has a documented
+developers placed and promised not to break; it has a documented
 argument format. A **kprobe** attaches to an arbitrary kernel function;
 it's enormously flexible (any function, no waiting for someone to add a
 tracepoint) but the function's name, signature, and the layout of the
 structs it's passed are **implementation details that change between
-kernel versions**. That trade-off — flexibility for stability — is the
+kernel versions**. That trade-off, flexibility for stability, is the
 whole story of this chapter, and the reason Chapter 8 revisits the same
 target with `fentry`, which gets the best of both.
 
 We probe `vfs_unlink(struct mnt_idmap *, struct inode *dir, struct
 dentry *dentry, …)`. It's a good first kprobe: it fires whenever anything
 deletes a file, the calling process context is easy to read, and its
-`dentry` argument is a pointer we can *try* to follow to the filename — a
+`dentry` argument is a pointer we can *try* to follow to the filename, a
 concrete lesson in reading kernel memory.
 
 > This chapter first targeted `do_unlinkat()`, but newer kernels **inlined
-> that helper away** — it's gone from `kallsyms` and BTF, so the kprobe can
+> that helper away**: it's gone from `kallsyms` and BTF, so the kprobe can
 > no longer attach to it. That's a live demonstration of the very fragility
 > described above, and exactly why we moved to `vfs_unlink`, the stable
 > VFS-layer function the standard tools (bcc, bpftrace) hook. The trade-off
 > for that stability: `vfs_unlink` hands you a `dentry`, not a `struct
 > filename *`, so the name now comes from `dentry->d_name.name` (a
-> version-specific struct offset — see the code).
+> version-specific struct offset; see the code).
 
 ## The kernel side
 
@@ -72,7 +72,7 @@ let uid = (bpf_get_current_uid_gid() & 0xffff_ffff) as u32;
 ```
 
 `pid_tgid` packs the thread ID in the low bits and the process ID
-(`tgid`) in the high bits — we shift to get the PID a human cares about.
+(`tgid`) in the high bits; we shift to get the PID a human cares about.
 `comm` is the 16-byte process name. If you only ever read these, your
 kprobe is as portable as a tracepoint.
 
@@ -94,14 +94,14 @@ if let Some(dentry) = ctx.arg::<*const u8>(2) {
 ```
 
 Two things deserve emphasis. First, you **cannot** dereference a kernel
-pointer directly — the verifier forbids it. You must copy through
+pointer directly: the verifier forbids it. You must copy through
 `bpf_probe_read_kernel`, which safely reads kernel memory into your
 stack/map. Second, we read the name pointer at a **fixed offset** into
 `struct dentry` (`d_name.name`); those offsets hold on this kernel but are
-exactly the kind of assumption a future kernel can invalidate — indeed the
+exactly the kind of assumption a future kernel can invalidate; indeed the
 helper this chapter first targeted, `do_unlinkat`, was removed outright,
 which is why we now hook `vfs_unlink`. If the read fails, we leave
-the filename empty and still emit the event — **degrade, don't crash**.
+the filename empty and still emit the event: **degrade, don't crash**.
 The robust answer to this fragility is CO-RE (BTF-relocated field
 access), which `fentry` (Chapter 8) and the CO-RE deep-dive
 (Part 9) build out properly. For a first kprobe, the explicit
@@ -111,7 +111,7 @@ access), which `fentry` (Chapter 8) and the CO-RE deep-dive
 
 Chapter 6 used a counter (a single number). Here each unlink is a
 distinct *event* with fields, so we stream records through a
-**`RingBuf`** — a shared, kernel-to-user circular buffer that's the
+**`RingBuf`**: a shared, kernel-to-user circular buffer that's the
 modern replacement for `PerfEventArray`. The kernel `reserve`s a slot,
 writes into it, and `submit`s; user space drains completed records.
 It's lossy under extreme pressure (the kernel drops rather than blocks)
@@ -128,7 +128,7 @@ program.load()?;
 program.attach("vfs_unlink", 0)?;     // 0 = entry offset
 ```
 
-Note the symmetry with Chapter 6 — same load/attach arc, just a
+Note the symmetry with Chapter 6: same load/attach arc, just a
 `KProbe` and a function name instead of a `TracePoint` and an event
 name. Draining uses a simple tokio timer that pulls all available
 records each tick:
@@ -152,7 +152,7 @@ rate demands it.
 
 The shared `UnlinkEvent` is `#[repr(C)]` in `unlinksnoop-common` so the
 bytes the kernel writes line up exactly with what user space reads.
-This is the contract from Chapter 5 made concrete — a wrong field order
+This is the contract from Chapter 5 made concrete: a wrong field order
 here reads as garbage, not an error.
 
 ## Build, deploy, observe
@@ -171,7 +171,7 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 20); do t=$(m
 A `PID UID COMM FILE` table fills in, and `ebpf_events_total` climbs on
 the Grafana overview dashboard with the `unlinksnoop` label.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-unlinksnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — unlink/delete attempts as they happen as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-unlinksnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: unlink/delete attempts as they happen as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check against the kernel
 
@@ -185,7 +185,7 @@ On the target VM, confirm independently:
 process. If its counts track the table `unlinksnoop` prints, both your
 attach point and your event plumbing are correct. If `bpftrace` sees
 unlinks but `unlinksnoop` shows empty filenames, you've isolated the
-bug to the argument-reading section — exactly the version-sensitive
+bug to the argument-reading section, exactly the version-sensitive
 part flagged above.
 
 ## What you learned
@@ -193,10 +193,10 @@ part flagged above.
 - A kprobe attaches to a kernel function by name; the cost is
   sensitivity to kernel internals.
 - Process context (`pid`/`uid`/`comm`) is portable; reading struct
-  fields off arguments is not — copy via `bpf_probe_read_kernel`, and
+  fields off arguments is not: copy via `bpf_probe_read_kernel`, and
   degrade gracefully.
 - Ring buffers stream per-event records; user space drains them.
 
-Next, the same `unlink` target with **`fentry`** — lower overhead than
+Next, the same `unlink` target with **`fentry`**: lower overhead than
 a kprobe, with typed, BTF-relocated argument access that fixes the
 fragility you just met.

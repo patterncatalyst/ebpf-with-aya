@@ -10,8 +10,8 @@ Every networking program so far has *watched*: Chapter 27 timed connects,
 28 tracked state changes, 29 read request lines, 30 noted established
 sockets. None of them changed what the kernel did with a packet. This
 chapter crosses that line. A `tc` classifier sits on the packet path and
-returns a **verdict** — pass it, drop it, or send it somewhere else — so
-for the first time your eBPF program is part of the data path, not a tap
+returns a **verdict**: pass it, drop it, or send it somewhere else. For
+the first time your eBPF program is part of the data path, not a tap
 beside it.
 
 The code is in `examples/31-tc-classify/`. `./demo.sh` there builds,
@@ -21,28 +21,28 @@ drive it.
 {% include excalidraw.html
    file="tc-clsact"
    alt="The clsact qdisc on an interface carries a tc ingress hook and a tc egress hook. Packets received from the wire pass through the ingress classifier on the way up to the network stack; packets sent by the stack pass through the egress classifier on the way down to the wire. Each #[classifier] program operates on the sk_buff and returns a verdict: TC_ACT_OK to pass, TC_ACT_SHOT to drop, or TC_ACT_REDIRECT to send to another interface."
-   caption="Figure 31.1 — tc runs on the sk_buff, in both directions, and returns a verdict" %}
+   caption="Figure 31.1: tc runs on the sk_buff, in both directions, and returns a verdict" %}
 
 ## The shift: from observing to acting
 
 `tc` (traffic control) BPF programs attach to the **clsact qdisc**, a
 queueing discipline that exists only to host eBPF classifiers. It gives
-you two hooks per interface — **ingress** and **egress** — so unlike XDP
+you two hooks per interface, **ingress** and **egress**, so unlike XDP
 (next chapter, ingress-only) you can act on outbound traffic too.
 
 A classifier runs on the **`sk_buff`**: the packet *plus* the metadata the
 kernel has already attached (the interface, the protocol, checksums). That
-makes it a gentle first step into the data path — you have structured
-access to the packet, not just raw bytes — and the program's **return
+makes it a gentle first step into the data path: you have structured
+access to the packet, not just raw bytes, and the program's **return
 value is a verdict** the kernel obeys:
 
-- `TC_ACT_OK` — let the packet continue.
-- `TC_ACT_SHOT` — drop it.
-- `TC_ACT_REDIRECT` — send it out a different interface (the basis of the
+- `TC_ACT_OK`: let the packet continue.
+- `TC_ACT_SHOT`: drop it.
+- `TC_ACT_REDIRECT`: send it out a different interface (the basis of the
   load balancers and bridges built on tc).
 
-Our program counts every egress packet by protocol, and — to show the
-verdict is real — drops anything headed for a demo port.
+Our program counts every egress packet by protocol and, to show the
+verdict is real, drops anything headed for a demo port.
 
 ## How the code works
 
@@ -52,7 +52,7 @@ The networking observers used a `RingBuf` to ship one record per event.
 On a data path that would be a catastrophe: egress fires for *every packet*,
 and a ring would fill and drop almost immediately while drowning user space
 in wakeups. So tc and XDP programs follow the **Performance-part** lesson
-instead — aggregate in the kernel, read totals on a timer:
+instead: aggregate in the kernel, read totals on a timer:
 
 ```rust
 #[map] static PKTS:  HashMap<u32, u64> = HashMap::with_max_entries(16, 0);
@@ -98,16 +98,16 @@ fn try_classify(ctx: &TcContext) -> Result<i32, ()> {
 Walking it the way you would write it:
 
 - **`ctx.load::<T>(offset)`** copies `T` out of the `sk_buff` at a byte
-  offset, bounds-checked by the kernel — the tc analogue of the
+  offset, bounds-checked by the kernel: the tc analogue of the
   socket-filter `load` from Chapter 29. We pull the Ethernet header at 0,
   bail to `TC_ACT_OK` for anything that isn't IPv4 (don't disturb ARP,
   IPv6, …), then pull the IPv4 header at `EthHdr::LEN`. The `EthHdr` /
   `Ipv4Hdr` / `TcpHdr` types come from the `network-types` crate, so the
   offsets and field names are named rather than magic numbers.
-- **`ctx.len()`** is the `sk_buff` length — the per-packet byte count we
-  add to `BYTES`, giving a throughput signal for free.
+- **`ctx.len()`** is the `sk_buff` length: the per-packet byte count we
+  add to `BYTES`, which doubles as a throughput signal.
 - The **verdict** is the whole point. We read the L4 destination port
-  (TCP or UDP), and if it matches `BLOCK_PORT` we return `TC_ACT_SHOT` —
+  (TCP or UDP), and if it matches `BLOCK_PORT` we return `TC_ACT_SHOT`:
   the kernel discards the packet and it never reaches the wire. Every
   other packet returns `TC_ACT_OK` and continues untouched.
 - **`unwrap_or(TC_ACT_OK)`** at the top is a safety policy: if a packet is
@@ -139,8 +139,8 @@ prog.attach(&iface, TcAttachType::Egress)?;
 
 Two things are new versus the socket-layer chapters. First, tc needs a
 host qdisc to attach to, so we ask Aya to add **clsact** to the interface
-(idempotent — if it's already there the error is harmless). Second,
-`attach` takes a **`TcAttachType`** — `Egress` here; `Ingress` would watch
+(idempotent: if it's already there the error is harmless). Second,
+`attach` takes a **`TcAttachType`**: `Egress` here; `Ingress` would watch
 inbound. Everything else is the familiar cast → `load` (verifier) →
 `attach` (target) sequence.
 
@@ -181,14 +181,14 @@ classifier there, then drives traffic from the target to the peer: ordinary
 requests to a normal port (passed and counted) and a burst aimed at the
 demo port (dropped). In Grafana you'll see `ebpf_tc_packets_total` rising
 across protocols and `ebpf_tc_dropped_total` ticking up for the blocked
-port — and on the target, the connections to that port simply time out,
+port. On the target, the connections to that port simply time out,
 because their packets never leave the box.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_tc_packets_total[1m])` — packets at the TC hook (with `ebpf_tc_bytes_total` and `ebpf_tc_dropped_total` for bytes and drops).
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_tc_packets_total[1m])`: packets at the TC hook (with `ebpf_tc_bytes_total` and `ebpf_tc_dropped_total` for bytes and drops).
 
 ## Cross-check
 
-These run **inside the target guest** — the `[vm]$` prefix (get a shell with
+These run **inside the target guest**: the `[vm]$` prefix (get a shell with
 `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`). First find the interface
 the program attached to; on the lab guest it's almost always `enp1s0`:
 
@@ -217,12 +217,12 @@ track your `ebpf_tc_dropped_total` in Grafana.
 ## What you learned
 
 - `tc`/clsact programs run on the **`sk_buff`** in **both directions** and
-  return a **verdict** (`TC_ACT_OK` / `TC_ACT_SHOT` / `TC_ACT_REDIRECT`) —
+  return a **verdict** (`TC_ACT_OK` / `TC_ACT_SHOT` / `TC_ACT_REDIRECT`);
   your code is now in the data path, not beside it.
 - The `#[classifier]` program type, `TcContext::load`/`len`, and attaching
   with `tc::qdisc_add_clsact` + `SchedClassifier` + `TcAttachType`.
 - Why data-path programs **aggregate in-kernel** and report on a timer
   instead of emitting per-packet, and how to read those maps as deltas.
 
-Next, Chapter 32 drops to the earliest hook of all — **XDP**, in the
+Next, Chapter 32 drops to the earliest hook of all, **XDP**, in the
 driver, before the `sk_buff` even exists.

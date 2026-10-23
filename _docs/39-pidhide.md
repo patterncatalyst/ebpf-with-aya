@@ -2,18 +2,18 @@
 title: "Hiding a process (lab-only offense)"
 order: 39
 part: Security & LSM
-description: "Understand rootkit-style eBPF by building one in the lab: rewrite the getdents64 buffer with bpf_probe_write_user so a chosen PID vanishes from /proc — invisible to ps and ls — then learn exactly how a defender detects the tampering."
+description: "Understand rootkit-style eBPF by building one in the lab: rewrite the getdents64 buffer with bpf_probe_write_user so a chosen PID vanishes from /proc, invisible to ps and ls, then learn exactly how a defender detects the tampering."
 duration: 50 minutes
 ---
 
 To defend against eBPF abuse you have to understand it, so this chapter
 builds a small piece of offense in the lab: a program that **hides a
-process**. The technique is the well-known eBPF "pidhide" — intercept the
+process**. The technique is the well-known eBPF "pidhide": intercept the
 `getdents64` syscall that lists a directory and edit its result buffer so a
 chosen `/proc/<pid>` entry disappears. The process keeps running; it's just
 erased from what `ps`, `top`, and `ls /proc` are allowed to see. Then we do
 the more important half: **how you detect it**. This is lab-only by
-construction — it uses a kernel-tainting helper and would make a real system
+construction: it uses a kernel-tainting helper and would make a real system
 untrustworthy.
 
 The code is in `examples/39-pidhide/`. `./demo.sh` there builds, deploys,
@@ -21,14 +21,14 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="pidhide"
-   alt="getdents64 in the kernel writes directory entries into a user buffer. An eBPF exit hook uses bpf_probe_write_user to splice out the target /proc/PID entry before ps or ls /proc reads it, so the entry is gone from userspace's view. The process still exists — it is edited out of what userspace is allowed to see. Defense: bpf_probe_write_user taints the kernel, and you can compare /proc against the real task list."
-   caption="Figure 39.1 — The process still exists; it is edited out of what userspace can see" %}
+   alt="getdents64 in the kernel writes directory entries into a user buffer. An eBPF exit hook uses bpf_probe_write_user to splice out the target /proc/PID entry before ps or ls /proc reads it, so the entry is gone from userspace's view. The process still exists; it is edited out of what userspace is allowed to see. Defense: bpf_probe_write_user taints the kernel, and you can compare /proc against the real task list."
+   caption="Figure 39.1: The process still exists; it is edited out of what userspace can see" %}
 
-## How process listing works — and how to break it
+## How process listing works (and how to break it)
 
 `ps` and `ls /proc` don't have a magic "list processes" call. They open
 `/proc` and call **`getdents64`**, which fills a user buffer with a packed
-array of `linux_dirent64` records — one per entry, each carrying its length
+array of `linux_dirent64` records: one per entry, each carrying its length
 (`d_reclen`) and name (`d_name`). To walk the array you start at the buffer,
 read `d_reclen`, jump that many bytes, and repeat until you've consumed the
 returned byte count.
@@ -37,7 +37,7 @@ That self-describing chain is the weakness. If you can edit the buffer after
 the kernel fills it but before userspace reads it, you can make an entry
 vanish by **extending the previous entry's `d_reclen` to swallow it**: the
 walker jumps straight over the hidden record and never sees it. eBPF can do
-exactly that — read the syscall's return buffer and write to it with
+exactly that: read the syscall's return buffer and write to it with
 `bpf_probe_write_user`.
 
 ## How the code works
@@ -60,8 +60,8 @@ pub fn enter_getdents(ctx: TracePointContext) -> u32 {
 }
 ```
 
-We stash the user buffer address keyed by `pid_tgid`, so the exit handler —
-which only sees the return value — knows where the records are.
+We stash the user buffer address keyed by `pid_tgid`, so the exit handler
+(which only sees the return value) knows where the records are.
 
 ### Splicing out the target (exit)
 
@@ -99,29 +99,29 @@ fn on_exit(ctx: &TracePointContext) -> Result<(), ()> {
 }
 ```
 
-The load-bearing parts:
+The pieces that matter:
 
 - A `linux_dirent64` record puts **`d_reclen` at offset 16** and the name at
   **offset 19**. We read both from the *user* buffer with
   `bpf_probe_read_user` (it's userspace memory, so the user reader), walking
   `bpos` forward by each `d_reclen`.
 - The **bounded loop** (`for _ in 0..512`) is mandatory: the verifier rejects
-  an unbounded walk. The bound has to cover a *whole* `/proc` in one pass — a
+  an unbounded walk. The bound has to cover a *whole* `/proc` in one pass: a
   live host has 200+ entries and `ls` pulls them all in a **single**
   `getdents64` (the buffer is filled completely), so there is no "next call" to
   catch an overflow. An entry past the bound stays in the same returned buffer
   and would leak, unhidden. (An early draft capped this at 64 and silently
-  failed to hide anything on a real system — the cap must be a realistic
+  failed to hide anything on a real system: the cap must be a realistic
   upper bound on entries-per-call, not a small constant.)
 - When `d_name` matches the target PID string, we **rewrite the *previous*
   entry's `d_reclen`** to `prev_reclen + reclen` with `bpf_probe_write_user`.
   Now the walker skips the target. (If the target is the very first entry
-  there's no previous to extend — a known edge case left unhandled here, and
+  there's no previous to extend; a known edge case left unhandled here, and
   noted because real implementations special-case it.)
 - **`bpf_probe_write_user` is the dangerous helper.** It writes into another
   process's memory from the kernel. Older material says it also taints the
   kernel the first time it's used; on the lab kernel (7.1.3) it does not (see
-  the detection section) — so the reliable tell is enumerating loaded
+  the detection section), so the reliable tell is enumerating loaded
   programs, not a passive flag.
 
 The loader writes the PID-to-hide as a null-padded string into `TARGET` and
@@ -145,7 +145,7 @@ The whole reason to build this is to recognize it. Two reliable signals, plus
 a caveat about one that's often overstated:
 
 1. **A BPF program is loaded that shouldn't be.** `sudo bpftool prog show`
-   lists tracepoint programs on `getdents64` — there's no legitimate reason
+   lists tracepoint programs on `getdents64`. There's no legitimate reason
    for one, and `bpftool` (and your own monitoring) can enumerate every
    loaded program and its attach point. This is the most reliable tell.
 2. **The data disagrees with itself.** The process exists by every channel
@@ -156,7 +156,7 @@ a caveat about one that's often overstated:
    actually contains" catches the discrepancy immediately.
 3. **Don't count on a kernel taint.** Older write-ups say
    `bpf_probe_write_user` trips `TAINT_USER` and makes `dmesg` warn. On the lab
-   kernel (7.1.3) it does **neither** — verified while this program was
+   kernel (7.1.3) it does **neither**, verified while this program was
    actively rewriting `getdents64` buffers: `/proc/sys/kernel/tainted` stayed
    `0` and `journalctl -k` for the whole boot logged no "corrupt user memory"
    notice. Treat the loaded-program enumeration above as your real detection,
@@ -166,19 +166,19 @@ The lesson cuts both ways: eBPF can hide things from userspace tools, and
 eBPF (plus the kernel's own bookkeeping) is also the most reliable way to
 catch that it happened.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_proc_hidden_total[1m])` — getdents entries rewritten to hide the PID.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_proc_hidden_total[1m])`: getdents entries rewritten to hide the PID.
 
 ## What you learned
 
 - **`getdents64` buffer rewriting** is how eBPF "rootkits" hide files and
   processes: splice an entry out by extending the previous record's
   `d_reclen` with `bpf_probe_write_user`.
-- That helper is **lab-only** — writing another process's memory from the
+- That helper is **lab-only**: writing another process's memory from the
   kernel is exactly what a defender watches for.
 - **Detection**: enumerating loaded BPF programs and cross-checking userspace
-  listings against the kernel's real task list. (Not the kernel taint flag —
+  listings against the kernel's real task list. (Not the kernel taint flag:
   it doesn't flip on current kernels.)
-- The scan bound must cover a **whole** `/proc` in one `getdents64` — a
+- The scan bound must cover a **whole** `/proc` in one `getdents64`; a
   too-small cap silently hides nothing.
 
 Next, Chapter 40 turns to defense proper: using an LSM hook to **protect a

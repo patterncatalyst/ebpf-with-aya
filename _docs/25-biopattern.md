@@ -2,7 +2,7 @@
 title: "biopattern"
 order: 25
 part: Performance & resources
-description: "Classify block-device I/O as sequential or random per device by tracking each device's sector position across the block_rq_issue tracepoint — the access pattern that determines whether storage thrives or thrashes."
+description: "Classify block-device I/O as sequential or random per device by tracking each device's sector position across the block_rq_issue tracepoint: the access pattern that determines whether storage thrives or thrashes."
 duration: 25 minutes
 ---
 
@@ -18,14 +18,14 @@ The code is in `examples/25-biopattern/`. `./demo.sh` there builds, deploys, and
 {% include excalidraw.html
    file="bio-seq-random"
    alt="Sequential vs random I/O: on each block_rq_issue, if the request's starting sector equals the previous request's end sector it is sequential, otherwise random, tallied per device in a kernel HashMap."
-   caption="Figure 25.1 — classifying block I/O as sequential or random" %}
+   caption="Figure 25.1. Classifying block I/O as sequential or random" %}
 
 ## Sequential vs. random, defined by sectors
 
 A block request targets a starting **sector** and spans `nr_sector`
 sectors. The pattern is just geometry: if a request begins exactly where
 the previous one on the same device **ended**, the head/controller
-didn't have to seek — that's **sequential**. If it starts somewhere
+didn't have to seek, that's **sequential**. If it starts somewhere
 else, that's **random**. So all we need is, per device, the end sector
 of the last request:
 
@@ -55,7 +55,7 @@ Fedora 44 kernel.
 
 Two maps keyed by device id (`dev_t`): `LAST_END[dev]` holds the previous
 request's end sector, and `STATS[dev]` accumulates `{ sequential, random,
-bytes }`. Each issue updates both — entirely in-kernel, no per-I/O events
+bytes }`. Each issue updates both, entirely in-kernel, with no per-I/O events
 (block I/O is high-frequency, so this is the same aggregate-in-kernel
 discipline as `runqlat` and `hardirqs`):
 
@@ -71,11 +71,11 @@ keeps each disk's classification accurate.
 
 ## Naming devices
 
-The `dev` field is a `dev_t` — a packed major/minor number. We decode it
+The `dev` field is a `dev_t`: a packed major/minor number. We decode it
 to `major:minor` for display; map that to a disk name with `lsblk` or
 `/proc/partitions` on the VM (e.g. `253:0` → `vda`). User space prints a
 live per-device table and exports `bio_sequential_ratio{dev}` as an OTLP
-observable gauge — a Grafana line per disk that drops when a workload
+observable gauge: a Grafana line per disk that drops when a workload
 turns seeky.
 
 ## Build, deploy, observe
@@ -94,9 +94,9 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'fio --name=rand --filename=/tm
 ```
 
 Watch SEQ% sit high during the `dd`, then collapse during the random
-`fio` run — the pattern made visible.
+`fio` run: the pattern made visible.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_bio_sequential_ratio` (a gauge — no `rate()`) — the sequential-vs-random ratio of block I/O (0–1).
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `ebpf_bio_sequential_ratio` (a gauge, no `rate()`): the sequential-vs-random ratio of block I/O (0–1).
 
 ## Cross-check
 
@@ -108,10 +108,10 @@ Watch SEQ% sit high during the `dd`, then collapse during the random
 ## What you learned
 
 - **Sequential vs. random** is defined by whether a request starts where
-  the last one ended — pure sector arithmetic.
+  the last one ended, pure sector arithmetic.
 - Trace it at **`block:block_rq_issue`**, reading `dev`/`sector`/`nr_sector`.
 - Keep **per-device state** (`LAST_END`, `STATS`) in kernel and
-  aggregate — don't emit per-I/O.
+  aggregate; don't emit per-I/O.
 - Decode `dev_t` to `major:minor` and map to disks with `lsblk`.
 
 That's the heart of *Performance & resources*' tooling. Next, the part

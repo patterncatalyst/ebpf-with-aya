@@ -2,13 +2,13 @@
 title: "opensnoop"
 order: 9
 part: Tracing the kernel
-description: Trace every file open with stable syscall tracepoints — read tracepoint arguments by offset, learn the user-vs-kernel memory-read distinction, and pair entry and exit to report which process opened which file with what result.
+description: "Trace every file open with stable syscall tracepoints: read tracepoint arguments by offset, learn the user-vs-kernel memory-read distinction, and pair entry and exit to report which process opened which file with what result."
 duration: 30 minutes
 ---
 
 Chapters 7 and 8 attached to a kernel *function*. This chapter attaches
-to **tracepoints** — stable, documented instrumentation points the
-kernel developers maintain — and builds `opensnoop`, the classic tool
+to **tracepoints**, stable, documented instrumentation points the
+kernel developers maintain, and builds `opensnoop`, the classic tool
 that shows every file open on the system: which process, which file,
 what flags, success or failure. Along the way you learn to read
 tracepoint arguments by offset and meet a distinction that bites
@@ -19,7 +19,7 @@ The code is in `examples/09-opensnoop/`. `./demo.sh` there builds, deploys, and 
 {% include excalidraw.html
    file="mem-read-user-kernel"
    alt="User vs kernel memory: an eBPF program may not dereference raw pointers; it copies bytes from the process's user memory with bpf_probe_read_user and from kernel memory with bpf_probe_read_kernel."
-   caption="Figure 9.1 — reading user vs kernel memory (the basis for chapters 9–12)" %}
+   caption="Figure 9.1. Reading user vs kernel memory (the basis for chapters 9–12)" %}
 
 ## Why tracepoints here
 
@@ -27,8 +27,8 @@ Syscalls have stable tracepoints (`syscalls:sys_enter_openat`,
 `syscalls:sys_exit_openat`) with a *documented argument format* that the
 kernel commits to keeping stable. That's the opposite trade-off from a
 kprobe: less reach (only where tracepoints exist), but no fragility
-from kernel-internal struct layouts. For syscall tracing — which is
-most observability work — tracepoints are the right default.
+from kernel-internal struct layouts. For syscall tracing, which is
+most observability work, tracepoints are the right default.
 
 `opensnoop` watches `openat`, the syscall behind essentially all file
 opens on a modern system. We pair the **enter** tracepoint (which has
@@ -45,7 +45,7 @@ byte offsets. The kernel publishes the layout. On the target VM:
 [vm]$ cat /sys/kernel/tracing/events/syscalls/sys_enter_openat/format
 ```
 
-You'll see fields with `offset:` annotations — after the 8-byte common
+You'll see fields with `offset:` annotations. After the 8-byte common
 header and the `__syscall_nr` field, the openat args begin: `dfd`@16,
 `filename`@24, `flags`@32, `mode`@40. The exit record has `ret`@16.
 Aya reads them from the context:
@@ -56,15 +56,15 @@ let flags: i32 = ctx.read_at::<i32>(32)?;          // int flags
 ```
 
 These offsets are long-stable on x86_64, but they are exactly the kind
-of value to *verify against the format file* rather than trust blindly
-— which is why the chapter has you read it. That's the
+of value to *verify against the format file* rather than trust blindly,
+which is why the chapter has you read it. That's the
 tracepoint discipline: stable, but confirm.
 
 ## User memory vs. kernel memory
 
 Here's the subtlety. In Chapters 7–8 we read kernel pointers with
 `bpf_probe_read_kernel`. But at *syscall entry*, the `filename` argument
-is a pointer into the **calling process's user-space memory** — the
+is a pointer into the **calling process's user-space memory**; the
 program hasn't copied it into the kernel yet. Reading it needs the
 *user* variant:
 
@@ -89,9 +89,9 @@ choice of type for each is the whole design:
 #[map] static EVENTS:   RingBuf               = RingBuf::with_byte_size(256 * 1024, 0);
 ```
 
-`INFLIGHT` is a `HashMap` keyed by `pid_tgid` — scratch space that holds
+`INFLIGHT` is a `HashMap` keyed by `pid_tgid`: scratch space that holds
 what we learned at *entry* until the matching *exit* fires. `EVENTS` is a
-`RingBuf` — the one-way kernel→user channel for *completed* opens. We
+`RingBuf`: the one-way kernel→user channel for *completed* opens. We
 don't emit at entry because we don't yet know if the open succeeded; we
 don't keep state in the ring buffer because a ring buffer isn't
 addressable by key. Each map type is doing the one thing it's good at.
@@ -113,15 +113,15 @@ pub fn sys_enter_openat(ctx: TracePointContext) -> u32 {
 ```
 
 Walking it: `bpf_get_current_pid_tgid()` returns a 64-bit value packing
-the thread id (low 32) and process id (high 32) — it's our correlation
+the thread id (low 32) and process id (high 32); it's our correlation
 key *and* it's unique per in-flight syscall, because a thread can only be
 inside one `openat` at a time. `ctx.read_at(24)` pulls the `filename`
 argument out of the tracepoint record at the offset we read from the
-format file; note we get a *pointer*, not the string — the string lives
+format file; note we get a *pointer*, not the string; the string lives
 in user memory (Figure 9.1), so `bpf_probe_read_user_str_bytes` copies it
 into our stack-allocated `info.filename`. That helper is the user-memory
 analogue of the kernel reader from Chapter 8, and it stops at the NUL or
-the buffer end, so it's bounded — which is what keeps the verifier happy.
+the buffer end, so it's bounded, which is what keeps the verifier happy.
 Finally `INFLIGHT.insert` stashes the struct under `pid_tgid`. Nothing is
 reported yet.
 
@@ -149,15 +149,15 @@ pub fn sys_exit_openat(ctx: TracePointContext) -> u32 {
 }
 ```
 
-The exit record carries the **return value** at offset 16 — the one
+The exit record carries the **return value** at offset 16, the one
 thing entry couldn't know. `INFLIGHT.get(&pid_tgid)` finds the entry we
 stashed; if it's missing (we started tracing mid-syscall) we bail. We
 `remove` immediately so the map doesn't leak entries for syscalls we've
 already reported. Then the emit pattern you'll see in every event-based
 chapter: `EVENTS.reserve::<OpenEvent>(0)` claims a slot *in* the ring
-buffer sized for our struct (no copy, no allocation — you write straight
-into kernel ring memory), we fill it — completing the record with `pid`,
-`uid`, and `comm` that are cheap to get at exit — and `slot.submit(0)`
+buffer sized for our struct (no copy, no allocation; you write straight
+into kernel ring memory). We fill it, completing the record with `pid`,
+`uid`, and `comm` that are cheap to get at exit, and `slot.submit(0)`
 publishes it so user space can see it. If `reserve` returns `None` the
 ring is full and we simply drop the event rather than block; losing an
 event is always preferable to stalling the kernel.
@@ -177,9 +177,9 @@ let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 `program_mut(name)` looks the program up by the kernel function's name;
 the `try_into::<&mut TracePoint>()` is where Aya checks the program is
 actually a tracepoint (a `kprobe` cast would fail here). `load()` is the
-verifier gate — if the kernel rejects the program, it's this call that
+verifier gate: if the kernel rejects the program, it's this call that
 errors. `attach(category, name)` wires it to `syscalls:sys_enter_openat`.
-Tracepoints need only those two strings — no symbol, no BTF — which is
+Tracepoints need only those two strings, no symbol, no BTF, which is
 the simplicity tracepoints buy you.
 
 Reading is the same poll loop as Chapter 6, but over a `RingBuf` instead
@@ -199,7 +199,7 @@ while let Some(item) = ring.next() {
 `read_unaligned` it back into an `OpenEvent` (unaligned because the ring
 packs records tightly, with no padding guarantees). The sign of `ret`
 becomes the `result` label, so one metric series splits cleanly into
-successes and failures — `ebpf_events_total{program="opensnoop",result="ok|err"}`.
+successes and failures: `ebpf_events_total{program="opensnoop",result="ok|err"}`.
 
 ## Build, deploy, observe
 
@@ -207,7 +207,7 @@ successes and failures — `ebpf_events_total{program="opensnoop",result="ok|err
 cd examples/09-opensnoop && ./demo.sh
 ```
 
-Generate opens on the target — including a guaranteed miss so you see a
+Generate opens on the target, including a guaranteed miss so you see a
 negative `ret`:
 
 ```bash
@@ -218,13 +218,13 @@ A `PID UID RET COMM FILE` table fills, and the `result` label lets you
 split opens into successes and failures in Grafana.
 
 > **Heads up: openat is high-volume.** Almost everything opens files
-> constantly. On a busy target this tool produces a *lot* of events —
+> constantly. On a busy target this tool produces a *lot* of events,
 > which is realistic, and a good reason later chapters add in-kernel
 > filtering (by PID, by filename prefix) so user space isn't flooded.
 > For now, watching the firehose makes the point that the kernel sees
 > everything.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-opensnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))` — file opens, split out by program and result as a live rate, the same events your terminal lists, now plotted over time.
+**In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-opensnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: file opens, split out by program and result as a live rate, the same events your terminal lists, now plotted over time.
 
 ## Cross-check
 
@@ -234,17 +234,17 @@ split opens into successes and failures in Grafana.
 
 The BCC tool is the C/libbpf implementation of the same idea. Running
 it beside your Rust `opensnoop` and comparing output is the most direct
-"is mine right?" check you can do — same events, same fields, different
+"is mine right?" check you can do: same events, same fields, different
 language.
 
 ## What you learned
 
 - Tracepoints are stable syscall instrumentation; read their args by
   offset from the format file.
-- Syscall arguments at entry are **user** memory —
+- Syscall arguments at entry are **user** memory:
   `bpf_probe_read_user_*`, not the kernel reader.
 - The entry/exit `HashMap` bridge from Chapter 8 generalizes cleanly to
   tracepoints.
 
-Next, a shorter sibling — **`sigsnoop`** — one tracepoint, signal
+Next, a shorter sibling, **`sigsnoop`**: one tracepoint, signal
 tracing, and friendly name mapping.
