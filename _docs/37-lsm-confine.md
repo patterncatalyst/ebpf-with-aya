@@ -6,6 +6,17 @@ description: "The shift from watching the kernel to mediating it: attach a BPF p
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a BPF program to an LSM hook whose return value the kernel obeys
+- Allow an operation with 0 or deny it with a negative errno
+- Confine one container's outbound connections by cgroup
+- Enable the bpf LSM in the kernel's LSM list
+
+## Why this matters
+
 Every program in this book so far has *reported*: it watched an event and
 wrote a number or a record. An LSM program is different in kind: its
 **return value is a decision the kernel obeys**. Linux Security Modules are

@@ -6,6 +6,18 @@ description: "A BPF program runs to completion and cannot sleep or loop forever,
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Initialize, attach a callback to, and arm a `bpf_timer` stored in a map value
+- Build a self-rescheduling periodic timer callback for in-kernel aggregation
+- Explain why a timer callback runs in softirq context and cannot sleep
+- Use a BPF workqueue to defer sleepable work off a hot path
+- Decide between a timer and a workqueue based on whether the deferred work can sleep
+
+## Why this matters
+
 Every BPF program in this book has obeyed one iron rule: **run to completion,
 quickly, without sleeping.** The verifier enforces it: no unbounded loops, no
 blocking, get in and get out. That rule is what makes BPF safe to wedge into

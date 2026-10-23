@@ -6,6 +6,17 @@ description: "The first user-space probe: attach a uretprobe to bash's readline(
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a uretprobe to bash's `readline()` by path and symbol to capture interactive commands
+- Explain why the memory a uprobe reads belongs to the traced process, not the kernel
+- Read a return value with `ctx.ret()` and copy a user-space string with `bpf_probe_read_user_str_bytes`
+- Locate which binary or library holds a symbol with `objdump`/`nm` when a uprobe produces no events
+
+## Why this matters
+
 Everything in *Tracing the kernel* attached to the kernel. This part
 turns the lens around: **uprobes** attach to functions inside
 user-space programs and libraries. The classic first example

@@ -299,7 +299,7 @@ name, but when you run a program by hand you'll pass it explicitly
 
 The `default` NAT network is fine for everything in this tutorial. If
 you'd rather keep lab traffic off the NAT (for example, to send
-deliberately malformed packets in the XDP chapters without any chance
+crafted malformed packets in the XDP chapters without any chance
 of them leaking out), define a second **isolated** libvirt network and
 attach a second NIC to each guest. That's an optional refinement
 introduced in the XDP part; the `default` network is the assumed

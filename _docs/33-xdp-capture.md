@@ -6,6 +6,17 @@ description: "Use XDP to observe rather than drop: parse and filter packets in t
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Parse and filter frames in the kernel at XDP
+- Keep only TCP control packets (SYN, FIN, RST)
+- Ship one-line records to user space through a ring buffer
+- Pass every other packet untouched with XDP_PASS
+
+## Why this matters
+
 Chapter 32 used XDP to *drop*. The same hook is just as good at *watching*,
 and watching at XDP is how high-rate packet capture is built, because you
 can decide in the kernel which packets are worth user space's attention and

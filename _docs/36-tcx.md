@@ -6,6 +6,17 @@ description: "Attach tc programs the modern way: tcx (kernel 6.6+) replaces the 
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a tc program with tcx and bpf_link on kernel 6.6 and later
+- Share a hook across several programs in a kernel-managed order
+- Rely on auto-detach when the link is dropped
+- Compare tcx against the legacy clsact-qdisc attach
+
+## Why this matters
+
 Chapter 31 attached a tc classifier the original way: add a `clsact`
 qdisc by hand, then hang a BPF filter off it. That works, but it has rough
 edges: you manage the qdisc's lifetime yourself, only one filter owns a

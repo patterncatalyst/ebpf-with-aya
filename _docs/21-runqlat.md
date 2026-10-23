@@ -6,6 +6,18 @@ description: "Measure scheduler run-queue latency (how long tasks wait runnable-
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why run-queue latency is the clearest signal of CPU saturation
+- Stitch together `sched_wakeup`, `sched_wakeup_new`, and `sched_switch` to time the wait
+- Aggregate wait times into an in-kernel log2 histogram instead of emitting per-event data
+- Export histogram percentiles as an OTLP observable gauge
+- Cross-check results against the BCC `runqlat-bpfcc` tool
+
+## Why this matters
+
 The *Performance & resources* part opens with a question every busy
 system eventually raises: "my CPU isn't pegged, so why is everything
 slow?" Often the answer is **run-queue latency**: tasks are *ready* to

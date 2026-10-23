@@ -6,6 +6,18 @@ description: "A harder target: a postgres database. Attach uprobes to a multi-pr
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why postgres's process-per-connection model lets one uprobe cover every backend
+- Key per-query and lock-wait timing on the backend pid
+- Capture SQL text at query entry with `bpf_probe_read_user_str_bytes`, before the uretprobe's argument register is gone
+- Explain USDT as the stable, documented probe API postgres ships, and why this chapter uprobes the wrapped functions instead
+- Cross-check probe output against postgres's own `pg_stat_statements` and `pg_stat_activity` views
+
+## Why this matters
+
 A database is the hardest kind of target: a long-running, multi-process server
 whose most important behavior (how long queries take, and how much time is
 lost *waiting on locks*) is exactly the part you can't see from the outside.

@@ -6,6 +6,18 @@ description: "A program type with no hook: BPF_PROG_TYPE_SYSCALL programs run on
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain what a `BPF_PROG_TYPE_SYSCALL` program is and why it attaches to nothing
+- Describe how a loader program replays libbpf's load sequence in-kernel via `bpf_sys_bpf`
+- Explain what `bpftool gen skeleton -L` embeds in a light skeleton, and why it needs no libelf or libbpf at load time
+- Explain why this mechanism is a step toward signed program loading
+- Recognize why Aya, as its own loader, doesn't need this mechanism for normal use
+
+## Why this matters
+
 Every program so far attaches to *something*: a kprobe, a tracepoint, a
 socket, a scheduler slot. **`BPF_PROG_TYPE_SYSCALL`** is the odd one out: it
 attaches to nothing. You *run* it, once, on demand, and while it runs it can

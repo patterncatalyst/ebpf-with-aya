@@ -6,6 +6,18 @@ description: "The OS bills a process for CPU time, never for joules, so per-work
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why the OS bills CPU time but not energy, and how RAPL exposes socket-level joules
+- Accumulate per-workload on-CPU time with an eBPF `sched_switch` tracepoint
+- Attribute a share of measured package energy to a workload using the time-proportion model
+- Identify the attribution model's limits: DVFS, C-states, and per-operation variance
+- Describe Kepler's shift toward measured energy sources and the `cpufreq_ext` control frontier
+
+## Why this matters
+
 Efficiency has quietly become an operating concern on par with latency:
 power is cost, carbon, and the thermal headroom that decides how dense you can
 pack a rack. But there's a measurement gap at the centre of it. The OS bills a

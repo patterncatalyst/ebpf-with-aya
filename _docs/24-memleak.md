@@ -6,6 +6,17 @@ description: "Find allocations that are never freed by pairing malloc/calloc wit
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Maintain a live allocation table by pairing `malloc`/`calloc` entry+return with `free`
+- Record each allocation's call stack with `bpf_get_stackid` to trace leaks back to their source
+- Scope a hot uprobe like `malloc` to a single process with an in-kernel pid filter
+- Recognize how frame-pointer omission affects user-stack unwinding
+
+## Why this matters
+
 A memory leak isn't a crash: it's bytes that pile up because something
 allocated them and never freed them. `memleak` catches them in the act:
 watch every `malloc`/`calloc` and every `free`, and whatever's allocated

@@ -6,6 +6,17 @@ description: "bpftrace has been our cross-check all along: the awk-for-the-kerne
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Describe bpftrace's probe/predicate/action syntax and how it compiles to eBPF through the same LLVM backend as Aya.
+- Parse bpftrace's NDJSON output (`-f json`) by event type in a Python wrapper.
+- Build a live syscall-top tool and other aggregations from bpftrace's `map`, `hist`, and `printf` events.
+- Decide when to reach for bpftrace's fast exploration versus Aya's production path.
+
+## Why this matters
+
 Part 10 is a field guide to the command-line tools this book has leaned on for
 *validation*: the `bpftool`, `bpftrace`, and BCC commands that appeared in
 nearly every "Cross-check" section to confirm what our Aya programs reported.

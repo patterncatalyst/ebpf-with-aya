@@ -6,6 +6,18 @@ description: See the plaintext crossing TLS by probing OpenSSL (SSL_write before
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach uprobes to `SSL_write` and `SSL_read` in a shared library to read plaintext at the TLS boundary
+- Pair a uprobe at `SSL_read`'s entry with a uretprobe at its return to read a buffer that's only populated on return
+- Capture bounded binary data with a constant cap so the eBPF verifier can prove the read is safe
+- Explain why FIPS mode changes which cipher runs but not where plaintext is available to a uprobe
+- Apply the ethical constraints that come with capturing plaintext traffic
+
+## Why this matters
+
 TLS encrypts traffic on the wire, so a packet sniffer sees ciphertext.
 But the application handed OpenSSL **plaintext** to encrypt, and OpenSSL
 handed the application **plaintext** after decrypting, and uprobes can

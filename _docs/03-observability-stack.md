@@ -6,6 +6,18 @@ description: Stand up Grafana + Tempo + Mimir + Loki in one Podman container, ru
 duration: 20 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Stand up Grafana, Tempo, Mimir, and Loki in one Podman container with `grafana/otel-lgtm`.
+- Verify the telemetry pipe with a Python 3.14 OTLP client before writing any Rust.
+- Explain how an Aya program's kernel half and user-space half split the work of measuring and reporting.
+- Locate a running program's output in both the terminal table and the Grafana `ebpf_*` metrics.
+- Explain why eBPF telemetry pushes over OTLP instead of being scraped by Prometheus.
+
+## Why this matters
+
 An eBPF program that counts something is useless until you can *see*
 the count. This chapter stands up the backend that every later chapter
 reports into: Grafana for visualization, Tempo for traces, Mimir for

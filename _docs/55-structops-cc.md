@@ -6,6 +6,18 @@ description: "Most BPF observes or filters at a hook the kernel calls. struct_op
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain how struct_ops inverts the normal BPF model so the kernel calls into a BPF-supplied interface
+- Implement a TCP congestion-control algorithm with `struct_ops/ssthresh`, `cong_avoid`, and `undo_cwnd` programs
+- Describe how BTF reflection matches a BPF struct_ops map to the kernel's own struct by name, kind, and size
+- Register and select a struct_ops implementation with `bpftool struct_ops`
+- Recognize struct_ops as the shared mechanism behind sched_ext, HID-BPF, bpf Qdisc, and FUSE-BPF
+
+## Why this matters
+
 Everything in this book so far has been BPF *reacting*: the kernel hits a hook
 it owns (a kprobe, a tracepoint, an XDP point) and calls your one program.
 **struct_ops** turns that relationship inside out. Here the kernel defines a

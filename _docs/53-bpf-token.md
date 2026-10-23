@@ -6,6 +6,18 @@ description: "Loading BPF has always demanded capabilities in the init namespace
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why BPF capabilities can't be safely scoped to a container's user namespace
+- Describe the four delegation axes (`delegate_cmds`, `delegate_maps`, `delegate_progs`, `delegate_attachs`) a privileged runtime sets on a bpffs mount
+- Derive a BPF token from a delegated bpffs and explain why the kernel checks the token instead of init-namespace capabilities
+- Explain why a token is bound to its user namespace and can't escape the container it was minted for
+- Identify where BPF token support plugs into Aya's loader today
+
+## Why this matters
+
 There's a question this book has quietly assumed away in every chapter: the
 loader runs as root. Each `demo.sh` deploys a binary to the lab VM and runs it
 with `sudo`, because loading a program and creating maps needs BPF

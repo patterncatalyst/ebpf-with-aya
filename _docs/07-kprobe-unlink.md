@@ -6,6 +6,18 @@ description: "Your first kprobe: attach to the kernel function behind file delet
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach a kprobe to an arbitrary kernel function by name and read its arguments.
+- Explain the flexibility-versus-stability trade-off between a kprobe and a tracepoint.
+- Read stable process context (pid, uid, comm) and distinguish it from version-sensitive struct fields read off a kernel pointer.
+- Stream per-event records to user space through a `RingBuf` instead of a single counter.
+- Cross-check an Aya kprobe against an independent `bpftrace` count.
+
+## Why this matters
+
 Chapter 6's tracepoint fired on a *stable* kernel trace event. A
 **kprobe** is more powerful and more dangerous: it attaches to (almost)
 any kernel function by name, at its entry, giving you the function's

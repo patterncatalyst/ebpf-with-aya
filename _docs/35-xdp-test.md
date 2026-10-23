@@ -6,6 +6,17 @@ description: "Unit-test eBPF programs without a NIC or live traffic: feed a hand
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Run a loaded program against a packet you build with BPF_PROG_TEST_RUN
+- Construct an Ethernet, IPv4, and TCP frame as a byte array
+- Read back the verdict, output buffer, and run duration
+- Assert on the verdict and map state in a test that needs no NIC
+
+## Why this matters
+
 Everything so far has been tested by *running* it: provision a peer,
 generate traffic, watch Grafana. That's integration testing, and it's
 slow, flaky, and impossible in CI without a kernel and a NIC. The kernel

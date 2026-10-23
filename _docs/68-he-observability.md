@@ -6,10 +6,21 @@ description: "A final project extension. Homomorphic encryption lets a server co
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why homomorphic encryption makes reading the payload both impossible and forbidden for ordinary observability.
+- Attach uprobe/uretprobe pairs to named TFHE-rs operation boundaries to time each operation without touching ciphertext.
+- Build a per-operation latency histogram (`ebpf_he_op_latency_seconds`) and read it in Grafana.
+- Use on-CPU stack profiling to attribute a slow operation's time to the NTT routines underneath, while staying data-blind.
+
+## Why this matters
+
 The Chapter 63 final project followed one request through two services and the kernel,
 joining everything on a single `trace_id`. This addendum takes the same machinery
 (uprobes, timing, OTLP to Grafana) and points it at a workload where you
-deliberately *cannot* and *must not* see the payload: **homomorphic encryption**.
+*cannot* and *must not* see the payload: **homomorphic encryption**.
 It's a small chapter with an outsized point about what observability *is*. When
 the entire value of a system is that the operator never sees the data, your
 telemetry has to measure the system without measuring the secret, and eBPF,

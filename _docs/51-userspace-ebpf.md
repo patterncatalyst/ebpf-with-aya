@@ -6,6 +6,18 @@ description: "eBPF is a portable bytecode ISA, and it doesn't need the kernel. R
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why eBPF is a portable bytecode ISA that doesn't require the kernel to run it
+- List three reasons to run eBPF in user space: no privileges or kernel ceiling, portability, and embedding/performance
+- Embed an eBPF program in a Rust process with rbpf, register a Rust helper function, and run it interpreted and JIT-compiled
+- Explain the tradeoff a user-space VM makes: portability and simplicity for a verifier far weaker than the kernel's
+- Describe what bpftime does: running uprobe/USDT handlers in user space while sharing maps with kernel eBPF
+
+## Why this matters
+
 Every chapter so far has loaded BPF into the kernel. But eBPF is, underneath,
 just a small **bytecode ISA**: eleven registers, a fixed instruction set, a
 helper-call convention, and nothing about that ISA requires the kernel to run

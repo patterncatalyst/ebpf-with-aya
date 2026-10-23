@@ -12,7 +12,7 @@ exports into, plus a Python 3.14 OTLP client that proves the pipe.
 - A **Python 3.14** client (`client/client.py`) running in **Podman**
   that emits a counter metric (`ebpf_events_total`), a trace span per
   iteration, and a correlated log line — all over OTLP/HTTP.
-- A provisioned dashboard (`eBPF with Aya — Overview`) showing event
+- A provisioned dashboard (`eBPF with Aya: Overview`) showing event
   rate, total events, and program logs.
 
 ## Run it
@@ -25,7 +25,7 @@ exports into, plus a Python 3.14 OTLP client that proves the pipe.
 ```
 
 Then open **http://127.0.0.1:3000** (anonymous admin, no login) and
-look at the `eBPF with Aya — Overview` dashboard, or use Explore.
+look at the `eBPF with Aya: Overview` dashboard, or use Explore.
 
 ## How later chapters use this
 
@@ -66,7 +66,7 @@ landed in Grafana for the examples that report.*
 ## The provisioned dashboard
 
 `grafana/provisioning/dashboards/ebpf-overview.json` is mounted into the stack
-and loads automatically — open Grafana and find **eBPF with Aya — Overview**
+and loads automatically — open Grafana and find **eBPF with Aya: Overview**
 in the *eBPF with Aya* folder. Alongside the events and logs panels it has a
 **Metric (explorer)** variable listing every `ebpf_*` series the tutorial
 exports, feeding a rate panel (for `*_total` counters) and a raw panel (for

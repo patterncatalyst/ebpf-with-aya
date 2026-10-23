@@ -6,6 +6,18 @@ description: "Classic BPF memory is rigid: fixed-size maps, fixed-size stack, bo
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Use a dynptr to access a variable-length memory region without copying into a fixed buffer
+- Emit variable-length ring-buffer records with `bpf_dynptr_data` and a bounds-checked slice
+- Explain why a dynptr slice is invalidated once its owning dynptr is submitted or dropped
+- Build a pointer-based data structure in a BPF arena shared zero-copy with user space
+- Choose between a dynptr and an arena based on whether the problem is variable length or shared structure
+
+## Why this matters
+
 The verifier's love of fixed sizes has shaped every program in this book. Maps
 have a fixed value size; the stack is 512 bytes; when we captured a SQL string
 in Chapter 47 we read it into a *fixed* 128-byte buffer and truncated, because

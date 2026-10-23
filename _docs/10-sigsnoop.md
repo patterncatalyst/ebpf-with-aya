@@ -6,6 +6,18 @@ description: "A shorter sibling to opensnoop: one tracepoint on the kill syscall
 duration: 15 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Build a minimal single-tracepoint tracer with no entry/exit correlation.
+- Read tracepoint arguments at their correct width (64-bit slots) to avoid narrowing bugs.
+- Keep the kernel program minimal and move signal-number-to-name mapping into user space.
+- Label an exported metric by decoded signal name for per-signal breakdowns in Grafana.
+- Cross-check an Aya tracer's offset-based argument reads against `bpftrace`'s name-based reads.
+
+## Why this matters
+
 `sigsnoop` is the minimal per-event tool: a single tracepoint, one
 event per signal sent, no entry/exit correlation. It traces `kill(2)`:
 who sent which signal to whom, and is a good place to reinforce two

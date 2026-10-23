@@ -6,6 +6,17 @@ description: "The defensive counterpart to the offense chapter: an LSM program o
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Deny writes to one inode at the inode_permission LSM hook
+- Make a file read-only even for root
+- Read a kernel struct field from inside an LSM program
+- Identify where unguarded field reads get fragile and how CO-RE fixes them
+
+## Why this matters
+
 Chapter 39 showed how eBPF can tamper with what userspace sees. This chapter
 uses the same hook family for defense: make a specific file **unmodifiable**,
 even by root. We attach to the LSM hook that mediates inode access,

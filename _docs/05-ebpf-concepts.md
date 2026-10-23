@@ -6,11 +6,23 @@ description: "Programs, maps, the verifier, BTF and CO-RE, program types and att
 duration: 20 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain what an eBPF program is and trace the load/verify/JIT/attach lifecycle.
+- Choose the right map type (`Array`, `HashMap`, `RingBuf`) for a given data-sharing need.
+- Explain what the kernel verifier checks, and why Rust avoids whole classes of its rejections.
+- Explain how BTF and CO-RE let one compiled program run across kernel versions.
+- Match a program type (kprobe, fentry, tracepoint, XDP, and the rest) to its attach point, and use `bpftool`/`bpftrace` to cross-check a running program.
+
+## Why this matters
+
 You have a lab and a toolchain. Before writing the first program, this
 chapter builds the mental model: what an eBPF program actually *is*,
 how it gets from your `.rs` file into a running kernel, what the
 verifier will and won't let you do, and how Aya's pieces map onto the
-kernel's. It's deliberately concept-only (no deploys) so that when
+kernel's. It stays concept-only, with no deploys, so that when
 Chapter 6's code appears, every line has a place to land.
 
 {% include excalidraw.html

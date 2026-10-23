@@ -6,6 +6,17 @@ description: "The third lab-only offense: intercept the read() a privileged proc
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Trace the read() a privileged process makes
+- Rewrite the returned bytes in memory while the file on disk stays intact
+- Explain how read-buffer tampering escalates privilege
+- Detect the tampering from its kernel tells
+
+## Why this matters
+
 Chapter 39 hid a process by editing a syscall's *output*. The same move,
 pointed at a different syscall, escalates privilege. When you run `sudo`, it
 reads its policy from `/etc/sudoers` to decide what you're allowed to do. If

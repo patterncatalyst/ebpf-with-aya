@@ -6,6 +6,17 @@ description: "Make XDP forward, not just observe: a UDP load balancer that rewri
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Mutate packet bytes at XDP while satisfying the verifier
+- Rewrite a UDP destination port to steer a datagram
+- Select a backend round-robin from a BPF map
+- Forward rewritten packets at the XDP hook
+
+## Why this matters
+
 So far XDP has dropped (Chapter 32) and observed (Chapter 33). Its third
 power is to **rewrite and forward**: change bytes in the packet and send it
 on its way. That is the heart of an XDP load balancer like Katran: a virtual

@@ -6,6 +6,18 @@ description: "Every ring buffer so far carried data kernel-to-user. The user rin
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain how the user ring buffer reverses the usual flow: user space produces, a BPF program consumes
+- Decide when to reach for a user ring buffer over a plain map (a stream of variable-length messages vs. a few settings)
+- Describe the reserve/submit discipline on the producer side and the drain-with-callback pattern on the consumer side
+- Explain why each drained sample arrives as a `bpf_dynptr` rather than a raw pointer
+- Identify what's settled in Aya today versus still emerging for this map type
+
+## Why this matters
+
 Ring buffers have appeared all through this book as the kernel's way to stream
 events *up* to user space: opensnoop, the L7 probes, the final project all use one
 in that direction. The **user ring buffer** (`BPF_MAP_TYPE_USER_RINGBUF`,

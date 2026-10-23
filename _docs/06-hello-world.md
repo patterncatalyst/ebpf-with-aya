@@ -6,6 +6,18 @@ description: A first Aya program (a tracepoint that counts process executions in
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Compare the libbpf/libbpf-rs C-based toolchain to Aya's all-Rust kernel-and-user-space split.
+- Write a `#[tracepoint]` handler that bumps a per-CPU counter and emits an `aya-log` record.
+- Load, attach, and read from a BPF map from an async Rust user-space loader.
+- Build, deploy, and run a first Aya program end to end against the target VM, exporting its count to Grafana.
+- Cross-check an Aya program's output against `bpftool` and `bpftrace`.
+
+## Why this matters
+
 Everything so far has been setup. This chapter is the first program:
 an eBPF tracepoint that counts every `execve` on the target VM, written
 in Rust with Aya, deployed to the guest, and reporting its count into
@@ -155,7 +167,7 @@ generate some executions on the target:
 ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in {1..50}; do /bin/true; done'
 ```
 
-Open the **eBPF with Aya — Overview** dashboard
+Open the **eBPF with Aya: Overview** dashboard
 (`http://127.0.0.1:3000/d/ebpf-overview`). `ebpf_events_total` climbs
 by ~50, and the log panel shows the kernel's `hello: execve observed`
 lines forwarded by `aya-log`. You just watched a program you wrote run

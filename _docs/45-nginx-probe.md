@@ -6,6 +6,18 @@ description: "Turn the toolkit on production software: attach uprobes to a conta
 duration: 45 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach uprobes to nginx's internal request-handling functions with no app changes or log parsing
+- Key per-request timing on the request object pointer instead of a PID, so overlapping requests on a concurrent server never collide
+- Check whether a target binary's symbols are present before attaching a uprobe, and know the fallback when they're stripped
+- Attach a uprobe to a binary running inside a container via `/proc/<pid>/root`
+- Export a per-request latency histogram to Grafana and cross-check it against client-side timing
+
+## Why this matters
+
 The techniques so far were proven on small programs we wrote. The point of
 eBPF is that they work just as well on software you *didn't* write and can't
 change. This part aims the toolkit at production targets, starting with the

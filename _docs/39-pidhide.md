@@ -6,6 +6,17 @@ description: "Understand rootkit-style eBPF by building one in the lab: rewrite 
 duration: 50 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain the getdents64-rewriting technique that hides a process
+- Edit a syscall's result buffer with bpf_probe_write_user
+- Detect the tampering a defender looks for
+- Recognize why the helper taints the kernel
+
+## Why this matters
+
 To defend against eBPF abuse you have to understand it, so this chapter
 builds a small piece of offense in the lab: a program that **hides a
 process**. The technique is the well-known eBPF "pidhide": intercept the

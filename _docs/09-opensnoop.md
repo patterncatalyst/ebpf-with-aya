@@ -6,6 +6,18 @@ description: "Trace every file open with stable syscall tracepoints: read tracep
 duration: 30 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Attach to stable syscall tracepoints and read their arguments by offset from the kernel's format file.
+- Distinguish user-space memory from kernel memory and use the matching `bpf_probe_read_*` helper.
+- Pair a syscall's entry and exit tracepoints with a `HashMap` to report arguments and a return value together.
+- Choose a map type for each job in a tracer: `HashMap` for in-flight state, `RingBuf` for completed events.
+- Cross-check a Rust `opensnoop` against the BCC `opensnoop-bpfcc` reference tool.
+
+## Why this matters
+
 Chapters 7 and 8 attached to a kernel *function*. This chapter attaches
 to **tracepoints**, stable, documented instrumentation points the
 kernel developers maintain, and builds `opensnoop`, the classic tool

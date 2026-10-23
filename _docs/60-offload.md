@@ -6,6 +6,18 @@ description: "Every program so far has run on the host CPU in the kernel. Offloa
 duration: 40 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Distinguish XDP's generic, native, and offload attach modes and where each runs
+- Explain why true hardware offload (NFP) is narrow while DPU offload is the practical 2026 answer
+- Deploy an Aya loader unchanged to a DPU's ARM Linux to run eBPF off the host CPU
+- Select an XDP attach mode in Aya with `XdpFlags` and detect which mode actually engaged
+- Describe where FPGA synthesis and GPU/AI pairing stand as research frontiers for offload
+
+## Why this matters
+
 Operating eBPF at scale eventually runs into a hard limit: the host CPU. An XDP
 filter dropping a DDoS flood, a load balancer rewriting every packet: at
 hundreds of gigabits these burn real CPU that your applications wanted. The

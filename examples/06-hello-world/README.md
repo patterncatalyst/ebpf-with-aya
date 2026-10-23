@@ -32,7 +32,7 @@ Generate some execve traffic on the target so the counter moves:
 ssh fedora@"$(../../scripts/lab/vm-ip.sh ebpf-target)" 'for i in {1..50}; do /bin/true; done'
 ```
 
-Then watch `ebpf_events_total` climb on the **eBPF with Aya — Overview**
+Then watch `ebpf_events_total` climb on the **eBPF with Aya: Overview**
 dashboard at http://127.0.0.1:3000/d/ebpf-overview.
 
 ## Cross-check with Fedora tooling (on the VM)

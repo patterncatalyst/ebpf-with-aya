@@ -6,6 +6,17 @@ description: Read a struct argument from a uprobe by following a pointer into th
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Read a struct argument from a uprobe by copying it with `bpf_probe_read_user` into a `#[repr(C)]` mirror
+- Explain why the mirror's field layout must match the target's exactly, and what happens when it doesn't
+- Recover a binary's struct layout from BTF with `pahole -J` and `bpftool btf dump` when you don't control the source
+- Distinguish mature kernel CO-RE from the newer, less push-button user-space CO-RE
+
+## Why this matters
+
 Chapter 14 read a scalar argument: a `u64` in a register. Real
 functions take **pointers to structs**, and reading fields out of them
 brings back a problem you met in the kprobe chapter: you need to know

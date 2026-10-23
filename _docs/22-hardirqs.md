@@ -6,6 +6,18 @@ description: "Measure the time the kernel spends in hardware-interrupt handlers,
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why hardirq time is hidden from per-process CPU accounting
+- Time hardware-interrupt handlers with `irq_handler_entry`/`exit`, keyed by CPU
+- Accumulate per-IRQ-vector totals in a kernel `HashMap` instead of emitting events
+- Recognize the nested-IRQ and read-modify-write simplifications as conscious trade-offs
+- Export per-vector totals as OTLP observable gauges for Grafana
+
+## Why this matters
+
 Hardware interrupts are the kernel dropping everything to service a
 device: a packet arrived, a disk finished, a timer fired. Handlers are
 supposed to be fast, but when a device is busy, the *aggregate* time in

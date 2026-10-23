@@ -6,6 +6,18 @@ description: "Open Part 4 by building out the second VM and measuring active TCP
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Provision a second lab VM and confirm the two-host networking setup
+- Identify where along the network path different eBPF program types attach
+- Time active TCP connection establishment with kprobes on `tcp_v4_connect` and `tcp_rcv_state_process`
+- Correlate two kprobes of one connection using the `struct sock` pointer as a key
+- Recognize the fragility of hardcoded kernel struct offsets and why CO-RE fixes it
+
+## Why this matters
+
 Welcome to **Networking**, the part where the lab grows its second
 machine. Everything so far ran on one guest; from here on we need real
 host-to-host traffic, so we bring up **ebpf-peer** alongside

@@ -6,6 +6,17 @@ description: "Point a uprobe at a function in a Rust program you built: confront
 duration: 25 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Export a Rust function with `#[no_mangle] #[inline(never)] extern "C"` so a uprobe can attach to it by a stable name and a known calling convention
+- Read a first argument register with `ctx.arg(0)` and explain why that only works when the target function uses the C ABI
+- Attach a uprobe to a binary you built by path and symbol
+- Diagnose a uprobe that produces no events by checking whether the compiler inlined the target function away
+
+## Why this matters
+
 Chapter 13 probed someone else's binary (bash) at a symbol that
 happened to be C. This chapter probes a **Rust** binary you built, and
 reads a function's argument as it's called. Two Rust-specific things
