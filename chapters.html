@@ -27,7 +27,7 @@ permalink: /docs/00-index/
     {%- assign parts_sorted = site.parts | sort: "order" -%}
     {%- for part in parts_sorted -%}
       {%- assign part_docs = site.docs | where: "part", part.part_name | sort: "order" -%}
-      {%- assign part_chapters = part_docs | where_exp: "d", "d.order > 0" -%}
+      {%- assign part_chapters = part_docs | where_exp: "d", "d.order >= 0" -%}
       {%- if part_chapters.size > 0 -%}
       <h2 class="section-heading">
         <span class="chip chip--accent">Part {{ part.order }}</span>
