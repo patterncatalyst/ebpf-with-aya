@@ -963,13 +963,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "running once replays the load sequence in-kernel \u2014 the basis of light skeletons and signed loading",
+   "text": "running once replays the load sequence in-kernel: the basis of light skeletons and signed loading",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "running once replays the load sequence in-kernel \u2014 the basis of light skeletons and signed loading",
+   "originalText": "running once replays the load sequence in-kernel: the basis of light skeletons and signed loading",
    "lineHeight": 1.25,
    "baseline": 11
   }

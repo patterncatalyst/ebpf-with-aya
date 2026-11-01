@@ -689,13 +689,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "the defensive counterpart to Ch 39 \u2014 portable field reads come with CO-RE (Ch 56)",
+   "text": "the defensive counterpart to Ch 39: portable field reads come with CO-RE (Ch 56)",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "the defensive counterpart to Ch 39 \u2014 portable field reads come with CO-RE (Ch 56)",
+   "originalText": "the defensive counterpart to Ch 39: portable field reads come with CO-RE (Ch 56)",
    "lineHeight": 1.25,
    "baseline": 11
   }

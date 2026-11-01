@@ -556,13 +556,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "stash on the way in, use it on the way out \u2014 reused by fentry, opensnoop, sslsniff, funclatency, runqlat, hardirqs",
+   "text": "stash on the way in, use it on the way out: reused by fentry, opensnoop, sslsniff, funclatency, runqlat, hardirqs",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "stash on the way in, use it on the way out \u2014 reused by fentry, opensnoop, sslsniff, funclatency, runqlat, hardirqs",
+   "originalText": "stash on the way in, use it on the way out: reused by fentry, opensnoop, sslsniff, funclatency, runqlat, hardirqs",
    "lineHeight": 1.25,
    "baseline": 11
   }

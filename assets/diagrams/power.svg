@@ -27,6 +27,6 @@
 <path d="M568,190 L640,190" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
 <text x="604.0" y="182.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">export</text>
 <text x="604.0" y="182.0" font-size="11" fill="#b8650a" text-anchor="middle">export</text>
-<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">attribute hardware energy to workloads — measure shares with eBPF, divide RAPL</text>
+<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">attribute hardware energy to workloads: measure shares with eBPF, divide RAPL</text>
 <text x="440" y="316" font-size="11" fill="#888" text-anchor="middle">limits: ignores DVFS frequency &amp; C-states → comparative, not absolute. control frontier: cpufreq_ext writes frequency policy in eBPF (struct_ops).</text>
 </svg>

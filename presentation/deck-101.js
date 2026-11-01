@@ -439,6 +439,32 @@ divider("06", "The observability payoff", "Kernel events, exported like any othe
   addNotes(s, "Where do you go from here? Two directions, both in the 201. Deeper: we take the things I hand-waved today — the verifier, and CO-RE and BTF which make programs portable across kernels — and treat them properly; we go through the map types in real depth; and we tackle the genuinely hard version of uprobes, reaching into stripped binaries hidden inside containers, which is where production application tracing actually lives. And wider: security programs that make allow-or-deny decisions at LSM hooks, and the frontier — kfuncs, struct_ops, the sched_ext scheduler, BPF timers — plus a candid look at where Aya still hits limits compared to libbpf and what to do about it. The best next step, though, is hands-on: clone the repo, bring up the VM, and run demo.sh in any chapter. Every example in this course is runnable and was verified on real hardware. Thank you — let's take questions.");
 }
 
+
+/* --- Scan to explore (QR codes) --- */
+{
+  const s = S();
+  addContentTitle(s, "SCAN TO EXPLORE", "Take it with you");
+
+  s.addImage({ path: `${ASSETS}/qr-ebpf-site.png`, x: 2.30, y: 1.78, w: 3.10, h: 3.10 });
+  s.addText("The site", { x: 1.55, y: 4.98, w: 4.60, h: 0.40,
+    fontFace: FONT.title, fontSize: 18, bold: true, color: COLOR.ink, align: "center", valign: "middle" });
+  s.addText("Chapters, runnable Aya eBPF examples, and the labs", { x: 1.45, y: 5.40, w: 4.80, h: 0.72,
+    fontFace: FONT.body, fontSize: 13, italic: true, color: COLOR.caption, align: "center", valign: "top" });
+  s.addText("patterncatalyst.github.io/ebpf-with-aya", { x: 1.45, y: 6.12, w: 4.80, h: 0.32,
+    fontFace: FONT.mono, fontSize: 10, color: COLOR.red, align: "center", valign: "middle" });
+
+  s.addImage({ path: `${ASSETS}/qr-hub.png`, x: 7.93, y: 1.78, w: 3.10, h: 3.10 });
+  s.addText("Workshops & Tutorials", { x: 7.18, y: 4.98, w: 4.60, h: 0.40,
+    fontFace: FONT.title, fontSize: 18, bold: true, color: COLOR.ink, align: "center", valign: "middle" });
+  s.addText("The whole series: every workshop, tutorial, and deck in one place", { x: 7.08, y: 5.40, w: 4.80, h: 0.72,
+    fontFace: FONT.body, fontSize: 13, italic: true, color: COLOR.caption, align: "center", valign: "top" });
+  s.addText("patterncatalyst.github.io/patterncatalyst-workshops-tutorials-list", { x: 7.08, y: 6.12, w: 4.80, h: 0.32,
+    fontFace: FONT.mono, fontSize: 9, color: COLOR.red, align: "center", valign: "middle" });
+
+  addNotes(s, "This is the eBPF with Aya 101 deck. The two codes take it with you: on the left, the site: the chapters, the runnable Aya eBPF examples, and the labs. On the right, the Workshops and Tutorials hub: every workshop, tutorial, and deck in the series in one place, including the 201 deep-dive. Both are public on the Pattern Catalyst GitHub organization.");
+}
+
+
 pres.writeFile({ fileName: OUT })
   .then(p => console.log("WROTE", p))
   .catch(e => { console.error(e); process.exit(1); });

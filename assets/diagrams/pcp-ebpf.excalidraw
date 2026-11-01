@@ -1535,13 +1535,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "pull + record (archives, alerts) \u2014 complements the book's push-based OTLP stream; both land in the same Grafana",
+   "text": "pull + record (archives, alerts): complements the book's push-based OTLP stream; both land in the same Grafana",
    "fontSize": 12,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "pull + record (archives, alerts) \u2014 complements the book's push-based OTLP stream; both land in the same Grafana",
+   "originalText": "pull + record (archives, alerts): complements the book's push-based OTLP stream; both land in the same Grafana",
    "lineHeight": 1.25,
    "baseline": 12
   }

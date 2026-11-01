@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" font-family="'Red Hat Text', system-ui, sans-serif" role="img">
 <defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker><marker id="am" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8650a"/></marker></defs>
 <rect x="20" y="40" width="860" height="280" rx="12" fill="#f7f7f7" stroke="#ddd"/>
-<text x="32" y="60" font-size="12" font-weight="700" fill="#888">target VM — one shared kernel</text>
+<text x="32" y="60" font-size="12" font-weight="700" fill="#888">target VM: one shared kernel</text>
 <rect x="60" y="92" width="300" height="150" rx="12" fill="#eef4fb" stroke="#ddd"/>
 <text x="72" y="112" font-size="12" font-weight="700" fill="#888">container (crun) · own PID + mount ns</text>
 <rect x="90" y="150" width="110" height="66" rx="9" fill="#eef4fb" stroke="#2f6db5" stroke-width="2"/>

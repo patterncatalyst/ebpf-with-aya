@@ -877,13 +877,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "drop the release on any path and the program won't load \u2014 kfuncs let the verifier enforce reference safety",
+   "text": "drop the release on any path and the program won't load: kfuncs let the verifier enforce reference safety",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "drop the release on any path and the program won't load \u2014 kfuncs let the verifier enforce reference safety",
+   "originalText": "drop the release on any path and the program won't load: kfuncs let the verifier enforce reference safety",
    "lineHeight": 1.25,
    "baseline": 11
   }

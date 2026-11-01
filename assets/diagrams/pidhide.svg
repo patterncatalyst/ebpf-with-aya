@@ -16,6 +16,6 @@
 <path d="M540,152 L620,152" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
 <text x="580.0" y="144.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">rewritten</text>
 <text x="580.0" y="144.0" font-size="11" fill="#b8650a" text-anchor="middle">rewritten</text>
-<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">the process still exists — it is edited out of what userspace is allowed to see</text>
+<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">the process still exists: it is edited out of what userspace is allowed to see</text>
 <text x="440" y="286" font-size="11" fill="#888" text-anchor="middle">DEFENSE: bpf_probe_write_user taints the kernel; compare /proc against the real task list</text>
 </svg>

@@ -964,13 +964,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "observe many attacker-relevant operations as one stream \u2014 then optionally shield",
+   "text": "observe many attacker-relevant operations as one stream: then optionally shield",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "observe many attacker-relevant operations as one stream \u2014 then optionally shield",
+   "originalText": "observe many attacker-relevant operations as one stream: then optionally shield",
    "lineHeight": 1.25,
    "baseline": 11
   }

@@ -689,13 +689,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "scoped by cgroup id \u2014 confine one container, leave the host untouched",
+   "text": "scoped by cgroup id: confine one container, leave the host untouched",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "scoped by cgroup id \u2014 confine one container, leave the host untouched",
+   "originalText": "scoped by cgroup id: confine one container, leave the host untouched",
    "lineHeight": 1.25,
    "baseline": 11
   }

@@ -43,5 +43,5 @@
 <text x="147" y="74" font-size="12" fill="#1d1d1d" text-anchor="middle">PMDAs (pluggable agents)</text>
 <text x="147" y="352" font-size="12" fill="#b8650a" text-anchor="middle" font-weight="700">↑ the eBPF intersection: pmdabpf runs CO-RE modules,</text>
 <text x="147" y="370" font-size="12" fill="#1d1d1d" text-anchor="middle">pmdabpftrace runs scripts; openmetrics bridges Aya loaders</text>
-<text x="520" y="448" font-size="12" fill="#1d1d1d" text-anchor="middle">pull + record (archives, alerts) — complements the book&#x27;s push-based OTLP stream; both land in the same Grafana</text>
+<text x="520" y="448" font-size="12" fill="#1d1d1d" text-anchor="middle">pull + record (archives, alerts): complements the book&#x27;s push-based OTLP stream; both land in the same Grafana</text>
 </svg>

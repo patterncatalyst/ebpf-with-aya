@@ -766,13 +766,13 @@
    "updated": 1,
    "link": null,
    "locked": false,
-   "text": "the same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, FUSE \u2014 BPF as a pluggable kernel module",
+   "text": "the same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, FUSE: BPF as a pluggable kernel module",
    "fontSize": 11,
    "fontFamily": 1,
    "textAlign": "left",
    "verticalAlign": "top",
    "containerId": null,
-   "originalText": "the same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, FUSE \u2014 BPF as a pluggable kernel module",
+   "originalText": "the same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, FUSE: BPF as a pluggable kernel module",
    "lineHeight": 1.25,
    "baseline": 11
   }

@@ -1,5 +1,5 @@
 {
-  "title": "eBPF with Aya — Overview",
+  "title": "eBPF with Aya: Overview",
   "uid": "ebpf-overview",
   "tags": ["ebpf-with-aya"],
   "schemaVersion": 39,
@@ -28,12 +28,12 @@
       "targets": [ { "refId": "A", "expr": "sum(increase(ebpf_events_total[15m]))" } ]
     },
     {
-      "id": 3, "title": "Selected metric — rate (use for *_total counters)", "type": "timeseries",
+      "id": 3, "title": "Selected metric: rate (use for *_total counters)", "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [ { "refId": "A", "expr": "rate(${metric}[$__rate_interval])" } ]
     },
     {
-      "id": 4, "title": "Selected metric — raw value (use for gauges)", "type": "timeseries",
+      "id": 4, "title": "Selected metric: raw value (use for gauges)", "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [ { "refId": "A", "expr": "${metric}" } ]
     },

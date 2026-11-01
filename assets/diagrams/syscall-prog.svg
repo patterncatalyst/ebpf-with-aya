@@ -29,5 +29,5 @@
 <text x="440" y="30" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">two ways to create BPF objects: many syscalls from user space, or one program that issues them itself</text>
 <text x="150" y="150" font-size="13" fill="#6a6a6a" text-anchor="middle">the usual way</text>
 <text x="150" y="272" font-size="13" fill="#b8650a" text-anchor="middle">loader program / light skeleton</text>
-<text x="440" y="294" font-size="11" fill="#888" text-anchor="middle">running once replays the load sequence in-kernel — the basis of light skeletons and signed loading</text>
+<text x="440" y="294" font-size="11" fill="#888" text-anchor="middle">running once replays the load sequence in-kernel: the basis of light skeletons and signed loading</text>
 </svg>

@@ -32,6 +32,6 @@
 <path d="M300,234 L160,234" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <text x="230.0" y="226.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">TX</text>
 <text x="230.0" y="226.0" font-size="11" fill="#555" text-anchor="middle">TX</text>
-<text x="440" y="36" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">tc runs on the sk_buff — both directions — and returns a verdict</text>
+<text x="440" y="36" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">tc runs on the sk_buff: both directions: and returns a verdict</text>
 <text x="440" y="308" font-size="11" fill="#888" text-anchor="middle">verdict: TC_ACT_OK (pass) · TC_ACT_SHOT (drop) · TC_ACT_REDIRECT (to another iface)</text>
 </svg>

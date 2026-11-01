@@ -2,17 +2,28 @@
 title: "Signal programs: reacting with force"
 order: 38
 part: Security & LSM
-description: "The other enforcement style: instead of denying a syscall at an LSM hook, react to one. A tracepoint on execve matches a forbidden binary and calls bpf_send_signal(SIGKILL) to kill the process before it runs — a 'signal program', lab-only offense that illuminates defense."
+description: "The other enforcement style: instead of denying a syscall at an LSM hook, react to one. A tracepoint on execve matches a forbidden binary and calls bpf_send_signal(SIGKILL) to kill the process before it runs: a 'signal program', lab-only offense that illuminates defense."
 duration: 40 minutes
 ---
+
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Send a signal from inside the kernel with bpf_send_signal()
+- Match a forbidden binary at a sys_enter_execve tracepoint
+- Stop a process before its exec completes
+- Explain why this enforcement style belongs in a lab
+
+## Why this matters
 
 Chapter 37 *prevented* an operation by returning `-EPERM` from an LSM hook.
 There's a second enforcement style: let the event happen and **react** to
 it. eBPF can send a signal to a process from inside the kernel with
 `bpf_send_signal()`, so a program can watch for something it doesn't like
 and **kill the offender on the spot**. This chapter builds the canonical
-example — kill any process that tries to execute a forbidden binary, before
-it gets to run — which doubles as a lesson in why this technique is powerful
+example: kill any process that tries to execute a forbidden binary, before
+it gets to run, which doubles as a lesson in why this technique is powerful
 *and* why it belongs in a lab.
 
 The code is in `examples/38-signal-kill/`. `./demo.sh` there builds,
@@ -21,8 +32,8 @@ it.
 
 {% include excalidraw.html
    file="signal-kill"
-   alt="A process calls execve on /tmp/forbidden-something. A tracepoint on sys_enter_execve reads the filename; if it matches the forbidden prefix, the program calls bpf_send_signal(SIGKILL) and the process dies before the exec completes. React, don't just watch — a signal program is lab-only offense that illuminates defense."
-   caption="Figure 38.1 — React, don't just watch: kill the process the moment it execs a forbidden binary" %}
+   alt="A process calls execve on /tmp/forbidden-something. A tracepoint on sys_enter_execve reads the filename; if it matches the forbidden prefix, the program calls bpf_send_signal(SIGKILL) and the process dies before the exec completes. React, don't just watch: a signal program is lab-only offense that illuminates defense."
+   caption="Figure 38.1: React, don't just watch; kill the process the moment it execs a forbidden binary" %}
 
 ## Prevent vs. react
 
@@ -31,19 +42,19 @@ Two ways to stop something with eBPF:
 - **Prevent** (Chapter 37): an LSM hook returns an error and the syscall
   never succeeds. Clean, but only at hooks the kernel offers, and only with
   an allow/deny answer.
-- **React**: watch any event you can probe, and if it's bad, *do something*
-  — emit an alert, or `bpf_send_signal()` to kill the process. Broader reach
+- **React**: watch any event you can probe, and if it's bad, *do something*:
+  emit an alert, or `bpf_send_signal()` to kill the process. Broader reach
   (any tracepoint/kprobe), but it's after-the-fact: you're racing the
   action, and a signal is a blunt instrument.
 
-`bpf_send_signal(sig)` sends a signal to the *current* task — the one whose
+`bpf_send_signal(sig)` sends a signal to the *current* task: the one whose
 event you're handling. Catch a process at `sys_enter_execve` and send
 `SIGKILL`, and it dies before the new program image is running. That's the
 "kill on sight" pattern: a denylist enforced with lethal force.
 
 A word on framing: this is **lab-only**. Killing processes from the kernel
 based on a string match is a great way to understand how EDR and runtime
-security tools work — and a great way to make a real system unusable. We
+security tools work, and a great way to make a real system unusable. We
 build it to learn the mechanism and its hazards, not to deploy it.
 
 ## How the code works
@@ -92,7 +103,7 @@ The pieces, the way you'd write them:
   *user-space* pointer, so the user reader).
 - **`starts_with`** compares the filename against a fixed prefix. The loop
   is bounded by `needle.len()`, a compile-time constant, and `buf` is
-  indexed within its fixed 64-byte size — both required for the verifier to
+  indexed within its fixed 64-byte size, both required for the verifier to
   accept it. String matching in eBPF lives or dies by these bounds.
 - On a match we **`bpf_send_signal(SIGKILL)`**. Because the program runs in
   the context of the process calling `execve`, the signal targets that
@@ -116,7 +127,7 @@ fn emit_kill(pid: u32) {
 ```
 
 User space attaches the tracepoint, drains the ring, and for each record
-prints `killed <comm> (pid N)` and bumps `ebpf_signal_kills_total` — the
+prints `killed <comm> (pid N)` and bumps `ebpf_signal_kills_total`, the
 same attach/drain pattern as every tracing chapter, with a lethal side
 effect in the kernel.
 
@@ -127,17 +138,17 @@ cd examples/38-signal-kill && ./demo.sh
 ```
 
 The demo loads the program on the target, then in a loop copies a harmless
-binary to `/tmp/forbidden-sleep` and tries to run it — each attempt is
-killed instantly — while also running a normal `sleep` that survives. You'll
+binary to `/tmp/forbidden-sleep` and tries to run it (each attempt is
+killed instantly) while also running a normal `sleep` that survives. You'll
 see `killed forbidden-sleep (pid …)` lines from the loader and
 `ebpf_signal_kills_total` rising in Grafana, and on the target the forbidden
 command exits immediately with "Killed".
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_signal_kills_total[1m])` — forbidden executions killed.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_signal_kills_total[1m])`: forbidden executions killed.
 
 ## Cross-check
 
-On the target (`[vm]$` — `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
+On the target (`[vm]$`, via `ssh fedora@$(scripts/lab/vm-ip.sh ebpf-target)`):
 
 ```bash
 [vm]$ cp /usr/bin/sleep /tmp/forbidden-sleep
@@ -154,19 +165,14 @@ show the process terminated by `SIGKILL`.
 ## What you learned
 
 - **`bpf_send_signal()`** lets a kernel-side eBPF program kill (or signal)
-  the current process — the *react* enforcement style, complementing
+  the current process, the *react* enforcement style, complementing
   Chapter 37's *prevent*.
 - Safe **string matching** in eBPF: copy into a fixed buffer and compare
   against a constant-length needle so every access is bounded for the
   verifier.
 - Why "kill on sight" is **lab-only**: it's the mechanism behind runtime
-  security tooling, and also a fast way to break a real system — learn it,
+  security tooling, and also a fast way to break a real system: learn it,
   don't ship it as written.
 
 Chapter 39 continues the Security part, building toward richer LSM policy
 and tamper detection.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

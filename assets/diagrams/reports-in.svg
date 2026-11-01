@@ -11,7 +11,7 @@
 <text x="482.5" y="172.0" font-size="11.5" fill="#555555" text-anchor="middle">reads the map</text>
 <rect x="615" y="58" width="235" height="56" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
 <text x="732.5" y="84.0" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">your terminal</text>
-<text x="732.5" y="101.0" font-size="11.5" fill="#555555" text-anchor="middle">live table — what you “watch”</text>
+<text x="732.5" y="101.0" font-size="11.5" fill="#555555" text-anchor="middle">live table: what you “watch”</text>
 <rect x="615" y="138" width="235" height="50" rx="9" fill="#fff8ef" stroke="#e8870c" stroke-width="2"/>
 <text x="732.5" y="168.5" font-size="13.5" font-weight="700" fill="#111111" text-anchor="middle">otel-lgtm  ·  OTLP :4318</text>
 <rect x="615" y="212" width="235" height="56" rx="9" fill="#ffffff" stroke="#111111" stroke-width="2"/>
@@ -29,5 +29,5 @@
 <text x="732.0" y="198.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">store + chart</text>
 <text x="732.0" y="198.0" font-size="11" fill="#555" text-anchor="middle">store + chart</text>
 <text x="440" y="32" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">two faces of output: a live table in your terminal, and ebpf_* metrics you chart in Grafana</text>
-<text x="440" y="322" font-size="11" fill="#888" text-anchor="middle">the program runs in the guest; the stack runs on your laptop — the loader pushes out via OTLP</text>
+<text x="440" y="322" font-size="11" fill="#888" text-anchor="middle">the program runs in the guest; the stack runs on your laptop: the loader pushes out via OTLP</text>
 </svg>

@@ -21,6 +21,6 @@
 <path d="M550,176 L610,195" fill="none" stroke="#555" stroke-width="2" marker-end="url(#a)"/>
 <text x="586.0" y="179.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">data_out</text>
 <text x="586.0" y="179.5" font-size="11" fill="#555" text-anchor="middle">data_out</text>
-<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">run the real program against a packet you build — no NIC, no live traffic</text>
+<text x="440" y="34" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">run the real program against a packet you build: no NIC, no live traffic</text>
 <text x="440" y="284" font-size="11" fill="#888" text-anchor="middle">assert the verdict (and map side-effects) in a test you can run anywhere with privileges</text>
 </svg>

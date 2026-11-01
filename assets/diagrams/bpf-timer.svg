@@ -32,6 +32,6 @@
 <path d="M750,122 L520,162" fill="none" stroke="#b8650a" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#am)"/>
 <text x="659.0" y="138.0" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">re-arms</text>
 <text x="659.0" y="138.0" font-size="11" fill="#b8650a" text-anchor="middle">re-arms</text>
-<text x="440" y="28" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">schedule work for later — without leaving the kernel or blocking the hot path</text>
+<text x="440" y="28" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">schedule work for later: without leaving the kernel or blocking the hot path</text>
 <text x="440" y="326" font-size="11" fill="#888" text-anchor="middle">timer = softirq (atomic, periodic, self-rescheduling); workqueue = process context (sleepable, fast-path/slow-path)</text>
 </svg>

@@ -6,8 +6,20 @@ description: "Build a sampling CPU profiler with a perf_event program firing at 
 duration: 35 minutes
 ---
 
+## Learning objectives
+
+By the end of this chapter you can:
+
+- Explain why a sampling profiler has a fixed, bounded cost unlike per-event tracers
+- Attach a `perf_event` program across all CPUs with a fixed-frequency sample policy
+- Capture kernel and user call stacks with `bpf_get_stackid` into a `StackTrace` map
+- Symbolize kernel frames via `/proc/kallsyms` and recognize the limits of symbolizing user frames
+- Emit folded-stack output for flame graphs and continuous profiling with Pyroscope
+
+## Why this matters
+
 `runqlat` and `hardirqs` told you *how long* things waited. A profiler
-tells you *where* the CPU actually spends its time — which functions are
+tells you *where* the CPU actually spends its time: which functions are
 on-CPU when you look. `profile` does it by **sampling**: a timer fires at
 a fixed rate on every CPU, and each time it grabs the current call stack.
 Aggregate thousands of those samples and the hot paths emerge. This
@@ -19,14 +31,14 @@ The code is in `examples/23-profile/`. `./demo.sh` there builds, deploys, and ru
 {% include excalidraw.html
    file="profiler-pipeline"
    alt="Sampling profiler pipeline: a perf_event timer fires at 99 Hz per CPU; each tick captures a stack with bpf_get_stackid into a StackTrace map; user space folds and symbolizes for a flame graph or Pyroscope."
-   caption="Figure 23.1 — the sampling profiler pipeline" %}
+   caption="Figure 23.1. The sampling profiler pipeline" %}
 
 ## Sampling, not tracing
 
-Every tool so far attached to a *specific event* — a syscall, a
+Every tool so far attached to a *specific event*: a syscall, a
 function, a tracepoint. A profiler is different: it attaches to a
 **timer** and asks "what's running *right now*?" at a fixed frequency
-(99 Hz per CPU is the convention — 99 rather than 100 to avoid beating
+(99 Hz per CPU is the convention; 99 rather than 100 to avoid beating
 against periodic kernel activity). The cost is therefore **fixed**: 99
 samples per second per CPU, whether the box is idle or on fire. That
 bounded overhead is what makes sampling profilers safe to run in
@@ -54,13 +66,13 @@ for cpu in online_cpus()? {
 }
 ```
 
-`AllProcessesOneCpu { cpu }` means "all processes, this one CPU" — repeat
+`AllProcessesOneCpu { cpu }` means "all processes, this one CPU"; repeat
 for every online CPU and you sample the whole machine. The eBPF side is
 a `#[perf_event]` function that runs on each tick.
 
 ## Walking the stack
 
-On each sample we want the **call stack** — the chain of return
+On each sample we want the **call stack**: the chain of return
 addresses showing who called whom. eBPF captures it with
 `bpf_get_stackid`, which walks the stack and stores the frames in a
 special **`StackTrace`** map, returning an integer id for that stack:
@@ -71,8 +83,8 @@ let ustack = STACKS.get_stackid(&ctx, BPF_F_USER_STACK as u64).unwrap_or(-1) as 
 ```
 
 Kernel and user stacks are captured separately (the flag selects which).
-The clever part is that **identical stacks get the same id** — the map
-dedups them — so we don't store the same stack a thousand times. Our
+The clever part is that **identical stacks get the same id**: the map
+dedups them, so we don't store the same stack a thousand times. Our
 count map is keyed by `(pid, comm, kstack_id, ustack_id)`, and the value
 is simply how many samples landed on that exact stack:
 
@@ -95,14 +107,14 @@ function names, and the two halves are resolved differently:
   greatest symbol whose address is ≤ it. (Because `profile` runs *on the
   VM*, that's the right kernel's symbols.)
 - **User** frames: this needs the target binary's symbol table and load
-  address — a real symbolizer's job (`blazesym`, `addr2line`,
+  address, a real symbolizer's job (`blazesym`, `addr2line`,
   `perf`'s). This example prints user frames as **hex** and leaves
   wiring in `blazesym` as an exercise; the kernel side shows the
   technique end-to-end.
 
 ## Folded output and flame graphs
 
-The output format is **folded stacks** — the lingua franca of flame
+The output format is **folded stacks**: the lingua franca of flame
 graphs:
 
 ```text
@@ -118,7 +130,7 @@ suffixed `_[k]`. Pipe it straight into Brendan Gregg's `flamegraph.pl`:
 flamegraph.pl out.folded > cpu.svg
 ```
 
-and you have the classic flame graph — wide boxes are where the CPU
+and you have the classic flame graph; wide boxes are where the CPU
 lives.
 
 ## Continuous profiling: Pyroscope
@@ -126,7 +138,7 @@ lives.
 For one-off investigation, folded → flame graph is perfect. For *always
 on* profiling, the `otel-lgtm` stack already bundles **Pyroscope**; the
 production move is to push these profiles (in pprof format) to it and use
-Grafana's flame-graph panel. That ingest path is an extension — the
+Grafana's flame-graph panel. That ingest path is an extension; the
 sampling and stack-capture mechanics here are exactly what feeds it.
 
 ## Build, deploy, observe
@@ -138,7 +150,7 @@ cd examples/23-profile && SECS=10 ./demo.sh > out.folded
 Drive some CPU on the VM while it samples (`sha256sum /dev/zero`), then
 build the flame graph from `out.folded`.
 
-**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_profile_samples_total[1m])` — CPU stack samples per second.
+**In Grafana** (`127.0.0.1:3000` → Explore), graph `rate(ebpf_profile_samples_total[1m])`: CPU stack samples per second.
 
 ## Cross-check
 
@@ -151,7 +163,7 @@ Both produce comparable folds; the hot functions should agree.
 
 ## What you learned
 
-- A **`perf_event`** program samples on a timer at fixed cost — the
+- A **`perf_event`** program samples on a timer at fixed cost: the
   profiler's cost model, unlike per-event tracing.
 - Capture call stacks with `bpf_get_stackid` into a **`StackTrace`**
   map; identical stacks dedup to one id.
@@ -160,10 +172,5 @@ Both produce comparable folds; the hot functions should agree.
 - Emit **folded stacks** for flame graphs; push to **Pyroscope** for
   continuous profiling.
 
-Next: **`memleak`** and **`biopattern`** — tracking allocations that
+Next: **`memleak`** and **`biopattern`**: tracking allocations that
 never free, and block-I/O access patterns.
-
----
-
-*Verification status: <span class="status status--verified">verified — Fedora 44, kernel 7.1.3</span>.
-Built and run on the lab VM (Fedora 44, kernel 7.1.3-200.fc44): builds, loads, and attaches cleanly and runs without error. Confirmed on this kernel — attach targets and struct offsets can be version-specific.*

@@ -28,6 +28,6 @@
 <path d="M560,190 L610,267" fill="none" stroke="#b8650a" stroke-width="2" marker-end="url(#am)"/>
 <text x="591.0" y="238.5" font-size="11" fill="#ffffff" stroke="#ffffff" stroke-width="3" paint-order="stroke" text-anchor="middle">trace_id</text>
 <text x="591.0" y="238.5" font-size="11" fill="#b8650a" text-anchor="middle">trace_id</text>
-<text x="440" y="30" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">one request, one trace_id, three correlated signals — click metric → trace → logs in Grafana</text>
+<text x="440" y="30" font-size="11" fill="#b8650a" text-anchor="middle" font-weight="700">one request, one trace_id, three correlated signals: click metric → trace → logs in Grafana</text>
 <text x="440" y="344" font-size="11" fill="#888" text-anchor="middle">we mint the trace_id in the loader; OBI propagates real W3C context across services</text>
 </svg>

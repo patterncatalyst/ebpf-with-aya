@@ -837,3 +837,12 @@ table :is(th, td) code {
 }
 .status--unverified { background: #fff8ef; border-color: #f0c98a; color: #8a5a00; }
 .status--verified   { background: #f1f8f2; border-color: #9cc79f; color: #2e7d32; }
+
+/* Chapters table-of-contents list (/docs/00-index/) */
+.toc-list { list-style: none; margin: 0 0 var(--space-7); padding: 0; }
+.toc-list > li { padding: var(--space-3) 0; border-bottom: 1px solid var(--border); }
+.toc-list > li:last-child { border-bottom: none; }
+.toc-list a { display: flex; gap: var(--space-3); align-items: baseline; font-weight: 600; text-decoration: none; }
+.toc-list a:hover { text-decoration: underline; }
+.toc-list__num { font-family: var(--font-mono); color: var(--accent); font-weight: 700; min-width: 2.4rem; flex: none; }
+.toc-list small { display: block; color: var(--ink-muted); font-weight: 400; margin-top: var(--space-1); }
