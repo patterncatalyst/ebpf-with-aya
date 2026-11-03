@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Every networking program so far has *watched*: Chapter 27 timed connects,
+Every networking program so far has *watched*: we timed connects,
 28 tracked state changes, 29 read request lines, 30 noted established
 sockets. None of them changed what the kernel did with a packet. This
 chapter crosses that line. A `tc` classifier sits on the packet path and
@@ -110,7 +110,7 @@ Walking it the way you would write it:
 
 - **`ctx.load::<T>(offset)`** copies `T` out of the `sk_buff` at a byte
   offset, bounds-checked by the kernel: the tc analogue of the
-  socket-filter `load` from Chapter 29. We pull the Ethernet header at 0,
+  socket-filter `load` from the L7 chapter. We pull the Ethernet header at 0,
   bail to `TC_ACT_OK` for anything that isn't IPv4 (don't disturb ARP,
   IPv6, …), then pull the IPv4 header at `EthHdr::LEN`. The `EthHdr` /
   `Ipv4Hdr` / `TcpHdr` types come from the `network-types` crate, so the
@@ -155,8 +155,8 @@ host qdisc to attach to, so we ask Aya to add **clsact** to the interface
 inbound. Everything else is the familiar cast → `load` (verifier) →
 `attach` (target) sequence.
 
-Reading aggregation maps from user space is the Performance-part pattern
-(Chapter 22): take the map, then on a timer iterate its entries and report
+Reading aggregation maps from user space is the performance pattern
+from earlier: take the map, then on a timer iterate its entries and report
 deltas as OTLP counters:
 
 ```rust
@@ -235,5 +235,5 @@ track your `ebpf_tc_dropped_total` in Grafana.
 - Why data-path programs **aggregate in-kernel** and report on a timer
   instead of emitting per-packet, and how to read those maps as deltas.
 
-Next, Chapter 32 drops to the earliest hook of all, **XDP**, in the
+Next, the book drops to the earliest hook of all, **XDP**, in the
 driver, before the `sk_buff` even exists.

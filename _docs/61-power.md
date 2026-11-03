@@ -120,12 +120,12 @@ Efficiency cuts two ways here. First, **eBPF is itself the low-energy way to
 observe**: an in-kernel, event-driven `sched_switch` accumulator costs a
 fraction of a userspace agent scraping `/proc` on a timer, so replacing polling
 telemetry with eBPF *reduces* the overhead you're trying to measure, and
-profiling (Chapter 23) then points you at the workload hotspots worth cutting.
+profiling then points you at the workload hotspots worth cutting.
 
 Second, and newer, eBPF is starting to **control** power. **`cpufreq_ext`** is
 the first upstream-bound eBPF interface that can set CPU frequency through a
-`bpf_struct_ops` (Chapter 55), a frequency-scaling governor written in eBPF
-instead of kernel C, composable with the `sched_ext` schedulers of Part 6. That
+`bpf_struct_ops`, a frequency-scaling governor written in eBPF
+instead of kernel C, composable with the `sched_ext` schedulers. That
 turns this chapter's measurement loop into a feedback loop: observe per-workload
 energy, then steer frequency or scheduling to reduce it, all in eBPF. It's
 early, but it's the direction: eBPF moving from the energy *dashboard* to the
@@ -172,5 +172,5 @@ eBPF shares are real, the joules need hardware the guest doesn't see.
   **`cpufreq_ext`** (struct_ops), an emerging way to **control** it: closing
   the loop from observing energy to steering it.
 
-Next, Chapter 62 closes the book: a look back across everything from a kprobe
+Next, the book closes: a look back across everything from a kprobe
 counting `unlink` to operating a fleet, and where eBPF and Aya go from here.

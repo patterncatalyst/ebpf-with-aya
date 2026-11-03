@@ -26,7 +26,7 @@ target VM. (A handful of advanced chapters are the exception, where a
 kernel feature Aya can't yet author is written in C; we flag it
 each time, and the section below lists them.) But the eBPF half compiles to a special target with a
 special linker, so the setup has a few moving parts. We'll get them
-all in place and prove them with a build in Chapter 6.
+all in place and prove them with a first build.
 
 {% include excalidraw.html
    file="workspace-build"
@@ -124,7 +124,7 @@ differs is the *front end*:
 - **C eBPF** (the libbpf/BCC world most kernel docs assume) uses **Clang**, an
   LLVM C front end, to compile a `.bpf.c` file straight to a BPF object:
   `clang -O2 -g -target bpf -c prog.bpf.c -o prog.o`. The `-g` matters: it keeps
-  the BTF debug info that CO-RE relies on (Chapter 58).
+  the BTF debug info that CO-RE relies on.
 - **Rust eBPF** (Aya) uses **rustc**, also an LLVM front end, to emit BPF, and
   then **`bpf-linker`** drives LLVM's BPF backend to produce and finalize the
   object. So in the *Rust* path there is no Clang at all: rustc + bpf-linker
@@ -147,18 +147,18 @@ runs is **C**, because Aya's kernel-side authoring for that specific feature is
 still emerging in 2026. The user-space side stays Rust or `bpftool`; the kernel
 program is C, loaded with `bpftool` or the subsystem's own tooling:
 
-- **sched_ext schedulers** (Chapters 43–44): the scheduler is `scx_*.bpf.c`,
+- **sched_ext schedulers**: the scheduler is `scx_*.bpf.c`,
   loaded via the `scx` tooling; the Aya crate there is a companion *observer*,
   not the scheduler itself.
-- **struct_ops** (Chapter 55): the TCP congestion-control vtable is `cc.bpf.c`,
+- **struct_ops**: the TCP congestion-control vtable is `cc.bpf.c`,
   installed with `bpftool struct_ops register`.
-- **BPF iterators** (Chapter 57): `task_iter.bpf.c`, installed with
+- **BPF iterators**: `task_iter.bpf.c`, installed with
   `bpftool iter pin`.
-- **BPF arena** (Chapter 56): `arena_list.bpf.c`, compiled with Clang and
+- **BPF arena**: `arena_list.bpf.c`, compiled with Clang and
   loaded via `bpftool`.
 
-A few more chapters (the ring-buffer dynptr, timers, and CO-RE bindings:
-Chapters 50, 54, 58) ship a working Aya kernel program *and* a canonical C
+A few more chapters (the ring-buffer dynptr, timers, and CO-RE bindings)
+ship a working Aya kernel program *and* a canonical C
 reference, because the Aya rendering is still approximate or depends on
 generated bindings; each says so in its verification note. The point isn't that
 Aya is lacking; it's that the goal is all-Rust while the reality in 2026 is
@@ -210,7 +210,7 @@ cd hello && cargo build
 
 The first build is slow: it compiles `core` for the BPF target and a
 chunk of the Aya crates. Subsequent builds are quick. If this
-succeeds, your toolchain is complete. Chapter 6 explains every line of
+succeeds, your toolchain is complete. The first program explains every line of
 what got generated and actually runs it against the target VM.
 
 > **The Aya crate versions you'll see:** the user-space crate is `aya`
@@ -240,7 +240,7 @@ the two-crate workspace.
    eBPF needs privileges *on the target VM*, not on your laptop. The
    per-chapter `demo.sh` builds in RustRover-friendly ways and then
    ships the binary to the guest with the `deploy-to-target.sh` from
-   Chapter 2. Use RustRover to edit and to run `cargo build`/`clippy`;
+   the lab. Use RustRover to edit and to run `cargo build`/`clippy`;
    use the terminal to deploy.
 
 ### Step-debugging the loader on the VM (RustRover / gdb)
@@ -262,7 +262,7 @@ has to attach *there*, not on your laptop. The way to bridge that is
 The **eBPF half is not source-line debuggable this way**. Once a program
 is verified and loaded it runs in kernel context; there's no gdb stepping
 into it. You "debug" the kernel side by *observing* it: `bpftool prog
-dump xlated`, `bpftool map dump`, `aya-log`, and `bpftrace` (Chapter 5).
+dump xlated`, `bpftool map dump`, `aya-log`, and `bpftrace`.
 So: gdb for the loader, `bpftool`/`bpftrace` for the program.
 
 #### The mechanism, from the terminal
@@ -317,7 +317,7 @@ your local source. Two practical notes gdb will remind you of:
 With the mechanism understood, the IDE config is a thin layer:
 
 - **Add the guest as an SSH host**: *Settings → Tools → SSH
-  Configurations*: host `<vm-ip>`, user `fedora`, the key from Chapter 2.
+  Configurations*: host `<vm-ip>`, user `fedora`, the key from the lab setup.
   (RustRover *Remote Development*, running the whole IDE backend on the
   guest, also works, but it's heavier than you need; SSH + remote debug
   is enough.)
@@ -327,7 +327,7 @@ With the mechanism understood, the IDE config is a thin layer:
   the loader source and hit Debug; RustRover speaks the same gdb remote
   protocol you just used.
 - **A "Before launch" step** that runs `scripts/lab/deploy-to-target.sh`
-  (Chapter 2), or a small wrapper that also `ssh`es in to start
+ , or a small wrapper that also `ssh`es in to start
   `sudo gdbserver … <binary>`, so *build → ship → run-under-debugger* is
   one green button.
 
@@ -342,7 +342,7 @@ With the mechanism understood, the IDE config is a thin layer:
   give "breakpoint set but not yet resolved" and never stop.
 - **eBPF ≠ steppable.** Breakpoints only bind in the loader. To "watch"
   the program, inspect its maps/ring buffers and `aya-log` output; the
-  kernel-side visibility tools are Chapter 5, not gdb.
+  kernel-side visibility tools are the eBPF toolchain, not gdb.
 
 ## The eBPF tooling landscape
 
@@ -356,7 +356,7 @@ the names blur together:
   a chapter cross-checks Aya's behaviour against ground truth, it's almost always
   `bpftool`.
 - **libbpf** is the canonical C loader library. It loads objects, performs the
-  CO-RE relocations (Chapter 58), and manages maps and links. Aya is its
+  CO-RE relocations, and manages maps and links. Aya is its
   pure-Rust counterpart and does *not* use it, but the kernel docs and the
   reference `.bpf.c` programs assume it.
 - **BCC** is the original framework: it bundles Clang and compiles eBPF *on the
@@ -369,14 +369,14 @@ the names blur together:
 - **pahole / `dwarves`** turns DWARF debug info into BTF and shows struct
   layouts; it's how a kernel gains the BTF that CO-RE and `vmlinux.h` depend on.
 - **`llvm-objdump` / `readelf`** inspect the compiled object, including the
-  CO-RE relocation records (Chapter 58's cross-check).
+  CO-RE relocation records.
 - **`perf`** is sampling and tracing that predates and complements eBPF, useful
-  for profiling alongside it (Chapter 23).
+  for profiling alongside it.
 
 The split that matters operationally: **you build on the laptop** (rustc,
 bpf-linker, cargo, and Clang for the C references) and **you inspect on the
 guest** (`bpftool`, `bpftrace`, `bcc-tools`, `perf`), because those read the
-kernel where the program actually runs, which is why Chapter 2's cloud-init put
+kernel where the program actually runs, which is why the lab's cloud-init put
 them in the VM. As a project policy these always come from Fedora/Red Hat
 repositories, never third-party binaries.
 
@@ -387,7 +387,7 @@ Your eBPF object is special, verified bytecode for the kernel VM, but the
 links a C library for its syscalls, memory allocation, and DNS. *Which* libc,
 and whether it's linked statically or dynamically, decides where that binary can
 run: a portability axis entirely **separate** from the kernel-version
-portability CO-RE gives you (Chapter 58). The two get conflated constantly; keep
+portability CO-RE gives you. The two get conflated constantly; keep
 them apart.
 
 - **glibc** is the GNU C Library, the default on Fedora, RHEL, the UBI images
@@ -443,4 +443,4 @@ default. For everything in this book, the stock glibc target is correct.
 - [x] Awareness of the **glibc** (our default) vs **musl** (optional, static,
   cross-distro) choice for the loader, distinct from CO-RE's kernel portability
 
-[Next: Chapter 5: eBPF concepts and tools →]({{ "/docs/05-ebpf-concepts/" | relative_url }})
+[Next: eBPF concepts and tools →]({{ "/docs/05-ebpf-concepts/" | relative_url }})

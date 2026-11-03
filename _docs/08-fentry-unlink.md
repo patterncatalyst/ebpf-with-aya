@@ -18,9 +18,9 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 7's kprobe told you an unlink was *attempted* and dredged the
+The kprobe told you an unlink was *attempted* and dredged the
 filename out of a raw pointer. This chapter attaches to the same
-target, `vfs_unlink` (Chapter 7 explains why it isn't `do_unlinkat`
+target, `vfs_unlink` (the kprobe chapter explains why it isn't `do_unlinkat`
 anymore), with **fentry** and **fexit**, and gets two
 things the kprobe couldn't: lower overhead with typed arguments, and
 the function's **return value**, so we can report whether each delete
@@ -48,7 +48,7 @@ overhead than a trap. **fexit** runs at function *return* and can read
 the **return value**, which a kprobe entry cannot see (you'd
 attach a second `kretprobe` for that). The cost: fentry/fexit require
 the kernel to have BTF (the `/sys/kernel/btf/vmlinux` you confirmed in
-Chapter 2) and a reasonably recent kernel, both true on Fedora 44.
+the lab) and a reasonably recent kernel, both true on Fedora 44.
 
 | | kprobe (Ch 7) | fentry/fexit (Ch 8) |
 |---|---|---|
@@ -71,7 +71,7 @@ returns in both probes for the same call:
    caption="Figure 8.1. fentry captures arguments, fexit captures the return; a pid_tgid-keyed map bridges them" %}
 
 This correlate-two-probes pattern recurs constantly (it's exactly how
-latency tools like `runqlat` in Chapter 21 pair a start and end
+latency tools like `runqlat` pair a start and end
 timestamp), so it's worth getting comfortable with here on something
 simple.
 
@@ -111,13 +111,13 @@ unlink succeeded; a negative value is a `-errno` (e.g. `-2` is
 `ENOENT`, "no such file"). This is the bit most likely to need a tweak
 on your kernel/aya version, so it's flagged in the reconciliation plan.
 
-The filename read is the same technique as Chapter 7: reading
+The filename read is the same technique as the kprobe: reading
 `dentry->d_name.name` at a fixed offset, and it carries the same version caveat. fentry gives you *typed
 arguments*, which makes the pointer's type trustworthy, but following a
 nested pointer to a string still goes through `bpf_probe_read_kernel`.
 The fully robust version uses BTF-generated kernel types (via
 `aya-tool generate`) so field offsets relocate automatically; that's
-the CO-RE machinery built out in Part 9. Here we keep the read
+the CO-RE machinery built out later. Here we keep the read
 explicit so the mechanic stays visible, and degrade to an empty
 filename if it fails.
 
@@ -138,9 +138,9 @@ exit.load("vfs_unlink", &btf)?;
 exit.attach()?;
 ```
 
-`Btf::from_sys_fs()` is why Chapter 2 made you confirm
+`Btf::from_sys_fs()` is why the lab made you confirm
 `/sys/kernel/btf/vmlinux` exists; without it, fentry/fexit can't
-load. Draining the ring buffer is identical to Chapter 7; the only
+load. Draining the ring buffer is identical to the kprobe; the only
 addition is a `result="ok"|"fail"` label on the exported counter so you
 can chart success versus failure:
 
@@ -165,7 +165,7 @@ ssh fedora@"$(scripts/lab/vm-ip.sh ebpf-target)" 'for i in $(seq 1 10); do t=$(m
 The table shows a `RET` column; the successful `mktemp`/`rm` pairs
 report `0`, the bogus removal reports a negative errno. In Grafana, the
 `result` label splits `ebpf_events_total` into ok versus fail, a
-distinction the Chapter 7 kprobe couldn't make.
+distinction the plain kprobe couldn't make.
 
 **In Grafana** (`127.0.0.1:3000` → Explore), filter to the `ebpf-fentrysnoop` service and graph `sum by (program) (rate(ebpf_events_total[1m]))`: delete attempts seen via fentry as a live rate, the same events your terminal lists, now plotted over time.
 

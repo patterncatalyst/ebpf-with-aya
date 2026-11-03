@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-So far XDP has dropped (Chapter 32) and observed (Chapter 33). Its third
+So far XDP has dropped and observed. Its third
 power is to **rewrite and forward**: change bytes in the packet and send it
 on its way. That is the heart of an XDP load balancer like Katran: a virtual
 address out front, a set of backends behind it, and an XDP program that
@@ -182,5 +182,5 @@ round-robin.
 
 That closes the **Networking** part. We built up from timing a connection to
 dropping, capturing, and load-balancing packets in the driver. Next is
-**Part 5, Security & LSM**, where eBPF stops reporting on the kernel and
+the **Security & LSM** part, where eBPF stops reporting on the kernel and
 starts making allow/deny decisions for it.

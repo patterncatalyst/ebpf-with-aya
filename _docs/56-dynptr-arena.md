@@ -20,11 +20,11 @@ By the end of this chapter you can:
 
 The verifier's love of fixed sizes has shaped every program in this book. Maps
 have a fixed value size; the stack is 512 bytes; when we captured a SQL string
-in Chapter 47 we read it into a *fixed* 128-byte buffer and truncated, because
+in the postgres probe we read it into a *fixed* 128-byte buffer and truncated, because
 "variable length" and "provable bounds" are in tension. Two recent additions
 resolve that tension from opposite ends. **Dynptrs** (kernel 5.19) give you a
 safe handle to a region whose length is only known at runtime: you already met
-one as the user-ring-buffer sample in Chapter 50. **Arenas** (kernel 6.9) give
+one as the user-ring-buffer sample. **Arenas** (kernel 6.9) give
 you a large region of memory, shared zero-copy with user space, in which BPF
 can build *real data structures with real pointers*. Together they're how
 modern BPF escapes the fixed-size box.
@@ -59,13 +59,13 @@ program. You don't dereference it directly; you ask it for access:
 - **`bpf_dynptr_slice`/`bpf_dynptr_slice_rdwr`** are for **skb/xdp** dynptrs,
   where the data may not be contiguous: they either hand back a direct pointer
   or copy into a buffer *you* supply, and may return NULL, so the verifier
-  forces a null check (the `KF_RET_NULL` discipline from Chapter 52).
+  forces a null check (the `KF_RET_NULL` discipline from kfuncs).
 
 The unifying idea is that a dynptr abstracts over *what backs the memory*. The
 same handle type wraps local memory (`bpf_dynptr_from_mem`), a ring-buffer
 reservation (`bpf_ringbuf_reserve_dynptr`), packet data
-(`bpf_dynptr_from_skb`/`_xdp`), and the user-ring-buffer sample you drained in
-Chapter 50. Write your parsing once against a dynptr and it works regardless of
+(`bpf_dynptr_from_skb`/`_xdp`), and the user-ring-buffer sample you drained
+earlier. Write your parsing once against a dynptr and it works regardless of
 source. One caution worth internalizing: a slice is **invalidated when its
 dynptr is** (e.g., once you submit a ring-buffer reservation), so you don't
 hold slices across the operation that ends the region.
@@ -179,5 +179,5 @@ seeing the arena map's bytes change as the BPF program builds its structure
   structures or large shared memory; both are emerging in Aya, with C canonical
   for now.
 
-Next, Chapter 57 closes the advanced part with **BPF iterators**: walking
+Next, the book closes the advanced part with **BPF iterators**: walking
 kernel data structures and emitting their contents like a synthetic file.

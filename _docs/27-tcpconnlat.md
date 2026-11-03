@@ -2,7 +2,7 @@
 title: "tcpconnlat"
 order: 27
 part: Networking
-description: "Open Part 4 by building out the second VM and measuring active TCP connection latency (connect() to SYN-ACK) with kprobes on the kernel TCP stack keyed by the socket pointer, reading struct fields by offset."
+description: "Open the networking part by building out the second VM and measuring active TCP connection latency (connect() to SYN-ACK) with kprobes on the kernel TCP stack keyed by the socket pointer, reading struct fields by offset."
 duration: 35 minutes
 ---
 
@@ -33,9 +33,9 @@ The code is in `examples/27-tcpconnlat/`.
 > before running anything:
 >
 > - **Observability stack up**: `http://127.0.0.1:3000` (Grafana) loads.
->   That's the Chapter 3 stack (`examples/03-observability-stack`).
+>   That's the observability stack (`examples/03-observability-stack`).
 > - **Target guest running**: `scripts/lab/vm-ip.sh ebpf-target` prints
->   an IP. That's the Chapter 2 guest.
+>   an IP. That's the lab guest.
 > - **Peer guest provisioned**: bring it up once with
 >   `scripts/lab/provision-vm.sh ebpf-peer`, then
 >   `scripts/lab/lab-ips.sh` prints both IPs and confirms they're
@@ -44,7 +44,7 @@ The code is in `examples/27-tcpconnlat/`.
 > If any of those isn't true, set it up first; the networking demos
 > can't run without all three. Full setup details (networking
 > requirements, resource sizing) are in
-> [Chapter 2]({{ "/docs/02-lab-setup/" | relative_url }}).
+> [the lab setup]({{ "/docs/02-lab-setup/" | relative_url }}).
 >
 > Then this chapter runs like every other: `cd examples/27-tcpconnlat`,
 > read its `README.md`, and `./demo.sh` builds on the host, deploys to
@@ -53,7 +53,7 @@ The code is in `examples/27-tcpconnlat/`.
 ## Where eBPF sits in the network path
 
 Before the specifics, the lay of the land. eBPF can attach at many
-points along a packet's journey, and the whole of Part 4 is a tour of
+points along a packet's journey, and the whole networking part is a tour of
 them, from the earliest (XDP, in the driver) to the latest (socket
 operations, up by the application):
 
@@ -123,7 +123,7 @@ correlate on: `tcp_rcv_state_process` runs in softirq context, not in
 the connecting task. What we *do* have is `ctx.arg(0)`, the
 **`struct sock *`** pointer, which is identical for both probes of one
 connection. So the sock pointer is the kernel analogue of the
-entry/exit key you've used since Chapter 8: stash under it at connect,
+entry/exit key you've used since the fentry bridge: stash under it at connect,
 look it up at the SYN-ACK. The first time a sock we stamped reappears in
 `tcp_rcv_state_process` is essentially the SYN-ACK being processed, so we
 compute the latency there, `remove` the entry so a later call can't
@@ -135,15 +135,15 @@ Those two lines in the connect handler, reading `daddr` and `dport`
 from `sk` at `SKC_DADDR` (0) and `SKC_DPORT` (12), are the soft spot.
 The address and port live at the very head of `struct sock` (inside
 `sock_common`). `bpf_probe_read_kernel` is mandatory here for the same
-reason as Chapter 8: you cannot dereference a kernel pointer directly,
+reason as before: you cannot dereference a kernel pointer directly,
 you copy through the helper. The fragility isn't the *read*, it's the
 hardcoded **offsets**. They sit at the head of the struct, which is
 *fairly* stable, but "fairly" isn't "guaranteed," and hardcoding
 offsets is exactly the brittleness kprobes are infamous for. The real
 fix is **CO-RE**, which relocates field offsets at load time against the
 running kernel's BTF so the same binary works everywhere; that's the
-deep-dive in Part 9. For now, verify the offsets with
-`pahole -C sock_common` and treat them as provisional. (Chapter 28
+deep-dive later. For now, verify the offsets with
+`pahole -C sock_common` and treat them as provisional. (The next chapter
 sidesteps the problem entirely with a tracepoint that hands you the
 fields, a pointed contrast.)
 
@@ -162,7 +162,7 @@ let hist = meter.f64_histogram("tcp_connect_latency_ms").build();
 let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 ```
 
-`attach(name, 0)` is the kprobe form you met in Chapter 7 (the function
+`attach(name, 0)` is the kprobe form you met earlier (the function
 name plus an entry offset of `0`), just applied to two TCP-stack
 functions instead of one. In the drain loop, each `ConnEvent` becomes a
 console row and a histogram sample, with the destination decoded from
@@ -213,13 +213,13 @@ or a busy peer).
 
 ## What you learned
 
-- Part 4 needs **two VMs**; the peer is `provision-vm.sh ebpf-peer`.
+- This part needs **two VMs**; the peer is `provision-vm.sh ebpf-peer`.
 - eBPF attaches all along the network path (Figure 27.1); this chapter
   is in the **TCP stack** via kprobes.
 - Correlate the two probes of one connection by the **`struct sock *`**
   pointer, the kernel-side entry/exit key.
 - Reading kernel struct fields by **offset** works but is fragile;
-  **CO-RE** (Part 9) is the portable fix.
+  **CO-RE** is the portable fix.
 
 Next: **`tcpstates`** traces the whole TCP state machine, with a single
 tracepoint that needs none of this offset chasing.

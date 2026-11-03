@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 37 *prevented* an operation by returning `-EPERM` from an LSM hook.
+The last chapter *prevented* an operation by returning `-EPERM` from an LSM hook.
 There's a second enforcement style: let the event happen and **react** to
 it. eBPF can send a signal to a process from inside the kernel with
 `bpf_send_signal()`, so a program can watch for something it doesn't like
@@ -39,7 +39,7 @@ it.
 
 Two ways to stop something with eBPF:
 
-- **Prevent** (Chapter 37): an LSM hook returns an error and the syscall
+- **Prevent**: an LSM hook returns an error and the syscall
   never succeeds. Clean, but only at hooks the kernel offers, and only with
   an allow/deny answer.
 - **React**: watch any event you can probe, and if it's bad, *do something*:
@@ -97,7 +97,7 @@ fn starts_with(buf: &[u8; 64], needle: &[u8]) -> bool {
 
 The pieces, the way you'd write them:
 
-- We hook **`sys_enter_execve`** exactly as `execsnoop` did in Chapter 11,
+- We hook **`sys_enter_execve`** exactly as `execsnoop` did,
   reading the filename pointer from the tracepoint record at offset 16 and
   copying the string with `bpf_probe_read_user_str_bytes` (it's a
   *user-space* pointer, so the user reader).
@@ -166,7 +166,7 @@ show the process terminated by `SIGKILL`.
 
 - **`bpf_send_signal()`** lets a kernel-side eBPF program kill (or signal)
   the current process, the *react* enforcement style, complementing
-  Chapter 37's *prevent*.
+  the LSM *prevent*.
 - Safe **string matching** in eBPF: copy into a fixed buffer and compare
   against a constant-length needle so every access is bounded for the
   verifier.
@@ -174,5 +174,5 @@ show the process terminated by `SIGKILL`.
   security tooling, and also a fast way to break a real system: learn it,
   don't ship it as written.
 
-Chapter 39 continues the Security part, building toward richer LSM policy
+Next, the book continues the Security part, building toward richer LSM policy
 and tamper detection.

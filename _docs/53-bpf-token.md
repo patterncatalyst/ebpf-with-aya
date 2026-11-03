@@ -133,7 +133,7 @@ than settled, so the example shows where it plugs into `EbpfLoader` and flags
 that you may be ahead of the released API. The important part for now is
 conceptual: nothing about your *program* changes. The token is a property of
 *how it's loaded*, supplied by the loader, so the same Aya program you wrote in
-Part 1 can run in a delegated container once the loader threads a token.
+The early tracing programs can run in a delegated container once the loader threads a token.
 
 ## Build, deploy, observe
 
@@ -180,5 +180,5 @@ present. The delegated mount, not that probe, is the capability check.
   runtimes (LXD/Incus/systemd) wire it via config, libbpf threads it
   transparently, and Aya's loader support for it is emerging.
 
-Next, Chapter 54 turns to BPF that schedules its own deferred work: **timers
+Next, the book turns to BPF that schedules its own deferred work: **timers
 and workqueues** running inside the kernel.

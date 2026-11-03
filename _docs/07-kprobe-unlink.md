@@ -18,7 +18,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 6's tracepoint fired on a *stable* kernel trace event. A
+The hello-world tracepoint fired on a *stable* kernel trace event. A
 **kprobe** is more powerful and more dangerous: it attaches to (almost)
 any kernel function by name, at its entry, giving you the function's
 arguments. This chapter builds `unlinksnoop`, a kprobe on
@@ -38,7 +38,7 @@ it's enormously flexible (any function, no waiting for someone to add a
 tracepoint) but the function's name, signature, and the layout of the
 structs it's passed are **implementation details that change between
 kernel versions**. That trade-off, flexibility for stability, is the
-whole story of this chapter, and the reason Chapter 8 revisits the same
+whole story of this chapter, and the reason the next one revisits the same
 target with `fentry`, which gets the best of both.
 
 We probe `vfs_unlink(struct mnt_idmap *, struct inode *dir, struct
@@ -115,13 +115,13 @@ helper this chapter first targeted, `do_unlinkat`, was removed outright,
 which is why we now hook `vfs_unlink`. If the read fails, we leave
 the filename empty and still emit the event: **degrade, don't crash**.
 The robust answer to this fragility is CO-RE (BTF-relocated field
-access), which `fentry` (Chapter 8) and the CO-RE deep-dive
-(Part 9) build out properly. For a first kprobe, the explicit
+access), which `fentry` and the CO-RE deep-dive
+build out properly. For a first kprobe, the explicit
 `probe_read` makes the underlying mechanic visible.
 
 ### Ring buffers
 
-Chapter 6 used a counter (a single number). Here each unlink is a
+Hello-world used a counter (a single number). Here each unlink is a
 distinct *event* with fields, so we stream records through a
 **`RingBuf`**: a shared, kernel-to-user circular buffer that's the
 modern replacement for `PerfEventArray`. The kernel `reserve`s a slot,
@@ -140,7 +140,7 @@ program.load()?;
 program.attach("vfs_unlink", 0)?;     // 0 = entry offset
 ```
 
-Note the symmetry with Chapter 6: same load/attach arc, just a
+Note the symmetry with hello-world: same load/attach arc, just a
 `KProbe` and a function name instead of a `TracePoint` and an event
 name. Draining uses a simple tokio timer that pulls all available
 records each tick:
@@ -164,7 +164,7 @@ rate demands it.
 
 The shared `UnlinkEvent` is `#[repr(C)]` in `unlinksnoop-common` so the
 bytes the kernel writes line up exactly with what user space reads.
-This is the contract from Chapter 5 made concrete: a wrong field order
+This is the shared-struct contract made concrete: a wrong field order
 here reads as garbage, not an error.
 
 ## Build, deploy, observe

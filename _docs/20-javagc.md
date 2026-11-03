@@ -168,7 +168,7 @@ allocation pressure.
 A real host rarely runs one JVM. Picture several services, each in its
 own container, each with its own `libjvm.so` under its own overlay
 filesystem, and possibly each on a different collector. Two things
-follow from Chapter 16:
+follow from the container work:
 
 - **One probe per binary path.** A uprobe attaches to a *file*, and each
   container's `libjvm.so` is a distinct path (under the container's
@@ -176,7 +176,7 @@ follow from Chapter 16:
   watch every JVM you resolve the USDT offset and attach the probe once
   per distinct `libjvm.so`.
 - **Attribute by cgroup / PID.** Events carry the host PID; map it to its
-  container via the cgroup id (Chapter 16) and label the metric
+  container via the cgroup id and label the metric
   `jvm_gc_pause_ms{container=…,collector=…}`. Now one dashboard compares
   GC behaviour across services (the G1 service's longer pauses beside
   the ZGC service's flat line), which is exactly the kind of fleet view
@@ -211,7 +211,7 @@ directly, as we do here. Either way the process itself is untouched.
 
 Our app targets are normally containerized; this chapter runs the JVM
 **directly on the VM** to keep the focus on USDT and GC. To observe the
-containerized **Quarkus** target from Chapter 16 instead, combine this
+containerized **Quarkus** target from before instead, combine this
 with that chapter's container-path resolution: locate `libjvm.so` under
 the container's overlay filesystem and point `javagc` at that path. The
 probe mechanics are identical; only the path discovery changes.

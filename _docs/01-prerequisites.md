@@ -10,7 +10,7 @@ This chapter is the floor. By the end you will have confirmed that
 your laptop can run KVM virtual machines, that rootless Podman works,
 and that you have the handful of host packages the rest of the
 tutorial assumes. Nothing here loads eBPF yet: that waits until you
-have a throwaway VM to load it *into* (Chapter 2).
+have a throwaway VM to load it *into*.
 
 ## Why a VM at all?
 
@@ -39,7 +39,7 @@ So the model for the whole tutorial is:
   <div class="lab-machine">
     <div class="lab-machine__role">Guest · KVM (optional)</div>
     <div class="lab-machine__name">ebpf-peer (Fedora 44)</div>
-    <p>A second guest, added in Chapter 2, for the chapters that need real traffic between two hosts (XDP, TC, tcpconnlat, the load balancer).</p>
+    <p>A second guest, added during lab setup, for the chapters that need real traffic between two hosts (XDP, TC, tcpconnlat, the load balancer).</p>
   </div>
 </div>
 
@@ -102,7 +102,7 @@ sudo dnf install -y @virtualization virt-install libvirt-client qemu-img guestfs
 
 `@virtualization` pulls in `libvirt`, `qemu-kvm`, and `virt-manager`.
 `virt-install` and `qemu-img` are the command-line provisioning tools
-Chapter 2 scripts against; `cloud-utils` provides `cloud-localds` for
+the lab-setup scripts run against; `cloud-utils` provides `cloud-localds` for
 building cloud-init seed images; `guestfs-tools` is handy for poking
 at guest disks when something goes wrong.
 
@@ -173,7 +173,7 @@ binaries or random scripts:
 sudo dnf install -y bpftool bpftrace bcc-tools perf
 ```
 
-You install these *inside the target VM* in Chapter 2 (that's where
+You install these *inside the target VM* during lab setup (that's where
 they're used), but installing them on the host too is convenient for
 following along. Note that on the host you'd be inspecting the host
 kernel; the meaningful runs happen in the guest.
@@ -188,4 +188,4 @@ kernel; the meaningful runs happen in the guest.
 
 If all four boxes are checked, you are ready to build the lab.
 
-[Next: Chapter 2: Lab setup →]({{ "/docs/02-lab-setup/" | relative_url }})
+[Next: Lab setup →]({{ "/docs/02-lab-setup/" | relative_url }})

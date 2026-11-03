@@ -18,7 +18,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Part 9 is about *operating* eBPF: running it across a fleet, not just on the
+This part is about *operating* eBPF: running it across a fleet, not just on the
 one VM in front of you. That starts with the question every chapter so far
 has quietly relied on someone else answering: **why does a program that reads
 `task->pid` on your laptop's kernel still read the right field on a server
@@ -26,7 +26,7 @@ running a different one?** Struct layouts change between kernel versions; a
 field can move, gain neighbours, or slip into a nested anonymous union. A
 program compiled with a fixed offset would read garbage on the next kernel. The
 answer is **CO-RE (Compile Once, Run Everywhere)**, and it's been working
-invisibly under Chapter 15's BTF uprobe, Chapter 52's `task_struct` kfunc
+invisibly under the BTF uprobe, the `task_struct` kfunc
 arguments, and every field read since. Time to see the machinery.
 
 The code is in `examples/58-core/`. `./demo.sh` reads task fields portably,
@@ -105,8 +105,8 @@ before reading rather than assuming.
 Here's the part that's been invisible: **Aya does CO-RE transparently.** Its BTF
 support is "enabled when the target kernel supports it," and when you read a
 kernel field through the right types, Aya emits and resolves the relocations for
-you, which is exactly why Chapter 15 could load a BTF-aware uprobe and Chapter
-52 could touch `task_struct` from a kfunc and have it work. The Rust side needed
+you, which is exactly why the BTF-aware uprobe could load and the
+kfunc could touch `task_struct` and have it work. The Rust side needed
 new compiler intrinsics (`preserve_access_index`, `preserve_field_info`,
 `preserve_type_info`, `preserve_enum_value` for the BPF target), and with those
 in place the same relocation machinery libbpf uses applies to Aya objects.
@@ -189,6 +189,6 @@ them from BTF.
   portability (one binary across unlike distros), and musl is Alpine's default,
   not Fedora/UBI's glibc.
 
-Next, Chapter 59 looks at running BPF as a managed service: **lifecycle,
+Next, the book looks at running BPF as a managed service: **lifecycle,
 pinning, and zero-downtime upgrades**, now that one artifact can target the
 whole fleet.

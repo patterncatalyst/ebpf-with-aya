@@ -204,6 +204,6 @@ the registered struct: the `struct_ops` mechanism made visible.
   kernel-side `struct_ops` is emerging, so we ran the real scheduler and
   observed it with an Aya probe.
 
-Next, Chapter 44 moves past the minimal policy to a more realistic one:
+Next, the book moves past the minimal policy to a more realistic one:
 `scx_nest`-style ideas about keeping work on warm cores, to see how dispatch
 queues express a real scheduling strategy.

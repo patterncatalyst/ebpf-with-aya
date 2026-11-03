@@ -106,7 +106,7 @@ packet. The complementary L7 technique traces the **syscalls** that move
 the data (`sys_enter_write`/`sys_enter_read`, or `sendto`/`recvfrom`),
 and inspects the *buffer*, which holds plaintext regardless of whether
 TLS encrypts it on the way out. (That's the same boundary `sslsniff`
-tapped in Chapter 17, just at the syscall rather than the library.)
+tapped in sslsniff, just at the syscall rather than the library.)
 
 So the choice:
 

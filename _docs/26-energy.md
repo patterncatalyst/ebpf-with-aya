@@ -157,5 +157,5 @@ and watch them rise to the top of the power table, with
 
 That closes **Performance & resources**. The signals built here
 (latency, profiles, power) are exactly what a **`sched_ext`** scheduler
-(Part 6) can consume to make power- and QoS-aware decisions; first,
-Part 4 takes on **networking**.
+can consume to make power- and QoS-aware decisions; first,
+the book takes on **networking**.

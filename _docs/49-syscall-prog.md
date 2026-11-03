@@ -54,7 +54,7 @@ The syscall program type inverts this. Instead of *performing* the load
 sequence from user space, you capture it as a **loader program**: a single BPF
 program (of type `BPF_PROG_TYPE_SYSCALL`) whose body is essentially "a strace
 of libbpf." When executed via **`BPF_PROG_RUN`** (the same test-run mechanism
-from Chapter 35, here used to *do work* rather than test), it calls
+from the XDP test harness, here used to *do work* rather than test), it calls
 `bpf_sys_bpf()` for each step (create this map, load that program), and ends
 with the same maps and programs created as if libbpf had done it. A couple of
 properties fall out of running inside the kernel:
@@ -156,5 +156,5 @@ program plus data, with libbpf no longer in the loading path.
   loading possible. Aya is itself the loader, so this is mechanism to
   recognize more than a tool to wield.
 
-Next, Chapter 50 looks at the **user ring buffer**, a channel that runs the
+Next, the book looks at the **user ring buffer**, a channel that runs the
 other direction, from user space into a BPF program.

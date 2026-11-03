@@ -23,7 +23,7 @@ chapter builds the mental model: what an eBPF program actually *is*,
 how it gets from your `.rs` file into a running kernel, what the
 verifier will and won't let you do, and how Aya's pieces map onto the
 kernel's. It stays concept-only, with no deploys, so that when
-Chapter 6's code appears, every line has a place to land.
+the first program appears, every line has a place to land.
 
 {% include excalidraw.html
    file="ebpf-lifecycle"
@@ -59,7 +59,7 @@ the program writes a map, and your loader reads that map and reports it.
 
 In Aya, "load" is `Ebpf::load(...)`, "attach" is `program.load()`
 followed by `program.attach(...)`, and "read the map" is opening a
-typed map handle and iterating it. Chapter 6 shows each of these.
+typed map handle and iterating it. The first program shows each of these.
 
 ## Maps: how the two worlds share data
 
@@ -75,7 +75,7 @@ file descriptor. The kinds you'll use most early:
   user space. `RingBuf` (the modern choice) is a single shared ring;
   perfect for "emit one record per `execve`".
 
-The shared `*-common` crate (Chapter 4) holds the `#[repr(C)]` structs
+The shared `*-common` crate holds the `#[repr(C)]` structs
 that go *into* maps, so the kernel writer and the user-space reader
 agree on the byte layout. Get that layout wrong and you'll read
 garbage; that's the most common early bug.
@@ -102,7 +102,7 @@ Two things to know now:
 ## Anatomy: how bytecode becomes a running probe
 
 The whole subsystem is easier to follow as one picture, because every later
-chapter is a variation on it. Your Rust compiles (via `bpf-linker`, Chapter 4)
+chapter is a variation on it. Your Rust compiles (via `bpf-linker`)
 to **BPF bytecode**; the loader hands that bytecode to the kernel with the
 `bpf()` syscall; the **verifier** proves it safe; the kernel **JIT-compiles** it
 to native instructions and attaches it to an **event source**: a kprobe, a
@@ -123,7 +123,7 @@ the entire point of eBPF. Read the pipeline as seven steps; the first three are
 the ①②③ marked on the diagram:
 
 1. **Compile (①).** `cargo build` runs your eBPF crate through `rustc` and
-   `bpf-linker` (Chapter 4) into **BPF bytecode**, embedded into the loader
+   `bpf-linker` into **BPF bytecode**, embedded into the loader
    binary with `include_bytes_aligned!`.
 2. **Load (②).** The loader calls `Ebpf::load(...)`, handing that bytecode to
    the kernel through the `bpf()` syscall, the first crossing into kernel space.
@@ -140,7 +140,7 @@ the ①②③ marked on the diagram:
    data; in this book, exports it over OTLP to Grafana.
 
 That final step is where "user space" earns its name, and it needn't be Rust:
-the Part 10 field-guide tools (`bpftrace`, `bcc`) follow the *exact same* kernel
+the field-guide tools (`bpftrace`, `bcc`) follow the *exact same* kernel
 path (compile, load, verify, attach, run) but are driven and read from
 **Python** instead of an Aya loader. Same pipeline, different front end.
 
@@ -156,7 +156,7 @@ layout between kernel versions. A probe that reads a field at a
 hardcoded offset breaks the moment the kernel changes. **BTF** (BPF
 Type Format) is the kernel describing its own types to you at runtime:
 that `vmlinux` blob you confirmed at `/sys/kernel/btf/vmlinux` in
-Chapter 2. **CO-RE** (Compile Once – Run Everywhere) uses BTF to
+the lab. **CO-RE** (Compile Once – Run Everywhere) uses BTF to
 *relocate* field accesses at load time, so one compiled program runs
 across kernel versions without recompiling.
 
@@ -222,7 +222,7 @@ misbehaves. You run these **inside the target VM**:
 
 Treat them as the multimeter you check against, not as competitors to
 Aya. The tutorial uses them throughout to verify that what your Rust
-program reports matches what the kernel actually did, and **Part 10**
+program reports matches what the kernel actually did, and the **field guide**
 returns to both, plus the BCC tools, to show how to drive them from Python.
 
 ## The shape of every chapter from here
@@ -243,13 +243,13 @@ With this model, each program chapter follows the same shape:
    on the real lab (Fedora 44, kernel 7.1.3); your own hardware is the final
    check.
 
-[Next: Chapter 6: Hello, eBPF →]({{ "/docs/06-hello-world/" | relative_url }})
+[Next: Hello, eBPF →]({{ "/docs/06-hello-world/" | relative_url }})
 
 ---
 
 *This chapter is conceptual, but its claims about Aya's API surface and
 kernel behavior are now <span class="status status--verified">verified</span>
-transitively: Chapter 6's program, and the rest of the corpus, is built,
+transitively: the first program, and the rest of the corpus, is built,
 deployed, and run on the lab (Fedora 44, kernel 7.1.3), which exercises these
 concepts end to end. The concepts themselves draw on* Learning eBPF *(Liz Rice),*
 BPF Performance Tools *(Brendan Gregg), the Aya Book, and

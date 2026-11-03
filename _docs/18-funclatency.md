@@ -30,7 +30,7 @@ The code is in `examples/18-funclatency/`. `./demo.sh` there builds, deploys, an
 ## Timing by pairing entry and return
 
 You met the entry/exit `HashMap` pattern for correlating data
-(Chapters 8, 9, 17). Timing is the same skeleton with a clock:
+earlier. Timing is the same skeleton with a clock:
 
 ```rust
 #[uprobe]

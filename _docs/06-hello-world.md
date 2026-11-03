@@ -47,7 +47,7 @@ still C compiled by clang, but the user side is Rust, with a generated
 skeleton you call from `main.rs`.
 
 The shape (*BPF object on one side, a loader that attaches it and
-reads maps on the other*) is identical to what you saw in Chapter 5.
+reads maps on the other*) is identical to what you saw in the concepts chapter.
 The thing libbpf established and we keep is **CO-RE**: that
 `SEC(".maps")` definition plus BTF relocations is what lets one object
 run across kernels.
@@ -67,7 +67,7 @@ Aya.
 
 ## The program, in three crates
 
-Recall the workspace shape from Chapter 4. Hello-world fills it in:
+Recall the workspace shape from the toolchain setup. Hello-world fills it in:
 
 - **`hello-ebpf/`**: the kernel program. A `#[tracepoint]` handler
   named `hello` that, on each `execve`, bumps a per-CPU counter and
@@ -146,11 +146,11 @@ loop {
 Summing across CPUs is why we used a *per-CPU* array: no locking in
 the kernel hot path, and user space does the cheap aggregation. The
 delta feeds the same `ebpf_events_total` series the Python client used
-in Chapter 3, so they share a panel.
+in the observability stack, so they share a panel.
 
 ## Build, deploy, observe
 
-With the Chapter 3 stack up and the Chapter 2 `ebpf-target` running,
+With the observability stack up and the `ebpf-target` guest running,
 the whole loop is one script:
 
 ```bash
@@ -159,7 +159,7 @@ cd examples/06-hello-world && ./demo.sh
 
 `demo.sh` builds the release binary on the host, resolves the libvirt
 gateway address (so the guest can reach the host's OTLP port), ships
-the binary to the target with the Chapter 2 `deploy-to-target.sh`, and
+the binary to the target with the lab's `deploy-to-target.sh`, and
 runs it under `sudo`. Leave it running and, in another terminal,
 generate some executions on the target:
 
@@ -192,7 +192,7 @@ On the target VM:
 `bpftrace` gives a fully independent count. If your Grafana number, the
 `bpftool` dump, and the `bpftrace` count all move together, the program
 is correct end to end. If they diverge, the divergence tells you which
-half is wrong, which is exactly the debugging leverage Chapter 5
+half is wrong, which is exactly the debugging leverage the two-sided model
 promised.
 
 ## When the build doesn't compile

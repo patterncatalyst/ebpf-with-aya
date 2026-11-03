@@ -41,8 +41,8 @@ available. The kernel implements them, but they fire on *user-space*
 code, and the memory they read belongs to the traced **process**, not
 the kernel.
 
-That last point is the crucial shift. In Chapters 7–8 we read kernel
-memory; in Chapter 9 we read user memory that happened to be a syscall
+That last point is the crucial shift. In the kprobe and fentry chapters we read kernel
+memory; in opensnoop we read user memory that happened to be a syscall
 argument. A uprobe lives entirely in user-space territory: arguments,
 return values, and any pointers they carry are all in the traced
 process's address space, read with the **user** probe helpers.

@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 32 used XDP to *drop*. The same hook is just as good at *watching*,
+The last chapter used XDP to *drop*. The same hook is just as good at *watching*,
 and watching at XDP is how high-rate packet capture is built, because you
 can decide in the kernel which packets are worth user space's attention and
 discard the rest without shipping it anywhere. This chapter builds a miniature `tcpdump`: an XDP
@@ -36,7 +36,7 @@ it.
 
 ## The discipline: filter first, copy little
 
-Chapters 31 and 32 hammered one rule: on a data path you don't ship a
+Earlier chapters hammered one rule: on a data path you don't ship a
 record per packet, you aggregate. Capture looks like the exception: its
 whole job is to emit records. But the rule still holds, just shifted: you
 **filter in the kernel** so that only a tiny fraction of packets ever
@@ -114,7 +114,7 @@ fn try_capture(ctx: &XdpContext) -> Result<u32, ()> {
 Reading it the way you'd write it:
 
 - Every header is fetched through the **`ptr_at` bounds check** from
-  Chapter 32; capture is still raw-pointer XDP, so each access is proven
+  the XDP dropper; capture is still raw-pointer XDP, so each access is proven
   in-window before the dereference.
 - We count *every* IPv4 packet by protocol in `SEEN` (the denominator),
   then narrow to TCP.
@@ -145,7 +145,7 @@ while let Some(item) = ring.next() {
 }
 ```
 
-The drain is the same `RingBuf` loop you've used since Chapter 9, with a
+The drain is the same `RingBuf` loop you've used since opensnoop, with a
 `read_unaligned` because the record is packed. The output reads like
 `tcpdump`: `SYN  10.0.0.5:54312 > 10.0.0.9:443  len 60`. We also export
 `ebpf_xdp_captured_total{flag}` (and a gauge of `SEEN` totals), so Grafana
@@ -191,5 +191,5 @@ That's the most direct "is my capture correct?" check there is.
 - A SYN/FIN/RST feed is a connection-activity view that mirrors
   `tcpdump 'tcp[tcpflags] & … != 0'`.
 
-Next, Chapter 34 makes XDP *forward*: a small load balancer that rewrites
+Next, the book makes XDP *forward*: a small load balancer that rewrites
 packets and fans them across backends with `XDP_TX`/`XDP_PASS`.

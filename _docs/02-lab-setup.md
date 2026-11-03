@@ -97,7 +97,7 @@ confirmed.
 You won't touch most of these by hand for a while, but it's worth knowing what's
 on the box and why, and which side of the lab each lives on. The **guest VM**
 gets the kernel-side toolchain (installed by cloud-init above); the **laptop**
-gets the Rust build chain (Chapter 4, via `rustup`, *not* `dnf`). All of it
+gets the Rust build chain (via `rustup`, *not* `dnf`). All of it
 comes from Fedora repositories or `rustup`, never third-party binaries.
 
 | Tool | Package / source | Where | What it's for |
@@ -116,7 +116,7 @@ comes from Fedora repositories or `rustup`, never third-party binaries.
 | `openssl` | `openssl` | VM | generate `traceparent` ids; a TLS target for `sslsniff` (Ch 14, 62, 63) |
 | `podman` / `podman-compose` / `crun` | same | VM | run the observed Quarkus/FastAPI targets so the VM kernel sees them (Ch 16, 45–47, 63) |
 | `iproute` (`ss`/`ip`), `tcpdump`, `nmap-ncat`, `socat` | same | VM | traffic generation + inspection for the networking part (Ch 27–36) |
-| `rustup` → Rust 1.96.0, BPF target | `rustup` | laptop | compile your Aya programs (Chapter 4); never installed via `dnf` |
+| `rustup` → Rust 1.96.0, BPF target | `rustup` | laptop | compile your Aya programs; never installed via `dnf` |
 | `bpf-linker`, `cargo-generate`, `aya-tool` | `cargo install` | laptop | link BPF objects, scaffold projects, generate `vmlinux` bindings (Ch 4) |
 
 If a later chapter reaches for a tool that isn't here, it says so and how to
@@ -133,7 +133,7 @@ twenty seconds and retry.
 
 ## Confirm the guest is eBPF-ready
 
-eBPF with CO-RE (Chapter 5) needs the running kernel to expose its own
+eBPF with CO-RE needs the running kernel to expose its own
 type information as **BTF** at `/sys/kernel/btf/vmlinux`. The cloud-init
 run already checked this and logged the result. Confirm it yourself
 inside the guest:
@@ -166,7 +166,7 @@ one command: it resolves the guest IP, `scp`s the binary in, and runs
 it over SSH under `sudo` (eBPF loading needs `CAP_BPF` /
 `CAP_SYS_ADMIN`, and the lab user has passwordless sudo).
 
-You don't have an Aya binary yet (that's Chapter 6), so rehearse with
+You don't have an Aya binary yet (that comes with the first program), so rehearse with
 something trivial that proves the path works end to end. Build a
 two-line "binary" on the host and ship it:
 
@@ -179,7 +179,7 @@ cd scripts/lab && ./deploy-to-target.sh ebpf-target /tmp/hello-deploy
 ```
 
 You should see `deploy loop OK on ebpf-target, kernel 6.x…` printed
-back from the guest. That is the exact mechanism Chapter 6 will use
+back from the guest. That is the exact mechanism the first program will use
 with a real Aya program; only the binary changes.
 
 > **Why deploy a binary instead of building on the guest?** Aya
@@ -188,7 +188,7 @@ with a real Aya program; only the binary changes.
 > caches warm) and ship the artifact. The guest never needs the Rust
 > toolchain, only a kernel. This is the same "build once, deploy the
 > artifact" story that makes Aya's musl + CO-RE combination so
-> portable, and it's covered properly in Chapter 4.
+> portable, and it's covered properly with the toolchain.
 
 ## Host-side gotchas that block the loop
 
@@ -218,7 +218,7 @@ telemetry path. They're environment, not code, so they're easy to miss:
   binary exports OTLP to the host at the libvirt gateway (e.g.
   `http://192.168.124.1:4318`). Two things must line up: the otel-lgtm stack
   must **publish OTLP on the bridge IP**, not just `127.0.0.1` (see the
-  compose file in Chapter 3), and the host firewall must **allow the guest
+  compose file in the observability stack), and the host firewall must **allow the guest
   subnet to reach those ports**. `virbr0` sits in firewalld's `libvirt` zone;
   for a trusted disposable guest the simplest fix is:
   ```bash
@@ -358,4 +358,4 @@ rebuild is fast.
 - [x] (Optional) `ebpf-peer` running and reachable from the target
 - [x] The guest interface name noted for the networking chapters
 
-[Next: Chapter 3: The observability stack →]({{ "/docs/03-observability-stack/" | relative_url }})
+[Next: The observability stack →]({{ "/docs/03-observability-stack/" | relative_url }})

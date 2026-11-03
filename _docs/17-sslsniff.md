@@ -42,7 +42,7 @@ The code is in `examples/17-sslsniff/`. `./demo.sh` there builds, deploys, and r
 
 ## Probing a shared library
 
-Chapters 14–15 probed executables. `libssl` is a **shared library**
+Earlier chapters probed executables. `libssl` is a **shared library**
 (`/usr/lib64/libssl.so.3` on Fedora), used by curl, wget, language
 runtimes, servers, anything doing OpenSSL TLS. A uprobe on a library
 fires for **every** process that calls into it, which is what makes one
@@ -53,7 +53,7 @@ exactly as before, just pointing at the `.so`:
 w.attach(Some("SSL_write"), 0, "/usr/lib64/libssl.so.3", None)?;
 ```
 
-The catch is the same as Chapter 13: only processes using *this* library
+The catch is the same as the bash uprobe: only processes using *this* library
 are seen. Statically-linked OpenSSL, or GnuTLS / NSS / BoringSSL /
 rustls, won't show up; you'd point at the relevant library and its
 equivalent functions.

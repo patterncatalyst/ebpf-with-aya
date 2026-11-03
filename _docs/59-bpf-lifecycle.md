@@ -41,7 +41,7 @@ keeps running after the loader exits, then proves its state survived; the
 
 ## Pillar 1: pinning decouples lifetime
 
-Chapter 48 introduced pinning a map to **bpffs** so a second process could read
+Earlier we pinned a map to **bpffs** so a second process could read
 it. The same mechanism is the foundation of operating eBPF: pinning a program,
 a **link**, or a map to `/sys/fs/bpf` takes a reference the kernel keeps even
 after every userspace fd closes. Pin the right objects and the loader becomes
@@ -57,7 +57,7 @@ This unlocks two operational patterns:
 - **Privilege separation.** A privileged initializer pins the objects; later,
   less-privileged consumers `from_pin` them by path. In Kubernetes this is how a
   privileged setup container can hand eBPF maps to unprivileged workloads: the
-  same idea behind the BPF token (Chapter 53), reached a different way.
+  same idea behind the BPF token, reached a different way.
 
 In Aya the pieces are `EbpfLoader::map_pin_path` (pin a program's maps under a
 directory as they load), `MapData::from_pin` (re-acquire one by path), and
@@ -116,7 +116,7 @@ At fleet scale you reach for an orchestrator that productizes exactly this:
   notably **graceful restart**): the control-plane daemon (`l3afd`) can be
   upgraded while the data-plane programs keep running, the new daemon taking
   ownership of the existing programs before the old one stops. Recent releases
-  add container/Kubernetes support and CO-RE (Chapter 58) for portable packages.
+  add container/Kubernetes support and CO-RE for portable packages.
 - **bpfman** (CNCF) is a Kubernetes-native eBPF manager: a privileged daemon
   loads and pins programs and maps across nodes so unprivileged workloads can
   use them, centralizing the lifecycle the way an operator expects.
@@ -166,6 +166,6 @@ decoupled from the loader: the precondition for every upgrade pattern above.
   (lifecycle, chaining, graceful restart) and **bpfman** (Kubernetes-native
   management) productize the same three pillars.
 
-Next, Chapter 60 turns to a very different frontier of operating eBPF:
+Next, the book turns to a very different frontier of operating eBPF:
 **offloading work to hardware and accelerators**, where the program runs
 somewhere other than the host CPU.

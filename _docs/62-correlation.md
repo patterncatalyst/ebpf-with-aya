@@ -21,7 +21,7 @@ By the end of this chapter you can:
 Every program in this book has fed Grafana the same kind of thing: an `ebpf_*`
 **metric**. We graphed counters and gauges and never once looked at the other
 two signals, and the backend has been quietly running them the whole time.
-The `grafana/otel-lgtm` stack from Chapter 3 isn't just Prometheus; it bundles
+The `grafana/otel-lgtm` stack from the observability setup isn't just Prometheus; it bundles
 **Tempo** for traces, **Loki** for logs, and **Pyroscope** for profiles, all
 behind one OTel Collector and one Grafana. The reason that matters isn't "more
 dashboards." It's **correlation**: the ability to start at a metric spike,
@@ -119,12 +119,12 @@ application's OTel SDK knows the trace_id; **the kernel does not.** An eBPF
 program watching a syscall or a socket sees bytes and pids, not your request's
 trace_id, so how does the eBPF view join the trace? Two ways, both seen earlier:
 
-- **Capture the id from the wire or the handler.** An L7 parse (Chapter 29) or a
-  uprobe on the request handler (Chapters 14, 45) can read the `traceparent`
+- **Capture the id from the wire or the handler.** An L7 parse or a
+  uprobe on the request handler can read the `traceparent`
   header or the in-process trace_id and attach it to the eBPF event, so an
   `ebpf_*` metric or event carries the same trace_id the app reported, and lines
   up by exemplar.
-- **Let OBI do it.** OpenTelemetry eBPF Instrumentation (Chapter 46) propagates
+- **Let OBI do it.** OpenTelemetry eBPF Instrumentation propagates
   trace context at the eBPF level zero-code, producing spans for traffic it sees
   without touching the app.
 
@@ -174,6 +174,6 @@ generated on the command line, followed all the way through the stack.
   **capturing it** (L7/uprobe) or via **OBI**, or correlates by **time + pid +
   service**, the bridge the final project builds next.
 
-Next, Chapter 63 is the **final project**: one `curl` through Quarkus and FastAPI,
+Next comes the **final project**: one `curl` through Quarkus and FastAPI,
 observed at every layer (app spans, metrics, logs, and the eBPF/Aya kernel
 view) correlated on a single trace.

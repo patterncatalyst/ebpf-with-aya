@@ -25,8 +25,8 @@ make eBPF produce the **three signals** (metrics, logs, and traces)
 that caused it and the logs that explain it? And can we do it for runtimes we
 *can't* symbol-probe, Java and Python, the way the real world does?
 
-The answer is yes, and the route to it is the central lesson of this part. In
-Chapter 45 we attached uprobes to nginx's own functions because nginx is a
+The answer is yes, and the route to it is the central lesson of this part.
+Earlier we attached uprobes to nginx's own functions because nginx is a
 native binary with symbols. **Java is JIT-compiled and Python is interpreted**:
 there is no stable `handle_request` symbol to hook in either. So we drop to
 the one layer every networked service shares no matter the language: the
@@ -46,7 +46,7 @@ details.
 ## Why the socket layer
 
 A uprobe needs a symbol or an offset in a binary. That works for C servers and
-even for Rust and Go (Chapters 14–15), but a JVM compiles methods to machine
+even for Rust and Go, but a JVM compiles methods to machine
 code *at runtime* at addresses that don't exist on disk, and CPython runs your
 handler as bytecode inside the interpreter loop; neither presents a stable
 "handle one request" function to attach to. What they *do* share is that every
@@ -90,7 +90,7 @@ pub fn on_send(ctx: ProbeContext) -> u32 {
 The key choices:
 
 - We key the request on the **`struct sock *` pointer** (read as a plain
-  `u64`, never dereferenced, like the request pointer in Chapter 45). A
+  `u64`, never dereferenced, like the request pointer in the nginx probe). A
   `recv` stamps the start; the following `send` on the same socket closes it
   and emits the duration.
 - **`bpf_get_current_comm()`** tags each event with the process name
@@ -133,7 +133,7 @@ the span under it; the log carries it (Loki's `derivedFields` turns it into a
 link); and where the metrics SDK supports **exemplars**, the histogram sample
 carries it too, so a point on the latency graph links straight to its trace.
 That wiring (trace→logs, trace→metrics, exemplars) is exactly what the
-observability stack's datasources were provisioned for back in Chapter 3;
+observability stack's datasources were provisioned for back in the observability setup;
 this is the chapter that finally exercises all of it.
 
 > **Up-front note on the seams.** Minting the `trace_id` in the loader gives us
@@ -210,8 +210,8 @@ all three agree, your hand-built three-signal pipeline is faithful.
   and counts become **RED metrics**; minting **one `trace_id`** across all
   three is what makes them correlate into the metric→trace→logs click-through.
 - This exercises the trace/log/metric correlation the stack was provisioned
-  for in Chapter 3, and **OBI** is the production tool that does it properly,
+  for in the observability setup, and **OBI** is the production tool that does it properly,
   with L7 parsing, W3C propagation, and TLS visibility.
 
-Next, Chapter 47 returns to a single hard target, a **postgres** database,
+Next, the book returns to a single hard target, a **postgres** database,
 to observe queries and lock waits.

@@ -201,5 +201,5 @@ work; and the program remaining loaded with a pending timer is the
   process context, enabling the **fast-path/slow-path** pattern; choose a timer
   for cheap periodic work, a workqueue when the deferred work must sleep.
 
-Next, Chapter 55 looks at **struct_ops** in general: implementing kernel
-policy interfaces in BPF, the mechanism beneath the schedulers of Part 6.
+Next, the book looks at **struct_ops** in general: implementing kernel
+policy interfaces in BPF, the mechanism beneath the schedulers.

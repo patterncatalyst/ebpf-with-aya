@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Part 10 is a field guide to the command-line tools this book has leaned on for
+This field guide covers the command-line tools this book has leaned on for
 *validation*: the `bpftool`, `bpftrace`, and BCC commands that appeared in
 nearly every "Cross-check" section to confirm what our Aya programs reported.
 It's optional and tool-focused: the goal is to make you fluent in the
@@ -38,7 +38,7 @@ has the details.
 
 bpftrace is a high-level tracing language: "awk for the kernel." You write a
 short program of one or more **probe blocks**, and bpftrace compiles it to eBPF
-through the same LLVM BPF backend Aya uses (Chapter 4), attaches it, runs
+through the same LLVM BPF backend Aya uses, attaches it, runs
 aggregation in in-kernel maps, and prints results. The shape is always
 `probe /predicate/ { action }`:
 
@@ -52,7 +52,7 @@ A handful of pieces cover most use:
 
 - **Probes**: `kprobe`/`kretprobe`, `tracepoint`, `uprobe`/`uretprobe`,
   `interval:s:N` (a timer), `begin`/`end`: the same attachment points you met
-  across Parts 1–4, named inline.
+  across the earlier parts, named inline.
 - **Builtins**: `pid`, `comm`, `args` (tracepoint fields), `arg0..argN` and
   `retval` (probes), `nsecs`: the context, without a struct in sight.
 - **Maps and aggregations**: `@name[keys] = count()` / `sum()` / `avg()` /
@@ -66,7 +66,7 @@ whole chapter in Aya is a single `lhist` line in bpftrace, so running both and
 comparing is a real test.
 
 bpftrace ships its own collection of ready-made tools, and like the BCC suite
-(Chapter 66) they map onto the kernel stack by the layer each observes:
+they map onto the kernel stack by the layer each observes:
 
 {% include excalidraw.html
    file="bpftrace-tools-map"
@@ -148,7 +148,7 @@ no crate to scaffold, no compile, no deploy: ask a question, get an answer,
 script it if it's worth keeping. It's how you'd confirm, in seconds, that the
 counter your Aya program exports matches the kernel's own view. **Aya** is the
 **production** instrument: typed programs you embed in a service, ship as one
-binary (Chapter 4), attach with lifecycle control (Chapter 59), and run for
+binary, attach with lifecycle control, and run for
 months. They're complementary: most real work uses bpftrace to *find* the
 probe and the signal, then Aya to *operationalize* it. This chapter, and Part
 10, are about being fluent in the first so the second is well-aimed.
@@ -160,7 +160,7 @@ cd examples/64-bpftrace-python && ./demo.sh
 ```
 
 The demo copies the Python wrapper and its bpftrace programs to the lab VM
-(where `bpftrace` lives, from Chapter 2), lists the bundled programs, then runs
+(where `bpftrace` lives, from the lab), lists the bundled programs, then runs
 three of them: the syscall-top table, the `execsnoop` stream, and the `runqlat`
 histogram: counts, a live stream, and a distribution, the three shapes you'll
 meet. Run any other with `--program`, or an inline one with `-e`. There's no
@@ -190,5 +190,5 @@ clean stream the kernel-facing tool already produces.
 - bpftrace is the **exploration/validation** instrument (no build/deploy); **Aya**
   is the **production** one: use bpftrace to find the signal, Aya to ship it.
 
-Next, Chapter 65 drives **bpftool** from Python: inspecting and managing loaded
+Next, the book drives **bpftool** from Python: inspecting and managing loaded
 programs, maps, and links programmatically.

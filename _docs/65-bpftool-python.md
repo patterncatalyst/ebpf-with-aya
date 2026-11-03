@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Where bpftrace (Chapter 64) *asks the kernel questions*, **bpftool** *inspects
+Where bpftrace *asks the kernel questions*, **bpftool** *inspects
 and manages what's already loaded*, and it was the cross-check in nearly every
 chapter: `prog show` to confirm our program loaded, `map dump` to verify a
 counter, `link show` for the attachment, `struct_ops register` and `iter pin` to
@@ -67,8 +67,8 @@ in its own right:
 | `top` | programs by **avg ns/run** (`run_time_ns/run_cnt`): which BPF costs the most CPU; warns if stats are off (`--enable-stats`) | `prog show` |
 | `maps` | every map: id, type, name, key/value sizes, max entries, memlock | `map show` |
 | `dump <name\|id>` | a map's contents as JSON: the `map dump` cross-check, scripted | `map dump` |
-| `links` | links (attachments) and the program each drives (the Chapter 59 view) | `link show` |
-| `net` | XDP/tc attachments per interface (the Chapter 60 cross-check) | `net show` |
+| `links` | links (attachments) and the program each drives (the lifecycle view) | `link show` |
+| `net` | XDP/tc attachments per interface (the offload cross-check) | `net show` |
 | `features` | which program and map types this kernel supports | `feature probe` |
 | `audit` | every loaded program with its **holders** and **attachments**, joined | `prog show` + `link show` |
 
@@ -138,5 +138,5 @@ you already trust.
 - bpftool is **read-mostly ground truth**: it confirms what's actually loaded,
   what it costs, and who owns it, independent of your loader's own view.
 
-Next, Chapter 66 tours the **BCC tools** (the ready-made `*-snoop`/`*-latency`
+Next, the book tours the **BCC tools** (the ready-made `*-snoop`/`*-latency`
 utilities) and drives them from Python, closing the field guide.

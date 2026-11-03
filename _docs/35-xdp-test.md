@@ -45,7 +45,7 @@ times, for benchmarking), and returns:
 
 - the program's **return value** (`XDP_DROP`, `XDP_PASS`, a `TC_ACT_*`, …),
 - the **output buffer**, which for a program that *rewrites* packets (like
-  the Chapter 34 load balancer) contains the modified bytes,
+  the XDP load balancer) contains the modified bytes,
 - the **duration** per run, and
 - any **map side-effects**: the program really executed, so a counter it
   bumped is now bumped.
@@ -59,7 +59,7 @@ firing), which still needs an integration run.
 
 ### The program under test
 
-A trimmed version of the Chapter 32 filter (drop ICMP, pass everything
+A trimmed version of the XDP drop filter (drop ICMP, pass everything
 else) plus a per-protocol counter so we can also assert a side-effect:
 
 ```rust
@@ -178,6 +178,5 @@ read the result correctly.
 - This is the fast inner loop; attachment still needs an integration run,
   but verdict and mutation logic can be tested deterministically in CI.
 
-Next, Chapter 36 closes the part with **`tcx`**: the modern, link-based
-way to attach tc programs that supersedes the clsact wiring from
-Chapter 31.
+Next, the book closes the part with **`tcx`**: the modern, link-based
+way to attach tc programs that supersedes the legacy clsact wiring.

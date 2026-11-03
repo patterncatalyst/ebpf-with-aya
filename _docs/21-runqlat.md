@@ -66,11 +66,11 @@ No single tracepoint gives you the wait, so we combine three from the
 
 The field offsets (`prev_pid` @ 24, `prev_state` @ 32, `next_pid` @ 56,
 wakeup `pid` @ 24) come from the tracepoint format files, the same way
-as Chapters 9–12, and they're the first thing to verify.
+as earlier tracers, and they're the first thing to verify.
 
 ## The real lesson: aggregate in the kernel
 
-Back in Chapter 18 we emitted one ring-buffer event per function call
+Earlier we emitted one ring-buffer event per function call
 and noted: *fine at modest rates, but for hot paths aggregate in the
 kernel instead.* `sched_switch` is the definitive hot path: it fires on
 **every context switch on every CPU**, thousands of times a second on a
