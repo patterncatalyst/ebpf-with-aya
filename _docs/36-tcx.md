@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 31 attached a tc classifier the original way: add a `clsact`
+Earlier we attached a tc classifier the original way: add a `clsact`
 qdisc by hand, then hang a BPF filter off it. That works, but it has rough
 edges: you manage the qdisc's lifetime yourself, only one filter owns a
 priority slot, and nothing coordinates with other tools that want the same
@@ -32,13 +32,13 @@ runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="tcx-chain"
-   alt="An ingress packet enters a tcx chain (a kernel-ordered, bpf_link-based sequence of classifier programs, prog A then prog B) and the result goes up to the network stack. tcx attaches via bpf_link with several programs in a kernel-managed order and no clsact qdisc, unlike the legacy approach in Chapter 31 which used a clsact qdisc plus a single tc filter attached and ordered by hand."
+   alt="An ingress packet enters a tcx chain (a kernel-ordered, bpf_link-based sequence of classifier programs, prog A then prog B) and the result goes up to the network stack. tcx attaches via bpf_link with several programs in a kernel-managed order and no clsact qdisc, unlike the legacy approach which used a clsact qdisc plus a single tc filter attached and ordered by hand."
    caption="Figure 36.1: tcx, a kernel-ordered chain of programs via bpf_link, no clsact qdisc" %}
 
 ## What tcx changes
 
 The program type is unchanged: it's still a `#[classifier]` returning a
-`TC_ACT_*` verdict on a `TcContext`, exactly as in Chapter 31. What changes
+`TC_ACT_*` verdict on a `TcContext`, exactly as before. What changes
 is **how it attaches**:
 
 - **No qdisc.** You don't `qdisc_add_clsact` anymore. tcx is a first-class
@@ -82,14 +82,14 @@ fn count(ctx: &TcContext) -> Result<(), ()> {
 
 ### Attaching with tcx
 
-Here's the whole difference from Chapter 31, side by side:
+Here's the whole difference from the legacy approach, side by side:
 
 ```rust
-// Chapter 31 (legacy clsact):
+// legacy clsact:
 //   let _ = tc::qdisc_add_clsact(&iface);                 // manage the qdisc yourself
 //   prog.attach(&iface, TcAttachType::Egress)?;           // returns a filter handle
 
-// Chapter 36 (tcx):
+// tcx:
 let prog: &mut SchedClassifier = ebpf.program_mut("tcx_count").unwrap().try_into()?;
 prog.load()?;
 let link_id = prog.attach(&iface, TcAttachType::Ingress)?;  // tcx on 6.6+, returns a link
@@ -115,7 +115,7 @@ cd examples/36-tcx && ./demo.sh
 The demo attaches the counter to the target's interface via tcx and drives
 a little traffic. Two things are worth confirming live: the counts rise in
 Grafana as before (the classifier logic is unchanged), and, unlike
-Chapter 31, there is **no clsact qdisc** on the interface, because tcx
+the legacy approach, there is **no clsact qdisc** on the interface, because tcx
 didn't create one.
 
 **In Grafana** (`127.0.0.1:3000` → Explore), graph `sum by (direction) (rate(ebpf_tcx_packets_total[1m]))`: packets by direction at the tcx hook.
@@ -132,7 +132,7 @@ find the interface and compare what each tool sees:
 [vm]$ sudo tc qdisc show dev enp1s0     # no clsact qdisc was added
 ```
 
-The telling contrast with Chapter 31: `bpftool net show` lists your program
+The telling contrast with the legacy approach: `bpftool net show` lists your program
 under `tcx/ingress`, while `tc filter show … ingress` is **empty** and
 there's **no clsact qdisc**: concrete proof that tcx is a different,
 kernel-managed attach point, not a filter hanging off a qdisc.
@@ -142,12 +142,12 @@ kernel-managed attach point, not a filter hanging off a qdisc.
 - **`tcx`** (kernel 6.6+) is the modern tc attach: a `bpf_link` instead of a
   qdisc-hung filter, with **auto-detach on drop** and a **kernel-managed
   order** that lets multiple programs share a hook.
-- The classifier code is identical to Chapter 31: only the attach call and
+- The classifier code is identical to the legacy version: only the attach call and
   its lifetime change (no `qdisc_add_clsact`; `attach` returns a link).
 - How to *see* the difference: `bpftool net show` lists `tcx/ingress` while
   `tc filter show` is empty and no clsact qdisc exists.
 
 That closes the **Networking** part: from timing a connection through
 dropping, capturing, load-balancing, testing, and now modern attachment.
-Next is **Part 5, Security & LSM**, where eBPF stops reporting on the kernel
+Next is the **Security & LSM** part, where eBPF stops reporting on the kernel
 and starts making allow/deny decisions for it.

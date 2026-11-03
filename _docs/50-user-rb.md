@@ -137,5 +137,5 @@ user-space sample reached the kernel consumer.
   way to touch variable-length user input, and a primitive this part returns
   to.
 
-Next, Chapter 51 looks at running eBPF logic in **user space**: turning the
+Next, the book looks at running eBPF logic in **user space**: turning the
 model inside out once more.

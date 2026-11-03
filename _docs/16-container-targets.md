@@ -73,7 +73,7 @@ something for a probe to see under load.
 Here's the mental unlock. A container is not a VM: it's just processes
 with their own **namespaces** (PID, mount, network, …) and a **cgroup**
 for resource accounting, all sharing the host kernel. eBPF runs *in
-that kernel*. So your existing tracers from Chapters 9–12 **already see
+that kernel*. So your existing tracers **already see
 processes inside containers**, no container-specific API needed.
 
 Two wrinkles come with that:
@@ -102,7 +102,7 @@ if target != 0 && cgroup != target {
 }
 ```
 
-The eBPF side is otherwise a cgroup-filtered `opensnoop` (Chapter 9):
+The eBPF side is otherwise a cgroup-filtered `opensnoop`:
 it traces `openat`, so each `/work` request that opens a file becomes a
 scoped event. A target of `0` means "don't filter," useful as a
 fallback.

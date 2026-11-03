@@ -2,7 +2,7 @@
 title: "Retrospective: the whole arc, and the road ahead"
 order: 67
 part: Retrospective
-description: "A look back across everything, from a kprobe counting unlink in Chapter 7 to a single request traced through two services and the kernel in Chapter 63. What stayed constant, what changed in how you think about the kernel, the true state of the code, and where eBPF and Aya are heading: the all-Rust frontier, sched_ext and struct_ops, cpufreq_ext, OBI, and the operating layers above."
+description: "A look back across everything, from a kprobe counting unlink to a single request traced through two services and the kernel. What stayed constant, what changed in how you think about the kernel, the true state of the code, and where eBPF and Aya are heading: the all-Rust frontier, sched_ext and struct_ops, cpufreq_ext, OBI, and the operating layers above."
 duration: 25 minutes
 ---
 
@@ -16,38 +16,38 @@ way, the real state of what you have, and where eBPF and Aya go from here.
 
 {% include excalidraw.html
    file="book-arc"
-   alt="From a kprobe counting unlink to operating a fleet, and the road ahead. The arc runs through six phases: Foundations (Part 0); Tracing and probing (Parts 1-2); Performance, networking, and security (Parts 3-5); Schedulers through advanced kernel surface (Parts 6-8); Operating eBPF (Part 9); and the Field guide (Part 10). It points to the frontier: all-Rust kernel side, sched_ext, struct_ops, cpufreq_ext, OBI, bpfman and L3AF, and DPU offload. The loop never changed: pick an event, write the handler, attach, observe, using Rust to ship and bpftrace, bcc, and bpftool to explore."
+   alt="From a kprobe counting unlink to operating a fleet, and the road ahead. The arc runs through six phases: Foundations; Tracing and probing; Performance, networking, and security; Schedulers through advanced kernel surface; Operating eBPF; and the Field guide. It points to the frontier: all-Rust kernel side, sched_ext, struct_ops, cpufreq_ext, OBI, bpfman and L3AF, and DPU offload. The loop never changed: pick an event, write the handler, attach, observe, using Rust to ship and bpftrace, bcc, and bpftool to explore."
    caption="Figure 67.1. The arc of the book, and where it points next" %}
 
 ## How the parts built on each other
 
-The **Foundations** (Part 0) were front-loaded with a real lab and
-a real observability stack, so that the very first program in Chapter 6 reported
+The **Foundations** were front-loaded with a real lab and
+a real observability stack, so that the very first program reported
 into Grafana rather than printing to a terminal. Everything after inherited that:
 no program in this book is a toy that only prints.
 
 From there the progression was a widening of *where* you attach. **Tracing the
-kernel** (Part 1) started at the most basic dynamic-tracing point: a kprobe on
+kernel** started at the most basic dynamic-tracing point: a kprobe on
 `unlink` counting file deletions, and worked through `fentry`, tracepoints, and
-the `*snoop` family. **User-space & language probing** (Part 2) crossed the
+the `*snoop` family. **User-space & language probing** crossed the
 boundary into processes with uprobes, USDT, and the TLS-reading `sslsniff`, then
-into language runtimes. **Performance & resources** (Part 3) turned attachment
+into language runtimes. **Performance & resources** turned attachment
 into measurement: run-queue latency, IRQ timing, CPU profiling, memory leaks.
-**Networking** (Part 4) went down the stack to XDP and TC, building real packet
-processors: a dropper, a load balancer, a capturer. **Security & LSM** (Part 5)
+**Networking** went down the stack to XDP and TC, building real packet
+processors: a dropper, a load balancer, a capturer. **Security & LSM**
 crossed the last line, from *observing* to *deciding*: LSM hooks that can deny an
 operation, not just record it.
 
-The back half raised the ceiling. **Schedulers** (Part 6) and the **advanced
-kernel surface** (Part 8) reached the frontier where eBPF implements kernel
+The back half raised the ceiling. **Schedulers** and the **advanced
+kernel surface** reached the frontier where eBPF implements kernel
 interfaces (`sched_ext`, `struct_ops`, iterators, arenas), and where, in 2026,
 the newest surface still speaks C first and Aya is catching up. **Application
-targets** (Part 7) grounded all of it in the Quarkus and FastAPI services you'd
-actually observe. **Operating eBPF** (Part 9) was the shift from "it works on my
+targets** grounded all of it in the Quarkus and FastAPI services you'd
+actually observe. **Operating eBPF** was the shift from "it works on my
 VM" to running it in production: CO-RE portability, zero-downtime upgrades, offload,
 power attribution, and the signal-correlation work that culminated in the
-**Chapter 63 final project**: one request, traced through two services and the
-kernel, on a single `trace_id`. The optional **Field guide** (Part 10) then
+**The final project**: one request, traced through two services and the
+kernel, on a single `trace_id`. The optional **Field guide** then
 handed you the command-line instruments (`bpftrace`, `bpftool`, the BCC tools)
 that had been the cross-check in every chapter, now driven from Python.
 
@@ -61,7 +61,7 @@ Strip away the specifics and the same handful of ideas carried the whole way:
 - **Rust earned its place at the verifier.** The bounds-checked slices and
   absence of uninitialized memory that make Rust *Rust* are exactly what the
   kernel **verifier** demands, so a large class of "verifier rejected your
-  program" errors simply never happened. That was the thesis from Chapter 5, and
+  program" errors simply never happened. That was the thesis from the start, and
   it held.
 - **Maps were the only channel.** From the first counter to the final project's
   per-request metrics, kernel and user space met only through maps and
@@ -72,8 +72,8 @@ Strip away the specifics and the same handful of ideas carried the whole way:
   Building on the host and shipping one binary to the guest was the same motion
   every time.
 - **Observability was the default, not an afterthought.** Because the stack was
-  there from Chapter 3, every program produced an `ebpf_*` signal you could graph,
-  and Part 9 showed that signal joining application traces and logs on one
+  there from the first stack, every program produced an `ebpf_*` signal you could graph,
+  and the operating part showed that signal joining application traces and logs on one
   `trace_id`. The three-signal story was the spine.
 - **Explore with the tools, ship with Aya.** `bpftrace` and the BCC tools found
   the signal in seconds; Aya turned it into a typed, embeddable, single binary
@@ -99,7 +99,7 @@ real Fedora 44 lab (kernel 7.1.3-200.fc44): programs load, attach, and their
 metrics move in Grafana; the few things this hardware can't exercise (NIC
 hardware offload, for one) are flagged as explicit skips, not silent passes, and
 the couple of actually broken examples were fixed and re-run. The lab you built
-in Part 0 is the proving ground that did it. That said, *your* kernel is not
+is the proving ground that did it. That said, *your* kernel is not
 *this* kernel: a tracepoint field offset, a UBI image tag, an Aya API, a struct
 layout can all shift between versions. Where a chapter flags a specific risk,
 that's where to look first if something doesn't attach on your machine, so
@@ -108,29 +108,29 @@ worth your own `cargo build` and `gh run watch`.
 
 ## Where eBPF and Aya go next
 
-The frontier this book kept reaching (Parts 6, 8, and 9) is moving fast, and the
+The frontier this book kept reaching is moving fast, and the
 direction is clear even where the destination isn't:
 
 - **The all-Rust kernel side is maturing.** Today the newest surface
   (`sched_ext` schedulers, `struct_ops` providers, iterators, arenas) is often
   *canonical in C* with Aya as the observer or loader, exactly as those chapters
   flagged. The trajectory is toward authoring all of it in Rust; each Aya release
-  closes more of that gap. The goal stated in Chapter 4 (write the whole thing
+  closes more of that gap. The goal stated early (write the whole thing
   in one language) gets closer every cycle.
 - **eBPF moves from observing to controlling.** `sched_ext` already lets you
-  write a CPU scheduler; **`cpufreq_ext`** (Chapter 61) is bringing frequency
-  policy into eBPF; LSM (Part 5) already decides. The next decade of eBPF is as
+  write a CPU scheduler; **`cpufreq_ext`** is bringing frequency
+  policy into eBPF; LSM already decides. The next decade of eBPF is as
   much about *steering* the system as watching it.
 - **Zero-code instrumentation goes mainstream.** **OBI** (OpenTelemetry eBPF
-  Instrumentation, Chapter 46) and its kin produce RED metrics and traces for
-  services without touching their code: the correlation story of Part 9, made
+  Instrumentation) and its kin produce RED metrics and traces for
+  services without touching their code: the correlation story, made
   automatic. Expect this to be the default way services get traced.
-- **Operating layers grow up.** **bpfman** and **L3AF** (Chapter 59) are turning
+- **Operating layers grow up.** **bpfman** and **L3AF** are turning
   "load a program" into "manage a fleet of programs": lifecycle, chaining,
   Kubernetes-native deployment. As eBPF becomes infrastructure, these become as
   important as the programs themselves.
 - **The hardware boundary keeps moving.** XDP offload, SmartNICs, and DPUs
-  (Chapter 60) push eBPF off the host CPU entirely; a DPU running ordinary Aya
+  push eBPF off the host CPU entirely; a DPU running ordinary Aya
   cross-compiled to `aarch64` is already plausible. Where the program runs is
   becoming another axis you choose.
 

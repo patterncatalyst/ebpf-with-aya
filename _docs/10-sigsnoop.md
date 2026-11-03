@@ -65,7 +65,7 @@ and get away with it on little-endian x86_64 until the day you don't.
 The sender needs no argument: it's the current process, so
 `bpf_get_current_pid_tgid() >> 32` is its PID and
 `bpf_get_current_comm()` its name. Then the same `reserve` → write →
-`submit` ring-buffer emit from Chapter 9, sized for one `SignalEvent`.
+`submit` ring-buffer emit from opensnoop, sized for one `SignalEvent`.
 There's no `HashMap` here because there's nothing to correlate: `kill`
 is reported the instant it's called, so this is the floor of what a
 useful tracer looks like.
@@ -84,7 +84,7 @@ let mut ring = RingBuf::try_from(ebpf.map_mut("EVENTS").unwrap())?;
 
 `try_into::<&mut TracePoint>()` confirms the program is a tracepoint,
 `load()` runs the verifier, and `attach("syscalls", "sys_enter_kill")`
-wires it up. Draining is the Chapter 9 loop (`ring.next()`,
+wires it up. Draining is the opensnoop loop (`ring.next()`,
 `read_unaligned` into a `SignalEvent`) with the one twist this chapter
 is about: the kernel handed us the signal *number*, and turning that
 into something legible is user space's job.

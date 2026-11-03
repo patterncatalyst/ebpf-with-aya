@@ -59,7 +59,7 @@ pub fn sys_enter_exit_group(ctx: TracePointContext) -> u32 {
 ```
 
 `ctx.read_at::<i64>(16)` reads `error_code` from the 64-bit argument
-slot and narrows to `i32` (same widening rule as Chapter 10). The dying
+slot and narrows to `i32` (same widening rule as sigsnoop). The dying
 process *is* the current process, so `bpf_get_current_pid_tgid()` and
 `bpf_get_current_comm()` give us who it was (no argument needed), and
 one `reserve`/`submit` ships the `ExitEvent`. As with `sigsnoop` there's
@@ -95,7 +95,7 @@ the value determines how it's encoded.
 
 ## The user side
 
-The attach and drain are the single-tracepoint pattern from Chapter 10:
+The attach and drain are the single-tracepoint pattern from sigsnoop:
 `program_mut("sys_enter_exit_group").try_into::<&mut TracePoint>()`,
 `load()`, `attach("syscalls", "sys_enter_exit_group")`, then a
 `RingBuf::try_from` loop. The only new logic is applying the decode from

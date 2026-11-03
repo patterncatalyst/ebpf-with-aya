@@ -42,7 +42,7 @@ store; the `README.md` has the details.
 A small but real shape: a `/checkout` request. The **FastAPI**
 service receives it, and to fulfil it calls a **Quarkus** `/inventory` service:
 two hops, two languages, two containers, one trace. Both run under Podman
-(Chapters 45–47's pattern), both export OTLP to the Chapter 3 stack. We fire it
+(the application-probe pattern), both export OTLP to the observability stack. We fire it
 with one command:
 
 ```bash
@@ -53,11 +53,11 @@ curl -H "traceparent: 00-$(openssl rand -hex 16)-$(openssl rand -hex 8)-01" \
 Because the `traceparent` propagates from FastAPI to Quarkus (their OTel SDKs do
 this automatically), the result in Tempo is a **single trace** with spans from
 *both* services nested under the incoming request: the distributed trace
-Chapter 62 described, now real.
+described earlier, now real.
 
 ## Three signals from the apps
 
-Each service, instrumented exactly as Chapter 62's example was, contributes all
+Each service, instrumented exactly as the correlation example was, contributes all
 three application signals under that one trace_id:
 
 - **Spans → Tempo.** `checkout` (FastAPI) as the parent, an HTTP client span for
@@ -86,8 +86,8 @@ The crucial step is joining that view to the trace, and there are two
 ways, both built earlier in the book:
 
 - **Extract the trace_id at L7.** The `traceparent` travels in the HTTP request
-  bytes. An eBPF program reading the socket payload (the OBI technique from
-  Chapter 46, or a uprobe on the TLS/read path from Chapters 14–15) can scan for
+  bytes. An eBPF program reading the socket payload (the OBI technique,
+  or a uprobe on the TLS/read path) can scan for
   `traceparent: 00-<trace_id>-…` and tag its event with that exact id. The
   example ships this as the canonical `reference/l7_traceparent.bpf.c`; it's the
   same id the app reported, captured from the wire.
@@ -103,7 +103,7 @@ on the same Grafana view as the trace, for the *same* request.
 
 ## Reading one request end to end
 
-With the stack wired (Chapter 62's correlation data sources) and the request
+With the stack wired (the correlation data sources) and the request
 fired, the investigation reads top to bottom:
 
 1. **Tempo**: find the trace by its id: the `checkout` span, the client call,
@@ -130,7 +130,7 @@ observer, fires the traced `curl`, prints the resulting **trace_id**, and lists
 the Grafana steps to read it across all four views. **In Grafana**
 (`127.0.0.1:3000`): Explore → Tempo → the trace; then the linked logs, the
 metric exemplars, and `ebpf_capstone_*` for the same window. It's the
-three-signals final project of Chapter 46, completed: two real services, the full
+three-signals final project, completed: two real services, the full
 LGTM correlation, and the eBPF view joined in.
 
 ## Cross-check
@@ -151,7 +151,7 @@ as one.
 - A single `curl` with a **`traceparent`** produces one **distributed trace**
   across **FastAPI → Quarkus**, with spans (Tempo), metrics (Prometheus), and
   logs (Loki) all sharing the trace_id: the full application-observability
-  story you assembled in Chapter 62.
+  story you assembled earlier.
 - An **Aya program adds the fourth view**: the kernel-side truth (syscalls,
   bytes, on-CPU time) for the same request, joined to the trace by **L7
   traceparent extraction** (OBI/uprobe) or by **time + pid + service**.
@@ -159,6 +159,6 @@ as one.
   state, and kernel reality** in a single Grafana investigation: the reason
   eBPF and OpenTelemetry are worth combining, and the payoff of the whole book.
 
-Next, Part 10 is an optional **field guide** to the command-line tools we've
+Next comes an optional **field guide** to the command-line tools we've
 leaned on for validation (`bpftrace`, `bpftool`, and the BCC tools), driven
 from Python. Then a closing retrospective.

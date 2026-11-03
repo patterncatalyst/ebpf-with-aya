@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 31 put your code on the packet path at the qdisc, working on a
+The tc classifier put your code on the packet path at the qdisc, working on a
 fully-formed `sk_buff`. **XDP** (the eXpress Data Path) goes lower and
 earlier: it runs in the network driver, on the raw received frame,
 *before the kernel allocates an `sk_buff` at all*. That makes it the
@@ -30,14 +30,14 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="xdp-path"
-   alt="The RX path drawn vertically. At the bottom, the NIC driver's RX ring. Immediately above it sits the XDP hook (#[xdp], raw frame, no sk_buff): the earliest hook. From XDP, XDP_PASS continues up to where the sk_buff is allocated, then to the tc/clsact hook from Chapter 31, then to IP and sockets (Chapters 27-30) at the top. Branching off the XDP hook: XDP_DROP discards the packet immediately, and XDP_TX / XDP_REDIRECT bounce or forward it. The XDP hook runs in the driver, before sk_buff, making it the earliest and fastest hook; tc and the socket hooks all sit higher."
+   alt="The RX path drawn vertically. At the bottom, the NIC driver's RX ring. Immediately above it sits the XDP hook (#[xdp], raw frame, no sk_buff): the earliest hook. From XDP, XDP_PASS continues up to where the sk_buff is allocated, then to the tc/clsact hook, then to IP and sockets at the top. Branching off the XDP hook: XDP_DROP discards the packet immediately, and XDP_TX / XDP_REDIRECT bounce or forward it. The XDP hook runs in the driver, before sk_buff, making it the earliest and fastest hook; tc and the socket hooks all sit higher."
    caption="Figure 32.1: XDP runs first, in the driver, before any sk_buff exists" %}
 
 ## The earliest, fastest, and rawest hook
 
 Look at the figure top-to-bottom and the whole book's network surface
-lines up: sockets and IP at the top (Chapters 27–30), tc/clsact below them
-(Chapter 31), and **XDP at the very bottom**, right above the driver. A
+lines up: sockets and IP at the top, tc/clsact below them,
+and **XDP at the very bottom**, right above the driver. A
 packet hits XDP before the kernel has spent anything building an
 `sk_buff`, which is exactly why XDP can drop millions of packets per
 second: the dropped ones cost almost nothing.
@@ -81,7 +81,7 @@ comparison and only then lets you dereference the pointer; omit it and the
 program is rejected at load time, not at runtime. This is the discipline
 XDP trades for its speed: you do the bounds proof by hand, every access.
 
-Contrast Chapter 31: `TcContext::load` copied a `T` out of the `sk_buff`
+Contrast the tc classifier: `TcContext::load` copied a `T` out of the `sk_buff`
 and did the bounds check internally. Here there is nothing to copy out of:
 you point directly into driver memory, so you carry the proof yourself.
 
@@ -115,7 +115,7 @@ fn try_filter(ctx: &XdpContext) -> Result<u32, ()> {
   isn't IPv4 we `XDP_PASS` (leave ARP/IPv6/… alone). Then we read the
   IPv4 header and its protocol byte.
 - We count every IPv4 packet by protocol in a `HashMap` (same in-kernel
-  aggregation as Chapter 31; per-packet ring buffers are out of the
+  aggregation as the tc classifier; per-packet ring buffers are out of the
   question at XDP rates), and we **drop ICMP** with `XDP_DROP`, bumping a
   drop counter. Everything else passes.
 - Dropping ICMP makes the verdict vividly visible: a `ping` to the target
@@ -150,7 +150,7 @@ defeats XDP's point, but it works everywhere and is fine for learning and
 for functional tests. On bare metal with a supported NIC, native mode is
 what you'd run.
 
-Draining is the timer-based delta read from Chapter 31, producing
+Draining is the timer-based delta read from the tc classifier, producing
 `ebpf_xdp_packets_total{proto}` and `ebpf_xdp_dropped_total{proto}`.
 
 ## Build, deploy, observe
@@ -214,6 +214,6 @@ from replies → timeouts → replies is the verdict, demonstrated end to end.
   including why a VM may need the fallback.
 
 This closes the **Networking** part: from timing connects to dropping
-packets in the driver. Next we move to **Part 5, Security & LSM**, where
+packets in the driver. Next we move to the **Security & LSM** part, where
 eBPF programs answer a different question: not "what happened?" but
 "should this be allowed?"

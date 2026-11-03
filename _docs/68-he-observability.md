@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-The Chapter 63 final project followed one request through two services and the kernel,
+The final project followed one request through two services and the kernel,
 joining everything on a single `trace_id`. This addendum takes the same machinery
 (uprobes, timing, OTLP to Grafana) and points it at a workload where you
 *cannot* and *must not* see the payload: **homomorphic encryption**.
@@ -34,7 +34,7 @@ and shows a per-operation latency histogram; the
 
 {% include excalidraw.html
    file="he-observability"
-   alt="Observe a privacy-preserving workload: time the operations, never the data. On the left, an HE workload built on TFHE-rs in Rust exposes boundary functions (he_keygen, he_encrypt which produces ciphertext, he_add and he_compute which perform homomorphic addition and multiplication on ciphertext, and he_decrypt), and its operands stay encrypted. An eBPF/Aya observer attaches a uprobe and uretprobe to each he_* boundary by symbol, measuring entry-to-return duration. That feeds a metric, ebpf_he_op_latency_seconds tagged by op (keygen, encrypt, add, compute, decrypt), exported to Grafana. It extends the Chapter 63 final project with the same uprobe and OTel machinery, on a workload whose data you never read: eBPF measures duration and stacks, not values."
+   alt="Observe a privacy-preserving workload: time the operations, never the data. On the left, an HE workload built on TFHE-rs in Rust exposes boundary functions (he_keygen, he_encrypt which produces ciphertext, he_add and he_compute which perform homomorphic addition and multiplication on ciphertext, and he_decrypt), and its operands stay encrypted. An eBPF/Aya observer attaches a uprobe and uretprobe to each he_* boundary by symbol, measuring entry-to-return duration. That feeds a metric, ebpf_he_op_latency_seconds tagged by op (keygen, encrypt, add, compute, decrypt), exported to Grafana. It extends the final project with the same uprobe and OTel machinery, on a workload whose data you never read: eBPF measures duration and stacks, not values."
    caption="Figure 68.1: timing each homomorphic operation by symbol, without ever reading its (encrypted) operands" %}
 
 ## What homomorphic encryption is
@@ -87,7 +87,7 @@ often bootstrapping runs, CPU and memory pressure) while revealing nothing about
 the *values*. That is precisely the shape of eBPF observability. A uprobe on
 `he_compute` records that the call took 84 ms; it does not, and structurally
 cannot in this design, read the ciphertext bytes being multiplied. A CPU profile
-(Chapter 23) records that the time went into the NTT routine; it captures stack
+records that the time went into the NTT routine; it captures stack
 addresses, not operands. eBPF measures the *system*, not the *secret*. That's
 usually framed as a safety nicety, but here is the only kind of observability the
 problem permits.
@@ -104,13 +104,13 @@ The workload (`he-workload`, using the `tfhe` crate) wraps each homomorphic
 operation in a named, non-inlined boundary function (`he_keygen`, `he_encrypt`,
 `he_add`, `he_compute`, `he_decrypt`), each marked `#[no_mangle] #[inline(never)] pub
 extern "C"`. That is deliberate and is the same technique as the uprobe-on-Rust
-chapter (Chapter 14): an optimized release build inlines and monomorphizes the
+chapter: an optimized release build inlines and monomorphizes the
 library's internals away, so you give the profiler stable symbols to attach to by
 defining the boundaries yourself. Inside, the functions do real TFHE-rs work:
 generate keys, encrypt a `FheUint8`, add and multiply two ciphertexts, decrypt, holding
 state in a `static` so the signatures stay simple to probe.
 
-The observer (`he-observer`) is a `funclatency`-style timer (Chapter 18) built
+The observer (`he-observer`) is a `funclatency`-style timer built
 from **uprobe/uretprobe pairs**. On entry to any boundary it stamps the start
 time keyed by `pid_tgid`; on return it computes the delta and emits a small
 record tagged with the operation:
@@ -174,7 +174,7 @@ The histogram tells you *which* operation is slow; it doesn't tell you *why*.
 `compute` is expensive because, underneath, a homomorphic multiply runs
 programmable bootstrapping whose inner loop is dominated by the number-theoretic
 transform (NTT) used for fast polynomial multiplication. To *see* that, sample
-stacks instead of timing boundaries. The on-CPU profiling from Chapter 23
+stacks instead of timing boundaries. The on-CPU profiling
 applies unchanged: a perf-event program samples the workload's user stack at, say,
 99 Hz and aggregates by stack, and the frames that pile up under `he_compute` are
 the library's NTT and polynomial routines. `examples/68-he-observability/profile.sh`
@@ -217,12 +217,12 @@ without reading a byte of data.
   never *values*. eBPF fits because it times symbols and samples stacks, not
   operands.
 - The implementation is the final project's machinery unchanged: **uprobe/uretprobe**
-  pairs on named workload boundaries (Chapter 14's technique), a `funclatency`
-  histogram (Chapter 18), and OTLP to Grafana, now proving that the same tools
+  pairs on named workload boundaries, a `funclatency`
+  histogram, and OTLP to Grafana, now proving that the same tools
   which can see *everything* about a request can, by design, see *nothing* about
   a secret.
 - Timing **two operations** (a cheap homomorphic `add` and an expensive
   `compute`, multiply) puts the FHE cost gap on one histogram, and **stack
-  profiling** (Chapter 23) attributes the multiply's milliseconds to the NTT
+  profiling** attributes the multiply's milliseconds to the NTT
   routines underneath, viewable as a Pyroscope flamegraph panel. Both stay
   data-blind: a duration and a stack of addresses, never an operand.

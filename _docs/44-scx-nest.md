@@ -27,7 +27,7 @@ scaling: a core that's been busy runs at turbo with hot caches, while five
 lightly-loaded cores all idle down to low frequency. For many workloads,
 three busy cores beat eight sleepy ones. This chapter explains that policy,
 shows how dispatch-queue and CPU-selection choices express it, and (keeping
-the faithful pattern from Chapter 43) runs the real `scx_nest` and makes its
+the faithful pattern established earlier) runs the real `scx_nest` and makes its
 behavior *visible* with an Aya probe.
 
 The code and runbook are in `examples/44-scx-nest/`. `./demo.sh` there runs
@@ -99,7 +99,7 @@ Reading it as policy:
 
 `bpf_cpumask_*` are the **kfuncs** sched_ext exposes for manipulating core
 sets: kernel functions BPF can call directly, the modern alternative to the
-fixed helper list (a topic Part 8 returns to). Everything else is the
+fixed helper list (a topic returned to later). Everything else is the
 `scx_simple` vocabulary: `scx_bpf_dispatch`, `SCX_DSQ_LOCAL`, slices. The
 *strategy* changed; the *primitives* didn't.
 
@@ -184,5 +184,5 @@ job; your Aya probe's per-CPU busy series should match it.
   `sched_switch` probe: the nest shows up as a few hot cores among idle ones.
 
 That closes the schedulers part's two-chapter tour: minimal and realistic.
-Next, Part 8 turns eBPF on real application targets, starting with probing a
+Next, the book turns eBPF on real application targets, starting with probing a
 production web server.

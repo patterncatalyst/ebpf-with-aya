@@ -106,7 +106,7 @@ Walking it:
   can be attached to a named kernel hook at all.
 - **`bpf_get_current_cgroup_id()`** is a plain helper: no struct walking.
   It returns the cgroup id of the calling task, the same 64-bit id you'd
-  match a container by (Chapter 16). We don't even look at the destination
+  match a container by. We don't even look at the destination
   address; the policy here is "this cgroup gets no outbound connections."
 - **The decision** is the return: `-1` (`-EPERM`) denies, `0` allows. We
   bump a `DENIED` counter on each block so user space can report how often
@@ -182,6 +182,6 @@ listing an `lsm` program confirms what's enforcing it.
 - **cgroup-scoped policy**: `bpf_get_current_cgroup_id()` lets you confine
   one container while leaving the host alone: MAC you can target.
 
-Next, Chapter 38 takes the other enforcement style: instead of denying a
+Next, the book takes the other enforcement style: instead of denying a
 syscall, *react* to one with a **signal program** that kills an offending
 process on the spot.

@@ -107,7 +107,7 @@ chapter so the C-and-CO-RE mental model is concrete, then move to
   assumes zsh, but bash is fine).
 - A **paragraph-level** idea of what the Linux kernel does: syscalls,
   processes, network packets. eBPF concepts themselves are taught in
-  Chapter 5.
+  the concepts chapter.
 
 ## Reference material
 
@@ -130,4 +130,4 @@ The tutorial leans on, and frequently points at, this canonical set:
 > [`CONTRIBUTING.md`](https://github.com/{{ site.github_username }}/{{ site.github_repo }}/blob/main/CONTRIBUTING.md)
 > for the full provenance policy.
 
-Ready? [Start with Chapter 1: Prerequisites →]({{ "/docs/01-prerequisites/" | relative_url }})
+Ready? [Start with Prerequisites →]({{ "/docs/01-prerequisites/" | relative_url }})

@@ -18,7 +18,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapters 7 and 8 attached to a kernel *function*. This chapter attaches
+The kprobe and fentry chapters attached to a kernel *function*. This chapter attaches
 to **tracepoints**, stable, documented instrumentation points the
 kernel developers maintain, and builds `opensnoop`, the classic tool
 that shows every file open on the system: which process, which file,
@@ -31,7 +31,7 @@ The code is in `examples/09-opensnoop/`. `./demo.sh` there builds, deploys, and 
 {% include excalidraw.html
    file="mem-read-user-kernel"
    alt="User vs kernel memory: an eBPF program may not dereference raw pointers; it copies bytes from the process's user memory with bpf_probe_read_user and from kernel memory with bpf_probe_read_kernel."
-   caption="Figure 9.1. Reading user vs kernel memory (the basis for chapters 9–12)" %}
+   caption="Figure 9.1. Reading user vs kernel memory" %}
 
 ## Why tracepoints here
 
@@ -46,7 +46,7 @@ most observability work, tracepoints are the right default.
 opens on a modern system. We pair the **enter** tracepoint (which has
 the filename and flags) with the **exit** tracepoint (which has the
 return value: the new fd, or a negative errno) using the same
-`pid_tgid` `HashMap` bridge from Chapter 8.
+`pid_tgid` `HashMap` bridge from the fentry chapter.
 
 ## Reading tracepoint arguments by offset
 
@@ -74,7 +74,7 @@ tracepoint discipline: stable, but confirm.
 
 ## User memory vs. kernel memory
 
-Here's the subtlety. In Chapters 7–8 we read kernel pointers with
+Here's the subtlety. Earlier we read kernel pointers with
 `bpf_probe_read_kernel`. But at *syscall entry*, the `filename` argument
 is a pointer into the **calling process's user-space memory**; the
 program hasn't copied it into the kernel yet. Reading it needs the
@@ -132,7 +132,7 @@ argument out of the tracepoint record at the offset we read from the
 format file; note we get a *pointer*, not the string; the string lives
 in user memory (Figure 9.1), so `bpf_probe_read_user_str_bytes` copies it
 into our stack-allocated `info.filename`. That helper is the user-memory
-analogue of the kernel reader from Chapter 8, and it stops at the NUL or
+analogue of the kernel reader from before, and it stops at the NUL or
 the buffer end, so it's bounded, which is what keeps the verifier happy.
 Finally `INFLIGHT.insert` stashes the struct under `pid_tgid`. Nothing is
 reported yet.
@@ -194,7 +194,7 @@ errors. `attach(category, name)` wires it to `syscalls:sys_enter_openat`.
 Tracepoints need only those two strings, no symbol, no BTF, which is
 the simplicity tracepoints buy you.
 
-Reading is the same poll loop as Chapter 6, but over a `RingBuf` instead
+Reading is the same poll loop as hello-world, but over a `RingBuf` instead
 of a per-CPU array:
 
 ```rust
@@ -255,7 +255,7 @@ language.
   offset from the format file.
 - Syscall arguments at entry are **user** memory:
   `bpf_probe_read_user_*`, not the kernel reader.
-- The entry/exit `HashMap` bridge from Chapter 8 generalizes cleanly to
+- The entry/exit `HashMap` bridge generalizes cleanly to
   tracepoints.
 
 Next, a shorter sibling, **`sigsnoop`**: one tracepoint, signal

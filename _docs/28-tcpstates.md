@@ -2,7 +2,7 @@
 title: "tcpstates"
 order: 28
 part: Networking
-description: "Trace every TCP connection through its state machine using the single stable sock:inet_sock_set_state tracepoint: the clean, offset-light counterpart to Chapter 27's kprobes, with the endpoints handed to you directly."
+description: "Trace every TCP connection through its state machine using the single stable sock:inet_sock_set_state tracepoint: the clean, offset-light counterpart to the connect-latency kprobes, with the endpoints handed to you directly."
 duration: 25 minutes
 ---
 
@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 27 timed one transition (connect → established) the hard way,
+The last chapter timed one transition (connect → established) the hard way,
 with kprobes and `struct sock` offsets. This chapter watches the
 **entire** TCP state machine: every connection moving through
 `SYN_SENT`, `ESTABLISHED`, `FIN_WAIT`, `CLOSE`, and the rest, and does
@@ -39,7 +39,7 @@ state, the protocol, and both endpoints' addresses and ports.
    caption="Figure 28.1: the TCP state machine via one tracepoint" %}
 
 Because the tracepoint hands you the fields, there are **no kprobes and
-no `struct sock` offsets**: the soft spot from Chapter 27 simply isn't
+no `struct sock` offsets**: the soft spot from the kprobe approach simply isn't
 here. You still read the tracepoint's own fields by offset (from its
 format file), but those offsets are part of a stable ABI the kernel
 maintains, not internal struct layout that drifts:

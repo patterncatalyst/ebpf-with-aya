@@ -176,6 +176,6 @@ When the database's own view agrees with the kernel's, the probe is faithful.
   (`query__start`, `lock__wait__start`, …); uprobes on the wrapped functions
   are the pragmatic stand-in until Aya's USDT attachment matures.
 
-That closes the Application targets part. Next, Part 8 turns to the advanced
+That closes the Application targets part. Next, the book turns to the advanced
 kernel surface (the BPF features that arrived in 2024–2026) starting with
 detaching and pinning programs so they outlive their loader.

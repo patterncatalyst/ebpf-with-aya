@@ -186,7 +186,7 @@ reach for whichever the program's story needs.
 
 Keep the stack up while you work through the tutorial; it's cheap, and it's
 not scenery. **Every program chapter that follows exports its `ebpf_*`
-metrics to this stack**, so the demo you run in Chapter 6, the latency
+metrics to this stack**, so the first demo you run, the latency
 histograms in the tracing chapters, the per-CPU bars in the schedulers
 chapters, and the request timings in the application chapters all show up here
 in Grafana with no further setup. That's the payoff for standing it up once
@@ -205,4 +205,4 @@ cd examples/03-observability-stack && ./demo.sh down
 - [x] A clear picture of the two faces of output: a live table in your
   terminal and `ebpf_*` metrics charted in Grafana at `127.0.0.1:3000`
 
-[Next: Chapter 4: The Rust + Aya toolchain →]({{ "/docs/04-rust-aya-toolchain/" | relative_url }})
+[Next: The Rust + Aya toolchain →]({{ "/docs/04-rust-aya-toolchain/" | relative_url }})

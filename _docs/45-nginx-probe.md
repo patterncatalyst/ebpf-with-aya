@@ -50,7 +50,7 @@ So the plan is a uprobe on a function that runs near the **start** of request
 processing (`ngx_http_process_request`) to stamp a start time keyed by `r`,
 and a uprobe on a function that runs at the **end**
 (`ngx_http_finalize_request`) to look up `r`, compute the elapsed time, and
-record it. This is the funclatency idea from Chapter 18, but keyed by an
+record it. This is the funclatency idea, but keyed by an
 application object instead of a PID, which is what lets it work on a
 concurrent server.
 
@@ -92,7 +92,7 @@ Reading it:
   we never dereference it, so we don't need nginx's struct layout at all.
 - **`req_start`** stamps `STARTS[r] = now`. **`req_done`** looks up `r`,
   computes the elapsed microseconds, drops it into a **log2 histogram**
-  (Chapter 18's bucketing), and removes the entry so the map doesn't grow.
+ , and removes the entry so the map doesn't grow.
 - Because the key is the request object, overlapping requests on the same
   worker never collide, exactly the property a PID key lacked.
 
@@ -183,6 +183,6 @@ the network), agreement between the two is the probe working.
   debuginfo if stripped) and **container namespaces** (attach via
   `/proc/<pid>/root/...` to reach the in-container inode).
 
-Next, Chapter 46 is a short final project that ties the whole observability story
+Next comes a short final project that ties the whole observability story
 together: turning eBPF on Java and Python services to produce correlated
 metrics, logs, and traces.

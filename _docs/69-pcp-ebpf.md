@@ -137,7 +137,7 @@ analysis from a dashboard.
 **`pmdabcc`: the predecessor.** Before CO-RE, the BCC PMDA ran BPF through the
 BCC Python frontend (runtime-compiled with Clang, needing kernel headers). It
 still exists and works, but `pmdabpf` is the direction of travel for the same
-reasons Chapter 66 gave: precompiled CO-RE modules avoid shipping a compiler to
+reasons given earlier: precompiled CO-RE modules avoid shipping a compiler to
 every host.
 
 **Bridging your own Aya tools into PCP.** Everything in this book exports `ebpf_*`
@@ -145,7 +145,7 @@ metrics over OTLP. Two paths bring those into PCP. The direct one: point
 `pmdaopenmetrics` at a Prometheus endpoint that carries them: either the
 otel-lgtm stack's bundled Prometheus, or a loader extended to expose a
 `/metrics` endpoint, by dropping a `.url` file in the OpenMetrics PMDA's config
-directory, after which your `ebpf_he_op_latency_seconds` (Chapter 68) or
+directory, after which your `ebpf_he_op_latency_seconds` or
 `ebpf_runqlat` lands in the `openmetrics.*` tree, gets archived by pmlogger, and
 can trigger a pmie alert. The thorough one: write a small Python PMDA that reads
 your Aya program's map or output directly and presents it with proper PCP
@@ -162,7 +162,7 @@ OTel `ebpf_*` metrics the book's other chapters produce, in the same Grafana.
 They are different philosophies, and the answer is "both, for different
 jobs." The book's approach (a bespoke Aya program
 pushing OTLP) wins when you need a *custom* probe and request-level correlation:
-your own metric, joined to traces and logs on a `trace_id`, as in the Chapter 63
+your own metric, joined to traces and logs on a `trace_id`, as in the final
 final project. PCP wins when you want *standard* eBPF tooling running 24/7 with
 low overhead, recorded to archives for retrospective analysis and wired to alerts,
 without writing or operating a loader at all: enable a `pmdabpf` module and it is

@@ -162,7 +162,7 @@ a caveat about one that's often overstated:
 2. **The data disagrees with itself.** The process exists by every channel
    that *doesn't* go through `getdents64`: `kill -0 <pid>` succeeds,
    `/proc/<pid>/` is directly statable, and a BPF **task iterator**
-   (Chapter in Part 8) walking the kernel's real task list shows it. A
+   walking the kernel's real task list shows it. A
    monitor that compares "what `ls /proc` returned" with "what the task list
    actually contains" catches the discrepancy immediately.
 3. **Don't count on a kernel taint.** Older write-ups say
@@ -192,5 +192,5 @@ catch that it happened.
 - The scan bound must cover a **whole** `/proc` in one `getdents64`; a
   too-small cap silently hides nothing.
 
-Next, Chapter 40 turns to defense proper: using an LSM hook to **protect a
+Next, the book turns to defense proper: using an LSM hook to **protect a
 file from tampering**, even by root.

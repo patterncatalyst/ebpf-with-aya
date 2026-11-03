@@ -149,5 +149,5 @@ ordinary eBPF you'd recognize from any kernel program.
   kernel context switch and can share maps with kernel eBPF, running programs
   built with libbpf or Aya.
 
-Next, Chapter 52 returns to the kernel for **kfuncs**, the modern, typed
+Next, the book returns to the kernel for **kfuncs**, the modern, typed
 alternative to the fixed helper list these VMs reimplement.

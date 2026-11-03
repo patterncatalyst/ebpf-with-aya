@@ -2,7 +2,7 @@
 title: "struct_ops: BPF that implements the kernel"
 order: 55
 part: Advanced kernel surface
-description: "Most BPF observes or filters at a hook the kernel calls. struct_ops inverts that: the kernel defines an interface (a struct of function pointers) and BPF supplies the whole implementation, which the kernel then calls into like a built-in module. Understand the vtable model behind Part 6's schedulers, write a minimal TCP congestion-control algorithm in BPF, and see the same mechanism reused across the kernel."
+description: "Most BPF observes or filters at a hook the kernel calls. struct_ops inverts that: the kernel defines an interface (a struct of function pointers) and BPF supplies the whole implementation, which the kernel then calls into like a built-in module. Understand the vtable model behind the schedulers, write a minimal TCP congestion-control algorithm in BPF, and see the same mechanism reused across the kernel."
 duration: 45 minutes
 ---
 
@@ -25,7 +25,7 @@ whole **interface** (a `struct` full of function pointers, a vtable), and BPF
 supplies the *entire implementation*. Once registered, the kernel calls into
 your BPF programs at each of the interface's call sites exactly as if you'd
 shipped a kernel module implementing that policy. This is the mechanism beneath
-Part 6's schedulers (`sched_ext` is "just" a big struct_ops), and it's how BPF
+The schedulers (`sched_ext` is "just" a big struct_ops), and it's how BPF
 became a way to write pluggable kernel subsystems without writing a module.
 This chapter generalizes it and grounds it in the original, most approachable
 user: **TCP congestion control**.
@@ -36,7 +36,7 @@ alongside cubic and reno; the `README.md` has the details.
 
 {% include excalidraw.html
    file="structops"
-   alt="struct_ops: BPF implements a kernel interface (a vtable), and the kernel calls in. On the left, BPF programs in sections struct_ops/ssthresh, struct_ops/cong_avoid, and struct_ops/undo_cwnd fill the slots of a STRUCT_OPS map holding a struct tcp_congestion_ops, which is registered via a link. On the right, the TCP stack's call sites invoke them: on ACK it calls cong_avoid, on loss it calls ssthresh, and the algorithm is selected via sysctl or setsockopt. The kernel calls your BPF. The same mechanism powers sched_ext (Part 6), HID-BPF, bpf Qdisc, and FUSE: BPF as a pluggable kernel module."
+   alt="struct_ops: BPF implements a kernel interface (a vtable), and the kernel calls in. On the left, BPF programs in sections struct_ops/ssthresh, struct_ops/cong_avoid, and struct_ops/undo_cwnd fill the slots of a STRUCT_OPS map holding a struct tcp_congestion_ops, which is registered via a link. On the right, the TCP stack's call sites invoke them: on ACK it calls cong_avoid, on loss it calls ssthresh, and the algorithm is selected via sysctl or setsockopt. The kernel calls your BPF. The same mechanism powers sched_ext, HID-BPF, bpf Qdisc, and FUSE: BPF as a pluggable kernel module."
    caption="Figure 55.1: BPF fills a kernel-defined vtable; the kernel calls into it at the interface's call sites" %}
 
 ## The inversion
@@ -129,7 +129,7 @@ Reading it as the TCP stack will run it:
   how many packets were acked. Below the slow-start threshold we grow the
   window exponentially (`tcp_slow_start`); above it, additively
   (`tcp_cong_avoid_ai`). Those two are kernel functions the CC struct_ops
-  interface makes callable, the same way kfuncs (Chapter 52) expose typed
+  interface makes callable, the same way kfuncs expose typed
   kernel functions to BPF, the congestion-control interface exposes its building
   blocks.
 - On loss the stack calls **`cc_ssthresh`**; we return half the window: textbook
@@ -152,7 +152,7 @@ connection that selects it runs *your code* on every ACK and every loss.
 Once you see the pattern, *BPF fills a kernel-defined vtable, registered as a
 struct_ops map*, you recognize it across the modern kernel:
 
-- **sched_ext** (Part 6): `sched_ext_ops` is a struct_ops with dozens of slots
+- **sched_ext**: `sched_ext_ops` is a struct_ops with dozens of slots
   (`.enqueue`, `.dispatch`, `.select_cpu`…). The schedulers you wrote there were
   struct_ops all along.
 - **HID-BPF**: `hid_bpf_ops` to fix up input-device reports.
@@ -211,5 +211,5 @@ implementation of its own interface.
   powers **sched_ext**, **HID-BPF**, **bpf Qdisc**, and **FUSE**: learn it once,
   recognize it everywhere.
 
-Next, Chapter 56 looks at **dynptrs and BPF arenas**: the modern way BPF
+Next, the book looks at **dynptrs and BPF arenas**: the modern way BPF
 handles variable-length data and shares large memory regions.

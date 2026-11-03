@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 39 hid a process by editing a syscall's *output*. The same move,
+Earlier we hid a process by editing a syscall's *output*. The same move,
 pointed at a different syscall, escalates privilege. When you run `sudo`, it
 reads its policy from `/etc/sudoers` to decide what you're allowed to do. If
 an eBPF program rewrites the bytes `sudo` gets back from that `read()` by
@@ -31,7 +31,7 @@ and runs it; its `README.md` covers what it does and how to drive it.
 
 {% include excalidraw.html
    file="sudo-escalate"
-   alt="sudo calls read on /etc/sudoers. An eBPF read-exit hook checks whether the current process is named sudo and the returned buffer begins with the sudoers header, and if so overwrites that buffer in memory. sudo then sees an injected line and grants root. The file on disk is never touched: only the bytes sudo reads into memory. Defense: the same tells as Chapter 39 (kernel taint, loaded programs), and an LSM can block bpf_probe_write_user."
+   alt="sudo calls read on /etc/sudoers. An eBPF read-exit hook checks whether the current process is named sudo and the returned buffer begins with the sudoers header, and if so overwrites that buffer in memory. sudo then sees an injected line and grants root. The file on disk is never touched: only the bytes sudo reads into memory. Defense: the same tells as the pid-hiding offense (kernel taint, loaded programs), and an LSM can block bpf_probe_write_user."
    caption="Figure 41.1: The file on disk is never touched; only the bytes sudo reads are forged" %}
 
 ## Why reads are forgeable
@@ -44,7 +44,7 @@ between the kernel's fill and sudo's parse and you've rewritten the policy
 for that one invocation, leaving the on-disk file pristine and the change
 invisible to anyone who `cat`s it.
 
-The mechanics mirror Chapter 39: capture the buffer on `sys_enter_read`,
+The mechanics mirror the pid-hide: capture the buffer on `sys_enter_read`,
 rewrite it on `sys_exit_read` with `bpf_probe_write_user`. The new wrinkle is
 *targeting*, and it's subtler than it looks. Matching the process name (`comm
 == "sudo"`) is necessary but nowhere near sufficient; getting it wrong doesn't
@@ -127,7 +127,7 @@ The pieces:
 - We **overwrite the first `p.len` bytes** of sudo's buffer with the payload
   using `bpf_probe_write_user`, counting tampers for telemetry.
 - `bpf_probe_write_user` is the same **kernel-tainting, lab-only** helper
-  from Chapter 39; using it is itself a detectable event.
+  from the pid-hide; using it is itself a detectable event.
 
 > **Verifier note.** The size passed to `bpf_probe_write_user` is
 > `ARG_CONST_SIZE`, so the verifier rejects any length it can't prove is
@@ -179,7 +179,7 @@ root, while `cat /etc/sudoers` on disk shows no such line.
 
 ## Detecting it
 
-The same toolkit as Chapter 39, plus one policy control:
+The same toolkit as the pid-hide, plus one policy control:
 
 1. **Unexpected loaded programs.** `sudo bpftool prog show` reveals
    tracepoints on `read`: there is no benign reason for one to exist on a
@@ -189,7 +189,7 @@ The same toolkit as Chapter 39, plus one policy control:
    match what `/etc/sudoers` *says*; an auditor comparing effective sudo
    rights against the on-disk policy catches the divergence even though the
    file is pristine.
-3. **Prevent the primitive.** An LSM program (Chapters 37, 40) can deny the
+3. **Prevent the primitive.** An LSM program can deny the
    `bpf` operations that load such tools, or restrict `bpf_probe_write_user`,
    defense turning eBPF against the very technique.
 
@@ -213,6 +213,6 @@ The same toolkit as Chapter 39, plus one policy control:
   behavior-vs-config audit), and LSM can deny the loading primitive
   outright.
 
-Next, Chapter 42 closes the security part by turning all of this into a
+Next, the book closes the security part by turning all of this into a
 **telemetry sensor**: many security-relevant hooks feeding one event stream,
 the shape of a real runtime-security tool.

@@ -105,7 +105,7 @@ println!("execs so far: {}", execs.get(&0, 0)?);
 This decoupling is the whole point: one process installs and pins, a different
 process (or many, over time) reads: the lifecycle of the eBPF program is no
 longer tied to any single program. That is exactly how zero-downtime managers
-operate, a thread Part 9 picks up.
+operate, a thread picked up later.
 
 ## Build, deploy, observe
 
@@ -149,5 +149,5 @@ command does. Removing the pins (`pinctl detach` or `rm`) and re-running
   lifecycle from its loader; **removing the pin** drops the reference and
   detaches.
 
-Next, Chapter 49 builds on persistence with programs that act on syscalls
+Next, the book builds on persistence with programs that act on syscalls
 directly, beginning the tour of the modern BPF surface.

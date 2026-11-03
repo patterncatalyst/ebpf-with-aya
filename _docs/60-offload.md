@@ -43,7 +43,7 @@ The clearest place to see offload is XDP, which can attach in **three modes**:
 - **Generic (SKB) mode**: XDP emulated in the network stack after the SKB is
   built. No driver support needed, but slow; a correctness/testing fallback.
 - **Native (driver) mode**: the program runs in the NIC driver, before the SKB
-  exists, on the **host CPU**. This is "fast XDP," what Chapters 32–36 used.
+  exists, on the **host CPU**. This is "fast XDP," what the networking chapters used.
 - **Offload mode**: the program runs **on the NIC itself**, not the host CPU at
   all. Packets are processed by the card's own processor; the host may never see
   the ones the program drops.
@@ -85,7 +85,7 @@ first. And on those cores you run **ordinary eBPF on ordinary Linux**.
 That changes the engineering story completely, and in Aya's favour: there's no
 special offload API to learn and no verifier subset to fight. You **cross-compile
 your loader for the DPU's architecture** (`aarch64-unknown-linux-gnu`, or musl
-per Chapter 4) and deploy it to the DPU's Linux exactly as you deploy to the lab
+per the toolchain) and deploy it to the DPU's Linux exactly as you deploy to the lab
 VM. The eBPF runs on the DPU, processing traffic before the host CPU is
 involved, and **none of your Aya code changes.** For most teams in 2026, "run
 eBPF on the DPU" is what offload actually means in production, and it's the one
@@ -112,7 +112,7 @@ Two further directions are real but still research or specialized:
 Aya covers the part you can actually run today on both ends. For **mode
 selection**, it sets `XdpFlags::HW_MODE`/`DRV_MODE`/`SKB_MODE` at attach, so you
 can request offload and detect support. For **DPUs**, the answer is the whole
-point of Part 9's CO-RE chapter: cross-compile and deploy. A DPU is just
+point of the CO-RE material: cross-compile and deploy. A DPU is just
 another Linux target, and a CO-RE object plus a cross-built loader runs there
 unchanged. True NFP offload would need that hardware and its toolchain; the
 example notes that the lab has neither.
@@ -157,6 +157,6 @@ there's no offload engine to take it, exactly what the chapter predicts.
   eBPF filters near the wire and an accelerator (e.g. NVIDIA Morpheus) does the
   inference, not eBPF running on the GPU itself.
 
-Next, Chapter 61 turns to a quieter operating concern that offload also touches:
+Next, the book turns to a quieter operating concern that offload also touches:
 **power and efficiency**: measuring and reducing what eBPF (and the workloads
 it watches) cost in energy.

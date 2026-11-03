@@ -33,13 +33,13 @@ tools through a Python summarizer; the `README.md` has the details.
 
 {% include excalidraw.html
    file="bcc-tools"
-   alt="Drive the ready-made BCC tools from Python: the validation suite, summarized. A Python wrapper spawns a BCC tool (execsnoop, biolatency, runqlat, tcpconnect, either classic Python plus C or libbpf CO-RE), which attaches to the kernel (compiling first if classic) where probes and maps run; the kernel returns events. The tool prints columnar text on stdout, which the wrapper parses into a top-N summary, counts, or a captured histogram. Classic BCC compiles inline C at runtime and needs clang plus kernel headers; libbpf-tools are precompiled CO-RE from Chapter 58. BCC is for depth, bpftrace for quick questions, Aya for production."
+   alt="Drive the ready-made BCC tools from Python: the validation suite, summarized. A Python wrapper spawns a BCC tool (execsnoop, biolatency, runqlat, tcpconnect, either classic Python plus C or libbpf CO-RE), which attaches to the kernel (compiling first if classic) where probes and maps run; the kernel returns events. The tool prints columnar text on stdout, which the wrapper parses into a top-N summary, counts, or a captured histogram. Classic BCC compiles inline C at runtime and needs clang plus kernel headers; libbpf-tools are precompiled CO-RE. BCC is for depth, bpftrace for quick questions, Aya for production."
    caption="Figure 66.1: A BCC tool gathers; the Python wrapper resolves, runs, and summarizes it" %}
 
 ## Two generations of BCC
 
 "BCC" means two related things today, and the difference is exactly the CO-RE
-story from Chapter 58:
+CO-RE story:
 
 - **Classic BCC**: each tool is a Python script with an **inline C** BPF program
   that BCC **compiles at runtime** with Clang/LLVM against the running kernel's
@@ -145,7 +145,7 @@ b.trace_print()
 
 That `BPF(text=...)` call is the whole story: BCC takes the C string, compiles it
 with Clang **right then**, loads it, and attaches it. That runtime compilation
-is what makes classic BCC flexible and dependency-heavy. Set it beside a Chapter 6
+is what makes classic BCC flexible and dependency-heavy. Set it beside the hello-world
 Aya program and the contrast is the book in miniature: BCC compiles C at runtime
 from Python; Aya compiles Rust ahead of time into one binary you ship. Both ride
 the same kernel verifier and maps; they differ in *when* and *in what language*
@@ -155,7 +155,7 @@ the program is written and built.
 
 The field guide's through-line: **BCC** for ready-made depth and quick custom
 probes (`trace`, `argdist`) when you accept its dependencies; **bpftrace**
-(Chapter 64) for fast one-liners in a small DSL; **bpftool** (Chapter 65) to
+for fast one-liners in a small DSL; **bpftool** to
 inspect what's loaded; and **Aya** for the typed, embeddable, single-binary
 programs you operate in production. You reach for the first three to *explore and
 validate*, and Aya to *ship*, which is exactly how this book used them.

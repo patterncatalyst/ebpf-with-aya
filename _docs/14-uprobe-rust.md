@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 13 probed someone else's binary (bash) at a symbol that
+The last chapter probed someone else's binary (bash) at a symbol that
 happened to be C. This chapter probes a **Rust** binary you built, and
 reads a function's argument as it's called. Two Rust-specific things
 surface immediately: **symbol mangling** and **calling convention**,
@@ -82,7 +82,7 @@ Attaching points at the **target binary's path** and the symbol:
 prog.attach(Some("compute"), 0, "/home/fedora/target-app", None)?;
 ```
 
-Same `attach` shape as Chapter 13; only the artifact and symbol
+Same `attach` shape as the bash uprobe; only the artifact and symbol
 change. The uprobe fires inside `target-app`'s process every time
 `compute` is entered, reads `rdi`, and ships it to user space.
 

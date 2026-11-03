@@ -56,7 +56,7 @@ exactly why helpers became a bottleneck:
 
 kfuncs drop both constraints. A **kfunc** is an ordinary kernel function that a
 subsystem *registers* as callable from BPF, described entirely through **BTF**
-(the kernel's type information, which Chapter 15 already leaned on). Because the
+(the kernel's type information, which the BTF uprobe already leaned on). Because the
 description is BTF rather than a frozen number:
 
 - Any subsystem (or even an out-of-tree module) can export its own kfuncs,
@@ -109,7 +109,7 @@ from its hook.
 
 In Aya, a kfunc is just an `extern` function the program calls; the linker and
 loader resolve it through BTF at load time. The kernel type comes from vmlinux
-BTF (the `aya-tool` bindings from Chapter 4; the full CO-RE story is Part 9):
+BTF (the `aya-tool` bindings from the toolchain setup; the full CO-RE story comes later):
 
 ```rust
 use vmlinux::task_struct;   // generated: `aya-tool generate task_struct`
@@ -134,7 +134,7 @@ pub fn lookup(_ctx: TracePointContext) -> u32 {
     }
 
     bump(0);                                               // found
-    // … here you could read task fields (a trusted-pointer read; see Part 9) …
+    // … here you could read task fields (a trusted-pointer read; covered later) …
     unsafe { bpf_task_release(task) };                     // KF_RELEASE: required on this path
     0
 }
@@ -202,5 +202,5 @@ stability, is exactly the thing to verify before relying on one.
   **enforcing reference safety at load time**: leak the reference and the
   program won't load.
 
-Next, Chapter 53 looks at the **BPF token**: how this kernel surface gets
+Next, the book looks at the **BPF token**: how this kernel surface gets
 safely delegated into unprivileged containers.

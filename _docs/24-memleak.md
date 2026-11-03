@@ -50,7 +50,7 @@ return address trail.
 
 `malloc`'s argument (the size) is available at **entry**, but its result
 (the pointer) only at **return**: the same split you saw with `SSL_read`
-in Chapter 17. So `malloc` needs both a uprobe and a uretprobe, bridged
+as sslsniff did. So `malloc` needs both a uprobe and a uretprobe, bridged
 by a per-thread stash:
 
 ```rust
@@ -64,7 +64,7 @@ by a per-thread stash:
 ```
 
 `free` is just an entry probe that removes the pointer. (libc tolerates
-uretprobes fine, unlike Go in Chapter 19.)
+uretprobes fine, unlike Go.)
 
 ## Recording the allocation site
 

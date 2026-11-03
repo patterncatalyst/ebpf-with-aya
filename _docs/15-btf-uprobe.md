@@ -17,7 +17,7 @@ By the end of this chapter you can:
 
 ## Why this matters
 
-Chapter 14 read a scalar argument: a `u64` in a register. Real
+The last chapter read a scalar argument: a `u64` in a register. Real
 functions take **pointers to structs**, and reading fields out of them
 brings back a problem you met in the kprobe chapter: you need to know
 the struct's layout, and hardcoding offsets is fragile. This chapter
@@ -69,8 +69,8 @@ share its struct definition. So how do you know the layout?
 
 **BTF** (BPF Type Format) is compact type information describing
 structs, their fields, and their offsets. You met it as the kernel's
-`/sys/kernel/btf/vmlinux` in Chapter 2, and as what makes fentry's typed
-arguments and CO-RE's relocations work (Chapters 5, 8). The same idea
+`/sys/kernel/btf/vmlinux` back in the lab, and as what makes fentry's typed
+arguments and CO-RE's relocations work. The same idea
 applies to user-space binaries: if a binary carries BTF, it tells you
 exactly how its structs are laid out.
 
@@ -100,7 +100,7 @@ changes between versions.
 > or **generated from the target's BTF** when you don't), read with
 > `bpf_probe_read_user`. BTF is what makes that mirror *correct* and
 > lets you detect when a target's layout has drifted out from under
-> you. The full relocation story is the CO-RE deep-dive in Part 9.
+> you. The full relocation story is the CO-RE deep-dive later.
 
 ## Build, deploy, observe
 

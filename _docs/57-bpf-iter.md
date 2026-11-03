@@ -61,7 +61,7 @@ keeping them straight:
 - The **iterator program type**: a standalone program the kernel calls once
   per element of a chosen set. This is the headline feature and our focus.
 - **Open-coded iterators**: BPF-side APIs (`bpf_for`, `bpf_repeat`, the
-  `bpf_iter_*` `KF_ITER_*` kfuncs from Chapter 52) that let *any* program type
+  `bpf_iter_*` `KF_ITER_*` kfuncs) that let *any* program type
   run a bounded loop. Same idea, different scope: loops inside a program rather
   than a dedicated iterator program.
 
@@ -131,7 +131,7 @@ The iterator *program type* walks kernel-defined sets. Sometimes you just want a
 **bounded loop inside an ordinary program**, and the verifier has historically
 been hostile to loops. Open-coded iterators are the sanctioned way: the
 `bpf_iter_*` kfuncs (`bpf_iter_num_new`/`_next`/`_destroy`, flagged
-`KF_ITER_NEW`/`NEXT`/`DESTROY` as Chapter 52 noted) and the `bpf_for(i, 0, n)`
+`KF_ITER_NEW`/`NEXT`/`DESTROY` as noted earlier) and the `bpf_for(i, 0, n)`
 and `bpf_repeat(n)` macros built on them. The verifier understands these as
 terminating, so you can iterate a range, or walk tasks/cgroups
 (`bpf_iter_task`, `bpf_iter_css`) from inside a kprobe or tracepoint, no
@@ -187,6 +187,6 @@ confirms you read them correctly.
   bounded-iteration idea into any program type. Iterator program support is
   emerging in Aya; the C path via `bpftool` is canonical today.
 
-That closes the advanced kernel surface. Part 9, **Operating eBPF**, steps up
+That closes the advanced kernel surface. The **Operating eBPF** part steps up
 a level to running this in production, beginning with the **CO-RE** deep-dive
 the earlier chapters kept pointing forward to.
