@@ -10,11 +10,15 @@ below are the field's standard references and the authoritative documentation it
 follows. They are reference works, not sources: no text or code from any of them
 is reproduced here.
 
-| Title | Author(s) | Publisher | Year | Focus |
-|---|---|---|---|---|
-| [*Learning eBPF*](https://www.oreilly.com/library/view/learning-ebpf/9781098135119/) | Liz Rice | O'Reilly | 2023 | What eBPF is, how programs attach, and what they can observe |
-| [*BPF Performance Tools*](https://www.brendangregg.com/bpf-performance-tools-book.html) | Brendan Gregg | Addison-Wesley | 2019 | bcc/bpftrace tools for Linux observability and performance |
-| [*The Rust Programming Language*](https://doc.rust-lang.org/book/) | Steve Klabnik, Carol Nichols | No Starch Press | 2023 | The Rust language the Aya user-space programs are written in |
+<table class="bib bib--books">
+  <colgroup><col style="width:62%"><col style="width:24%"><col style="width:14%"></colgroup>
+  <thead><tr><th>Title</th><th>Author(s)</th><th>Year</th></tr></thead>
+  <tbody>
+    <tr><td><a href="https://www.oreilly.com/library/view/learning-ebpf/9781098135119/" rel="noopener"><em>Learning eBPF</em></a><br><small>O'Reilly. What eBPF is, how programs attach, and what they can observe</small></td><td>Liz Rice</td><td>2023</td></tr>
+    <tr><td><a href="https://www.brendangregg.com/bpf-performance-tools-book.html" rel="noopener"><em>BPF Performance Tools</em></a><br><small>Addison-Wesley. bcc/bpftrace tools for Linux observability and performance</small></td><td>Brendan Gregg</td><td>2019</td></tr>
+    <tr><td><a href="https://doc.rust-lang.org/book/" rel="noopener"><em>The Rust Programming Language</em></a><br><small>No Starch Press. The Rust language the Aya user-space programs are written in</small></td><td>Steve Klabnik, Carol Nichols</td><td>2023</td></tr>
+  </tbody>
+</table>
 
 ## Primary references
 
